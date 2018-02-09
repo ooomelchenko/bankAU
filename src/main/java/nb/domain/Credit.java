@@ -93,12 +93,6 @@ public class Credit implements Serializable {
     private String nbuPladge;
     @Column(name = "IS_IT_SOLD")
     private Boolean isSold;
-    /*@Column(name = "FOND_DEC_DATE")
-    private Date fondDecisionDate;
-    @Column(name = "FOND_DECISION")
-    private String fondDecision;
-    @Column(name = "FOND_DECISION_NUM")
-    private String decisionNumber;*/
     @Column(name = "ACCEPTED_PRICE")
     private BigDecimal acceptPrice;
     @Column(name = "PAYMENTS_BID")
@@ -111,10 +105,6 @@ public class Credit implements Serializable {
     private Date customerPayDate;
     @Column(name = "PLAN_SALE_DATE")
     private Date planSaleDate;
-    /*@Column(name = "ACCEPTED_EXCHANGE")
-    private String acceptExchange;
-    @Column(name = "NEED_NEW_FD")
-    private boolean neadNewFondDec;*/
 
     @Column(name = "LOT_ID")
     private Long lot;
@@ -126,39 +116,11 @@ public class Credit implements Serializable {
         this.nd = nd;
     }
 
-    public Long getId() {
-        return id;
-    }
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getRegion() {
-        return region;
-    }
-    public void setRegion(String region) {
-        this.region = region;
-    }
-
     public String getMfo() {
         return mfo;
     }
     public void setMfo(String mfo) {
         this.mfo = mfo;
-    }
-
-    public String getAssetTypeCode() {
-        return assetTypeCode;
-    }
-    public void setAssetTypeCode(String assetTypeCode) {
-        this.assetTypeCode = assetTypeCode;
-    }
-
-    public String getAssetGroupCode() {
-        return assetGroupCode;
-    }
-    public void setAssetGroupCode(String assetGroupCode) {
-        this.assetGroupCode = assetGroupCode;
     }
 
     public String getClientType() {
@@ -180,13 +142,6 @@ public class Credit implements Serializable {
     }
     public void setZast(String zast) {
         this.zast = zast;
-    }
-
-    public String getInn() {
-        return inn;
-    }
-    public void setInn(String inn) {
-        this.inn = inn;
     }
 
     public String getFio() {
@@ -273,13 +228,6 @@ public class Credit implements Serializable {
         this.comission = comission;
     }
 
-    public BigDecimal getZb() {
-        return zb;
-    }
-    public void setZb(BigDecimal zb) {
-        this.zb = zb;
-    }
-
     public int getDpd() {
         return dpd;
     }
@@ -299,13 +247,6 @@ public class Credit implements Serializable {
     }
     public void setRatingPriceNoPDV(BigDecimal ratingPriceNoPDV) {
         this.ratingPriceNoPDV = ratingPriceNoPDV;
-    }
-
-    public BigDecimal getCreditPrice() {
-        return rv;
-    }
-    public void setCreditPrice(BigDecimal rv) {
-        this.rv = rv;
     }
 
     public String getNbuRate() {
@@ -350,25 +291,11 @@ public class Credit implements Serializable {
         this.discountPrice = discountPrice;
     }
 
-    public BigDecimal getFactPrice() {
-        return factPrice;
-    }
-    public void setFactPrice(BigDecimal factPrice) {
-        this.factPrice = factPrice;
-    }
-
     public String getNbuPladge() {
         return nbuPladge;
     }
     public void setNbuPladge(String nbuPladge) {
         this.nbuPladge = nbuPladge;
-    }
-
-    public Boolean getSold() {
-        return isSold;
-    }
-    public void setSold(Boolean sold) {
-        isSold = sold;
     }
 
     public Long getLot() {
@@ -383,41 +310,6 @@ public class Credit implements Serializable {
     }
     public void setRv(BigDecimal rv) {
         this.rv = rv;
-    }
-
-    public BigDecimal getAcceptPrice() {
-        return acceptPrice;
-    }
-    public void setAcceptPrice(BigDecimal acceptPrice) {
-        this.acceptPrice = acceptPrice;
-    }
-
-    public BigDecimal getPaysBid() {
-        return paysBid;
-    }
-    public void setPaysBid(BigDecimal paysBid) {
-        this.paysBid = paysBid;
-    }
-
-    public BigDecimal getPaysCustomer() {
-        return paysCustomer;
-    }
-    public void setPaysCustomer(BigDecimal paysCustomer) {
-        this.paysCustomer = paysCustomer;
-    }
-
-    public Date getBidPayDate() {
-        return bidPayDate;
-    }
-    public void setBidPayDate(Date bidPayDate) {
-        this.bidPayDate = bidPayDate;
-    }
-
-    public Date getCustomerPayDate() {
-        return customerPayDate;
-    }
-    public void setCustomerPayDate(Date customerPayDate) {
-        this.customerPayDate = customerPayDate;
     }
 
     public Date getPlanSaleDate() {
