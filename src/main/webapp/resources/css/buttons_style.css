@@ -1,0 +1,105 @@
+button {
+    font-size: large;
+    font-style: oblique;
+}
+.button {
+    background-color: #37415d;
+    color: #bfe1f1;
+    width: 20%;
+    height: 60px;
+    cursor: pointer;
+    font-family: "Trebuchet MS", "Lucida Sans";
+    padding: 7px 20px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+
+    box-shadow: 2px -2px 5px 0 rgba(0, 0, 0, .1),
+    -2px -2px 5px 0 rgba(0, 0, 0, .1),
+    2px 2px 5px 0 rgba(0, 0, 0, .1),
+    -2px 2px 5px 0 rgba(0, 0, 0, .1);
+    font-size: 25px;
+    letter-spacing: 2px;
+    transition: 0.3s all linear;
+}
+
+.button:hover {
+    border-right: 10px solid white;
+    border-left: 10px solid white;
+    background-color: #252F48;
+    color: white;
+}
+
+#ul_menu li {
+    cursor: pointer;
+    font-family: "Trebuchet MS", "Lucida Sans";
+    padding: 7px 20px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    border-left: 10px solid #8bc63e;
+    box-shadow: 2px -2px 5px 0 rgba(0, 0, 0, .1),
+    -2px -2px 5px 0 rgba(0, 0, 0, .1),
+    2px 2px 5px 0 rgba(0, 0, 0, .1),
+    -2px 2px 5px 0 rgba(0, 0, 0, .1);
+    font-size: 20px;
+    letter-spacing: 2px;
+    transition: 0.3s all linear;
+}
+
+#ul_menu li:nth-child(2) {
+    border-color: #fcba30;
+}
+
+#ul_menu li:nth-child(3) {
+    border-color: #f05d22;
+}
+
+#ul_menu li:nth-child(4) {
+    border-color: blueviolet;
+}
+
+#ul_menu li:hover {
+    border-left: 10px solid transparent;
+}
+
+#ul_menu li:nth-child(1):hover {
+    border-right: 10px solid #8bc63e;
+    background-color: darkcyan;
+    color: #8bc63e
+}
+
+#ul_menu li:nth-child(2):hover {
+    border-right: 10px solid #fcba30;
+    background-color: darkcyan;
+    color: #fcba30
+}
+
+#ul_menu li:nth-child(3):hover {
+    border-right: 10px solid #f05d22;
+    background-color: darkcyan;
+    color: #f05d22
+}
+
+#ul_menu li:nth-child(4):hover {
+    border-right: 10px solid blueviolet;
+    background-color: darkcyan;
+    color: blueviolet
+}
+
+#div_services_menu ul li a {
+    display:block;
+    width:200px;
+    height:40px;
+    background-color:#37415d;
+    border-left:5px solid #bfe1f1;
+    border-right:5px solid #bfe1f1;
+    padding-left:10px;
+    text-decoration:none;
+    color:#bfe1f1; }
+
+#div_services_menu ul li a:hover {
+    -moz-transform:rotate(-5deg);
+    -moz-box-shadow:10px 10px 20px #37415d;
+    -webkit-transform:rotate(-5deg);
+    -webkit-box-shadow:10px 10px 20px #37415d;
+    transform:rotate(-5deg);
+    box-shadow:10px 10px 20px #37415d; }

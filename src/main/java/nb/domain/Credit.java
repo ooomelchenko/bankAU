@@ -1,5 +1,7 @@
 package nb.domain;
 
+import nb.general.domain.Unit;
+
 import javax.persistence.*;
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -9,7 +11,7 @@ import java.util.Locale;
 
 @Entity
 @Table(name = "Credits")
-public class Credit implements Serializable {
+public class Credit extends Unit implements Serializable {
     static final SimpleDateFormat sdfshort = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
 
     @Id

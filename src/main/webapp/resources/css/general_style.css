@@ -1,0 +1,62 @@
+body {
+    color: #bdc2e7;
+    font: 500 16px/18px 'Open Sans', sans-serif;
+    background: #252F48 ; /*url(resources/images/font.png)*/
+    height: 100%;
+    margin-top: 8%;
+}
+
+p {
+    text-indent: 20px; /* Отступ первой строки в пикселах */
+    line-height: 1.5;
+}
+
+header {
+    top: 0;
+    left: 0;
+    padding: 0;
+    width: 100%;
+    border-bottom: 1px solid;
+    position: fixed;
+    height: 8%;
+    background: #37415d;
+    display: inline-table;
+}
+
+header div {
+    display: table-cell;
+    vertical-align: top;
+}
+header #div_sheet_header {
+    text-align: center;
+    width: 30%;
+}
+header .div_header_additions {
+    width: 35%;
+}
+
+header li, footer li {
+    list-style-type: none;
+}
+
+footer {
+    padding: 0;
+    margin: 0;
+    font: 14px 'Open Sans', sans-serif;
+    border-top: 1px solid white;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 8%;
+    background: #37415d;
+}
+
+footer div {
+    display: inline-block;
+}
+
+footer ul {
+     display: inline-block;
+     vertical-align: top;
+ }
