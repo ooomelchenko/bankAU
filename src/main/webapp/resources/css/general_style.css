@@ -33,10 +33,26 @@ header #div_sheet_header {
 }
 header .div_header_additions {
     width: 35%;
+    padding: 5px;
+}
+
+header #div_right_side {
+    text-align: -moz-right;
 }
 
 header li, footer li {
     list-style-type: none;
+}
+
+header img {
+    height: 40px;
+    width: 40px;
+    opacity: 0.5;
+}
+
+header img:hover {
+    cursor: pointer;
+    opacity: 1;
 }
 
 footer {

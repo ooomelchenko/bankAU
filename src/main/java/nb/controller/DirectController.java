@@ -79,32 +79,25 @@ public class DirectController {
             return "LogIN";
     }
 
-    @RequestMapping(value = "/lotMenu", method = RequestMethod.GET)
-    private String lotMenu(HttpSession session, Model model) {
+    @RequestMapping(value = "/lotMenu/{saleStatus}", method = RequestMethod.GET)
+    private String lotMenu(HttpSession session, Model model, @PathVariable String saleStatus) {
         if (!isAuth(session)) {
             return "LogIN";
         } else {
-            model.addAttribute("lotList", lotService.getLots());
-            return "LotMenu";
-        }
-    }
 
-    @RequestMapping(value = "/soldedLotMenu", method = RequestMethod.GET)
-    private String soldedLotMenu(HttpSession session, Model model) {
-        if (!isAuth(session)) {
-            return "LogIN";
-        } else {
-            model.addAttribute("lotList", lotService.getSoldedLots());
-            return "LotMenu";
-        }
-    }
+            switch (saleStatus) {
+                case "notSolded":
+                    model.addAttribute("lotList", lotService.getNotSoldedLots());
 
-    @RequestMapping(value = "/notSoldedLotMenu", method = RequestMethod.GET)
-    private String notSoldedLotMenu(HttpSession session, Model model) {
-        if (!isAuth(session)) {
-            return "LogIN";
-        } else {
-            model.addAttribute("lotList", lotService.getNotSoldedLots());
+                    break;
+                case "solded":
+                    model.addAttribute("lotList", lotService.getSoldedLots());
+                    break;
+                default:
+                    model.addAttribute("lotList", lotService.getLots());
+                    break;
+            }
+            model.addAttribute(saleStatus);
             return "LotMenu";
         }
     }

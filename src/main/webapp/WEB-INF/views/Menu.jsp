@@ -21,6 +21,14 @@
     </script>
     <link href="resources/css/general_style.css" rel="stylesheet" type="text/css">
     <style type="text/css">
+        header img{
+            width: 40px;
+            height: 40px;
+            opacity: 0.5;
+        }
+        header img:hover{
+            opacity: 1;
+        }
         #div_mainMenu button{
             width: 200px;
             height: 60px;
@@ -50,11 +58,11 @@
         #search_img, #search_cr_img{
             width: 75px;
             height: 45px;
+            opacity: 0.5;
         }
         #search_img:hover, #search_cr_img:hover{
             cursor: pointer;
-            width: 77px;
-            height: 47px;
+            opacity: 1;
         }
         #img_reports{
             width: 80px;
@@ -93,14 +101,14 @@
 <body>
 <header>
     <div id="div_left_side" class="div_header_additions">
-        <h3 >${userId}, вітаємо в програмі!</h3>
+        <h3>  ${userId}, вітаємо в програмі!</h3>
     </div>
     <div id="div_sheet_header">
         <h1>ГОЛОВНЕ МЕНЮ</h1>
     </div>
-    <div id="div_right_side" class="div_header_additions" style="text-align: center">
+    <div id="div_right_side" class="div_header_additions" >
         <a href="logout">
-            <img src="resources/css/images/log_aut.png" title="Вийти з програми" width="50px" height="50px">
+            <img src="resources/css/images/log_out.png" title="Вийти з програми">
         </a>
     </div>
 </header>
@@ -110,7 +118,7 @@
         <%--<img class="menuImg" src="images/menu/lot.jpg" onclick="location.href = 'lotMenu'" title="ЛОТИ">
         <img class="menuImg" src="images/menu/bid.jpg" onclick="location.href = 'bidMenu'" title="ТОРГИ">
         <img class="menuImg" src="images/menu/ex.jpg" onclick="location.href = 'exMenu'" title="БІРЖІ">--%>
-        <button id="button_lots_direction" onclick="location.href = 'notSoldedLotMenu'">Лоти</button>
+        <button id="button_lots_direction" onclick="location.href = 'lotMenu/notSolded'">Лоти</button>
         <button id="button_bids_direction" onclick="location.href = 'bidMenu'">Аукціони</button>
         <button id="button_exchanges_direction" onclick="location.href = 'exMenu'">Біржі</button>
     </div>
