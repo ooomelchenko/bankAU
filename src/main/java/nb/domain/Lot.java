@@ -63,6 +63,8 @@ public class Lot implements Serializable, Comparable<Lot> {
     private String nbuDecision;
     @Column(name = "NBU_DECISION_NUM")
     private String nbuDecisionNumber;
+    @Column(name = "BID_SCENARIO")
+    private short bidScenario;
 
     @ManyToOne
     private User user;//класс
@@ -76,7 +78,7 @@ public class Lot implements Serializable, Comparable<Lot> {
         else if(bid==null)
             return -1;
         else
-        return bid.compareTo(entryLot.bid);
+            return bid.compareTo(entryLot.bid);
     }
 
     public Long getId() {
@@ -268,6 +270,13 @@ public class Lot implements Serializable, Comparable<Lot> {
         this.nbuDecisionNumber = nbuDecisionNumber;
     }
 
+    public short getBidScenario() {
+        return bidScenario;
+    }
+    public void setBidScenario(short bidScenario) {
+        this.bidScenario = bidScenario;
+    }
+
     //Конструктора
     public Lot() {
     }
@@ -292,6 +301,7 @@ public class Lot implements Serializable, Comparable<Lot> {
         this.nbuDecision = null;
         this.nbuDecisionDate = null;
         this.nbuDecisionNumber = null;
+        this.bidScenario = 0;
     }
 
     @Override
@@ -319,6 +329,10 @@ public class Lot implements Serializable, Comparable<Lot> {
                 ", fondDecisionDate=" + fondDecisionDate +
                 ", fondDecision='" + fondDecision + '\'' +
                 ", decisionNumber='" + decisionNumber + '\'' +
+                ", nbuDecisionDate=" + nbuDecisionDate +
+                ", nbuDecision='" + nbuDecision + '\'' +
+                ", nbuDecisionNumber='" + nbuDecisionNumber + '\'' +
+                ", bidScenario=" + bidScenario +
                 ", user=" + user +
                 ", bid=" + bid +
                 '}';

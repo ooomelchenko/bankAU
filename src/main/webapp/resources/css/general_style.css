@@ -1,6 +1,6 @@
 body {
-    color: #bdc2e7;
-    font: 500 16px/18px 'Open Sans', sans-serif;
+    color: #d2d7ff;
+    font: 500 14px/16px 'Open Sans', sans-serif;
     background: #252F48 ; /*url(resources/images/font.png)*/
     height: 100%;
     margin-top: 8%;
@@ -9,6 +9,11 @@ body {
 p {
     text-indent: 20px; /* Отступ первой строки в пикселах */
     line-height: 1.5;
+}
+
+input, select{
+    background: #37415d;
+    color: ghostwhite;
 }
 
 header {
@@ -55,6 +60,8 @@ header img:hover {
     opacity: 1;
 }
 
+
+
 footer {
     padding: 0;
     margin: 0;
@@ -76,3 +83,11 @@ footer ul {
      display: inline-block;
      vertical-align: top;
  }
+
+.icon_button{
+    opacity: 0.7;
+}
+.icon_button:hover{
+    cursor: pointer;
+    opacity: 1;
+}

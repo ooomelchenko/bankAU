@@ -3,6 +3,7 @@
 <%@ page import="java.text.SimpleDateFormat" %>
 <%@ page import="java.util.*" %>
 <%@ page contentType="text/html;charset=UTF-8" %>
+<base href="${pageContext.request.contextPath}/"/>
 <html>
 <head>
     <%
@@ -24,8 +25,8 @@
     %>
 
     <title>Меню лотів</title>
-    <script src="/resources/js/jquery-3.2.1.js"></script>
-    <script src="/resources/js/lotsMenu.js"></script>
+    <script type="text/javascript" src="resources/js/jquery-3.2.1.js"></script>
+    <script type="text/javascript" src="resources/js/lotsMenu.js"></script>
     <script type="text/javascript">
         $(document).ready(function () {
             function checkBids() {
@@ -47,10 +48,10 @@
 
             div_create_lot.click(function () {
                 if ($('#radio_asset_lot_type').prop('checked')) {
-                    window.open("/lotCreator")
+                    window.open("lotCreator")
                 }
                 else if ($('#radio_credit_lot_type').prop('checked')) {
-                    window.open("/lotCreditsCreator")
+                    window.open("lotCreditsCreator")
                 }
                 else alert("Оберіть тип нового лоту!")
             });
@@ -136,7 +137,7 @@
         });
     </script>
 
-    <link href="/resources/css/general_style.css" rel="stylesheet" type="text/css">
+    <link href="resources/css/general_style.css" rel="stylesheet" type="text/css">
     <style>
 
         #div_lots_filter {
@@ -156,8 +157,8 @@
         }
 
         #table_lots .trL:hover {
-            color: darkblue;
-            background-color: whitesmoke; /* Цвет фона */
+            color: ghostwhite;
+            background-color: #141429; /* Цвет фона */
         }
 
         #table_lots td, #table_lots th {
@@ -223,8 +224,8 @@
 
 <header>
     <div id="div_left_side" class="div_header_additions">
-        <div id="div_beck_img" title="назад" onclick="location.href='/index'">
-            <img src="/resources/css/images/back.png">
+        <div id="div_beck_img" title="назад" onclick="location.href='index'">
+            <img src="resources/css/images/back.png">
         </div>
     </div>
     <div id="div_sheet_header">
@@ -232,7 +233,7 @@
     </div>
     <div id="div_right_side" class="div_header_additions">
         <div id="div_create_lot" title="створити новий лот">
-            <img src="/resources/css/images/create_lot.png">
+            <img src="resources/css/images/create_lot.png">
         </div>
         <div style="text-align: left">
             <input type="radio" name="radio_new_lot_type" id="radio_credit_lot_type"> кредити
@@ -244,11 +245,11 @@
 
 <div id="div_lots_filter">
     Всі лоти <input type="radio" name="lot_type"
-                    onclick="location.href ='all'" <%if (saleStatus.equals("all")) out.print("checked=\"checked\"");%> >
+                    onclick="location.href ='lotMenu/all'" <%if (saleStatus.equals("all")) out.print("checked=\"checked\"");%> >
     Непродані лоти <input type="radio" name="lot_type"
-                          onclick="location.href ='notSolded'" <%if (saleStatus.equals("notSolded")) out.print("checked=\"checked\"");%> >
+                          onclick="location.href ='lotMenu/notSolded'" <%if (saleStatus.equals("notSolded")) out.print("checked=\"checked\"");%> >
     Продані лоти <input type="radio" name="lot_type"
-                        onclick="location.href ='solded'" <%if (saleStatus.equals("solded")) out.print("checked=\"checked\"");%> >
+                        onclick="location.href ='lotMenu/solded'" <%if (saleStatus.equals("solded")) out.print("checked=\"checked\"");%> >
 </div>
 
 <div id="div_lots" class="view">
@@ -311,8 +312,7 @@
                 Bid bid = lot.getBid();
         %>
         <tr class="trL" align="center">
-            <td class="lotId"  <%if (lot.getLotType() == 0) out.print("style=\"color: #00a5ff\"");%> ><%=lot.getId()%>
-            </td>
+            <td class="lotId" <%if (lot.getLotType() == 0) out.print("style=\"color: #00a5ff\"");%> ><%=lot.getId()%></td>
             <td class="bidDate"><%
                 if (bid != null && bid.getBidDate() != null) {
                     out.print(sdf.format(bid.getBidDate()));

@@ -1,9 +1,6 @@
 package nb.domain;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
@@ -12,8 +9,12 @@ import java.util.Date;
 @Table(name = "Credits_History")
 public class CreditHistory implements Serializable {
     @Id
-    @Column(name = "KEY_N")
+    @SequenceGenerator(name = "sequence", sequenceName = "Credit_History_SEQ", initialValue = 1, allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sequence")
+    @Column(name = "ID")
     private Long id;
+    @Column(name = "KEY_N")
+    private Long crId;
     @Column(name = "ND_NLS")
     private Long nd;
     @Column(name = "F_IDCODE")
@@ -22,7 +23,6 @@ public class CreditHistory implements Serializable {
     private BigDecimal startPrice;
     @Column(name = "FIRST_Start_PRICE")
     private BigDecimal firstStartPrice;
-
     @Column(name = "ACCEPTED_PRICE")
     private BigDecimal acceptPrice;
 
@@ -41,6 +41,13 @@ public class CreditHistory implements Serializable {
     }
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public Long getCrId() {
+        return crId;
+    }
+    public void setCrId(Long crId) {
+        this.crId = crId;
     }
 
     public Long getNd() {
@@ -100,7 +107,7 @@ public class CreditHistory implements Serializable {
     }
 
     public CreditHistory(String user, Credit credit) {
-        id=credit.getId();
+        crId=credit.getId();
         nd=credit.getNd();
         inn=credit.getInn();
         startPrice=credit.getStartPrice();
@@ -110,17 +117,20 @@ public class CreditHistory implements Serializable {
         this.user=user;
         changeDate=new Date();
     }
+
     @Override
     public String toString() {
-        return "Credit{" +
+        return "CreditHistory{" +
                 "id=" + id +
+                ", crId=" + crId +
                 ", nd=" + nd +
                 ", inn='" + inn + '\'' +
                 ", startPrice=" + startPrice +
                 ", firstStartPrice=" + firstStartPrice +
                 ", acceptPrice=" + acceptPrice +
-                ", lot=" + lotId +
+                ", lotId=" + lotId +
+                ", user='" + user + '\'' +
+                ", changeDate=" + changeDate +
                 '}';
     }
-
 }

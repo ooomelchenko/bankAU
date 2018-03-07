@@ -6,31 +6,18 @@ import java.util.Date;
 public class Unit {
 
     private Long id;
-
     private String assetTypeCode;
-
     private String assetGroupCode;
-
     private String inn;
-
     private BigDecimal zb;
-
     private BigDecimal rv;
-
     private String region;
-
     private BigDecimal factPrice;
-
     private boolean isSold;
-
     private BigDecimal acceptPrice;
-
     private BigDecimal paysBid;
-
     private BigDecimal paysCustomer;
-
     private Date bidPayDate;
-
     private Date customerPayDate;
 
     public Long getId() {

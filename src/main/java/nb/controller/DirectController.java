@@ -222,11 +222,11 @@ public class DirectController {
         }
     }
 
-   /* @RequestMapping(value = "/lotRedactor", method = RequestMethod.GET)
-    private String LotRedactor(HttpSession session, Model model) {
-        String lotId = (String) session.getAttribute("lotRid");
+    @RequestMapping(value = "/lotRedactor/{idLot}", method = RequestMethod.GET)
+    private String LotRedactor(HttpSession session, Model model, @PathVariable Long idLot) {
+
         String userName = (String) session.getAttribute("userId");
-        Lot lot = lotService.getLot(Long.parseLong(lotId));
+        Lot lot = lotService.getLot(idLot);
 
         model.addAttribute("bidStatusList", StaticStatus.bidStatusList);
         model.addAttribute("statusList", StaticStatus.statusList);
@@ -236,7 +236,7 @@ public class DirectController {
         model.addAttribute("allBidsList", bidService.getAllBids());
         model.addAttribute("fondDecisionsList", StaticStatus.fondDecisionsList);
         model.addAttribute("allExchangeList", exchangeService.getAllExchanges());
-        List<Long> bidIdList = lotService.getBidsIdByLot(Long.parseLong(lotId));
+        List<Long> bidIdList = lotService.getBidsIdByLot(idLot);
 
         Set<Bid> historyBids = new TreeSet<>();
 
@@ -255,7 +255,7 @@ public class DirectController {
         model.addAttribute("bidsHistoryList", historyBids);
         return "LotRedaction";
 
-    }*/
+    }
 
     @RequestMapping(value = "/exLots", method = RequestMethod.GET)
     private String exRedactor(HttpSession session, Model model) {

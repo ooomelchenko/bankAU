@@ -111,6 +111,121 @@ public class Credit extends Unit implements Serializable {
     @Column(name = "LOT_ID")
     private Long lot;
 
+    @Override
+    public Long getId() {
+        return id;
+    }
+    @Override
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    @Override
+    public String getRegion() {
+        return region;
+    }
+    @Override
+    public void setRegion(String region) {
+        this.region = region;
+    }
+
+    @Override
+    public String getAssetTypeCode() {
+        return assetTypeCode;
+    }
+    @Override
+    public void setAssetTypeCode(String assetTypeCode) {
+        this.assetTypeCode = assetTypeCode;
+    }
+
+    @Override
+    public String getAssetGroupCode() {
+        return assetGroupCode;
+    }
+    @Override
+    public void setAssetGroupCode(String assetGroupCode) {
+        this.assetGroupCode = assetGroupCode;
+    }
+
+    @Override
+    public String getInn() {
+        return inn;
+    }
+    @Override
+    public void setInn(String inn) {
+        this.inn = inn;
+    }
+
+    @Override
+    public BigDecimal getZb() {
+        return zb;
+    }
+    @Override
+    public void setZb(BigDecimal zb) {
+        this.zb = zb;
+    }
+
+    @Override
+    public BigDecimal getFactPrice() {
+        return factPrice;
+    }
+    @Override
+    public void setFactPrice(BigDecimal factPrice) {
+        this.factPrice = factPrice;
+    }
+
+    public Boolean getSold() {
+        return isSold;
+    }
+    public void setSold(Boolean sold) {
+        isSold = sold;
+    }
+
+    @Override
+    public BigDecimal getAcceptPrice() {
+        return acceptPrice;
+    }
+    @Override
+    public void setAcceptPrice(BigDecimal acceptPrice) {
+        this.acceptPrice = acceptPrice;
+    }
+
+    @Override
+    public BigDecimal getPaysBid() {
+        return paysBid;
+    }
+    @Override
+    public void setPaysBid(BigDecimal paysBid) {
+        this.paysBid = paysBid;
+    }
+
+    @Override
+    public BigDecimal getPaysCustomer() {
+        return paysCustomer;
+    }
+    @Override
+    public void setPaysCustomer(BigDecimal paysCustomer) {
+        this.paysCustomer = paysCustomer;
+    }
+
+    @Override
+    public Date getBidPayDate() {
+        return bidPayDate;
+    }
+    @Override
+    public void setBidPayDate(Date bidPayDate) {
+        this.bidPayDate = bidPayDate;
+    }
+
+    @Override
+    public Date getCustomerPayDate() {
+        return customerPayDate;
+    }
+    @Override
+    public void setCustomerPayDate(Date customerPayDate) {
+        this.customerPayDate = customerPayDate;
+    }
+
     public Long getNd() {
         return nd;
     }
