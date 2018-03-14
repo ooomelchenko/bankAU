@@ -40,7 +40,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 @Controller
-@SessionAttributes({"userId", "lotRid", "exRid", "objIdToDownload", "docName", "docType", "reportPath", "assetPortionNum"})
+@SessionAttributes({"userId", "lotRid", "objIdToDownload", "docName", "docType", "reportPath", "assetPortionNum"})
 public class AssetController {
 
     @Autowired
@@ -1008,13 +1008,6 @@ public class AssetController {
         return "1";
     }*/
 
-    @RequestMapping(value = "/setRex", method = RequestMethod.GET)
-    private @ResponseBody
-    String setRex(@RequestParam("exId") String exId, Model model) {
-        model.addAttribute("exRid", exId);
-        return "1";
-    }
-
     @RequestMapping(value = "/lotDel", method = RequestMethod.POST)
     private @ResponseBody
     int deleteLot(@RequestParam("lotId") String lotId) {
@@ -1076,10 +1069,9 @@ public class AssetController {
 
     @RequestMapping(value = "/countSumByLot", method = RequestMethod.POST)
     private @ResponseBody
-    List<String> countSumByLot(@RequestParam("lotId") String idLot) {
+    List<String> countSumByLot(@RequestParam("lotId") Long idLot) {
         List<String> countSumList = new ArrayList<>();
-        Long id = Long.parseLong(idLot);
-        Lot lot = lotService.getLot(id);
+        Lot lot = lotService.getLot(idLot);
         Long count = lotService.lotCount(lot);
         BigDecimal sum = lotService.lotSum(lot);
         if(count!=null)
@@ -1091,14 +1083,14 @@ public class AssetController {
 
     @RequestMapping(value = "/paymentsSumByLot", method = RequestMethod.POST)
     private @ResponseBody
-    BigDecimal paymentsSum(@RequestParam("lotId") String idLot) {
-        return lotService.paymentsSumByLot(lotService.getLot(Long.parseLong(idLot)));
+    BigDecimal paymentsSum(@RequestParam("lotId") Long idLot) {
+        return lotService.paymentsSumByLot(lotService.getLot(idLot));
     }
 
     @RequestMapping(value = "/paymentsByLot", method = RequestMethod.POST)
     private @ResponseBody
-    List<Pay> paymentsByLot(@RequestParam("lotId") String idLot) {
-        Lot lot = lotService.getLot(Long.parseLong(idLot));
+    List<Pay> paymentsByLot(@RequestParam("lotId") Long idLot) {
+        Lot lot = lotService.getLot(idLot);
         return lotService.paymentsByLot(lot);
     }
 
@@ -1362,6 +1354,78 @@ public class AssetController {
 
         model.addAttribute("reportPath", reportPath);
         return "1";
+    }
+
+    @RequestMapping(value = "/getReport/{reportNum}/{start}/{end}", method = RequestMethod.GET)
+    public void getReport(HttpServletResponse response, @PathVariable String start, @PathVariable String end,
+                         @PathVariable int reportNum) throws IOException {
+        String reportPath = "";
+
+        if(reportNum==4){
+            try {
+                reportPath=fillAssTab();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        if(reportNum==3){
+            try {
+                reportPath=fillCrdTab(creditService.getCreditsByPortion(1));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        Date startDate = null;
+        Date endDate = null;
+        try {
+            startDate = sdfshort.parse(start);
+        } catch (ParseException e) {
+        }
+        try {
+            endDate = sdfshort.parse(end);
+        } catch (ParseException e) {
+        }
+        List<Asset> assetList = assetService.findAllSuccessBids(startDate, endDate);
+        List<Credit> crList = creditService.getCredits_SuccessBids(startDate, endDate);
+
+        if (reportNum==1) {
+            try {
+                reportPath = makeDodatok(assetList, crList, start, end);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        if (reportNum==2) {
+            reportPath = "C:\\projectFiles\\Dodatok 2_14.xls";
+        }
+        if (reportNum==5) {
+            reportPath = makePaymentsReport(payService.getPaysByDates(startDate, endDate), start, end);
+        }
+        if (reportNum==6) {
+            try {
+                reportPath = makeBidsSumReport(lotService.getLotsHistoryByBidDates(startDate, endDate), lotService.getLotsHistoryAggregatedByBid(startDate, endDate));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        File file = new File(reportPath);
+        InputStream is = new FileInputStream(file);
+
+        response.setContentType("application/octet-stream");
+        response.setHeader("Content-Disposition", "attachment; filename=\"" + file.getName() + "\"");
+
+        OutputStream os = response.getOutputStream();
+        byte[] buffer = new byte[1024];
+        int len;
+        while ((len = is.read(buffer)) != -1) {
+            os.write(buffer, 0, len);
+        }
+        os.flush();
+        is.close();
+        os.close();
+        file.delete();
     }
 
     @RequestMapping(value = "/getFileNames", method = RequestMethod.POST)
@@ -2376,8 +2440,8 @@ public class AssetController {
 
     @RequestMapping(value = "/countSumLotsByExchange", method = RequestMethod.POST)
     private @ResponseBody
-    List<String> countSumLotsByExchange(@RequestParam("exId") String exId) {
-        Exchange exchange = exchangeService.getExchange(Long.parseLong(exId));
+    List<String> countSumLotsByExchange(@RequestParam("exId") Long exId) {
+        Exchange exchange = exchangeService.getExchange(exId);
         List<Lot> lotsList = lotService.getLotsByExchange(exchange);
         List<String> list = new ArrayList<>();
         BigDecimal lotRV = new BigDecimal(0.00);
@@ -2391,8 +2455,8 @@ public class AssetController {
 
     @RequestMapping(value = "/countBidsByExchange", method = RequestMethod.GET)
     private @ResponseBody
-    int countBidsByExchange(@RequestParam("exId") String exId) {
-        Exchange exchange = exchangeService.getExchange(Long.parseLong(exId));
+    int countBidsByExchange(@RequestParam("exId") Long exId) {
+        Exchange exchange = exchangeService.getExchange(exId);
         return bidService.getBidsByExchange(exchange).size();
     }
 

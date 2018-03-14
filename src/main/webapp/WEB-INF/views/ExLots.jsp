@@ -1,37 +1,57 @@
-<%@ page import="nadrabank.domain.Bid" %>
-<%@ page import="nadrabank.domain.Exchange" %>
-<%@ page import="nadrabank.domain.Lot" %>
+<%@ page import="nb.domain.Bid" %>
+<%@ page import="nb.domain.Exchange" %>
+<%@ page import="nb.domain.Lot" %>
 <%@ page import="java.text.SimpleDateFormat" %>
-<%@ page import="java.util.Date" %>
-<%@ page import="java.util.Formatter" %>
 <%@ page import="java.util.List" %>
 <%@ page import="java.util.Locale" %>
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page contentType="text/html;charset=UTF-8"  %>
+<base href="${pageContext.request.contextPath}/"/>
 <html>
 <head>
-    <script src="js/jquery-1.11.1.js"></script>
-    <script src="js/lotsMenu.js"></script>
+    <script src="resources/js/jquery-3.2.1.js"></script>
+    <script src="resources/js/lotsMenu.js"></script>
+
+    <link href="resources/css/general_style.css" rel="stylesheet" type="text/css">
+    <style>
+        table{
+            width: 100%;
+            font-size: small;
+            border-collapse: collapse;
+        }
+        table th{
+            color: mediumvioletred;
+            border-bottom: 1px solid mediumvioletred;
+        }
+        .trL{
+            color: cyan;
+        }
+        .trL:hover{
+            cursor: pointer;
+            color: ghostwhite;
+            border-bottom: 1px solid ghostwhite;
+        }
+    </style>
+
     <title>Торги на біржі</title>
 </head>
-<body style="background-color: mintcream" id="bd">
 <%
     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
     Exchange exchange = (Exchange) request.getAttribute("exchange");
     List <Lot> lotList = (List <Lot>) request.getAttribute("lotList");
 %>
-<H2 align="center">
-    <%out.print(exchange.getCompanyName());%>
-</H2>
-<div>
-    <table id="ltbl" border="light" class="table" style="background-color: lightcyan">
-        <tr bgcolor="#00ff7f">
+<body>
+<header>
+    <div id="div_sheet_header">
+        <h1><%out.print(exchange.getCompanyName());%></h1>
+    </div>
+</header>
+
+<div style="width: 100%">
+    <table id="ltbl" border="light">
+        <tr>
             <th>ID</th>
-            <th title="Натисніть для відображення фільтру">
-                Дата торгів
-            </th>
-            <th title="Натисніть для відображення фільтру">
-                Назва біржі
-            </th>
+            <th>Дата торгів</th>
+            <th>Назва біржі</th>
             <th>Оціночна вартість, грн.</th>
             <th>Торги</th>
             <th>Статус аукціону</th>

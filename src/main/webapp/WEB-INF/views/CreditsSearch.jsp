@@ -1,11 +1,11 @@
-<%@ page import="nadrabank.domain.Credit" %>
-<%@ page import="java.util.List" %>
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page contentType="text/html;charset=UTF-8" %>
 <html>
 <head>
     <title>Пошук кредитів</title>
-    <link rel="stylesheet" media="screen" type="text/css" href="css/lotCreatorStyle.css"/>
-    <script src="js/jquery-1.11.1.js"></script>
+
+    <link rel="stylesheet" media="screen" type="text/css" href="resources/css/general_style.css"/>
+
+    <script type="text/javascript" src="resources/js/jquery-3.2.1.js"></script>
     <script>
         $(document).ready(function () {
             var ftab = $('.findTab');
@@ -68,11 +68,11 @@
             $('#objHistoryBut').click( function() {
                 if($(this).val()==0){
                     $(this).val(1);
-                    $('#asset_history_block').show();
+                    $('#div_asset_history').show();
                 }
                 else{
                     $(this).val(0);
-                    $('#asset_history_block').hide();
+                    $('#div_asset_history').hide();
                 }
                 $('.asset_history_tr').remove();
                 $('.price_history_tr').remove();
@@ -141,60 +141,80 @@
 
         });
     </script>
+
+    <style>
+        table{
+            border-collapse: collapse;
+            font-size: x-small;
+        }
+
+        #div_search {
+            margin-top: -40px;
+            margin-bottom: 20px;
+            width: 100%;
+            display: inline-table;
+
+        }
+
+        .div_search_block {
+            border: 1px solid;
+            text-align: center;
+            vertical-align: center;
+            display: table-cell;
+        }
+        #div_search_file div{
+            display: table-cell;
+        }
+    </style>
 </head>
 
-<body style="background-color: mintcream">
-<div id="b0">
-    <button onclick="location.href='lotMenu'">Назад</button>
-    <H1 align="center">Пошук кредитів</H1>
-</div>
+<body>
 
-<div id="mainBlock">
-
-    <div id="searchBlock" class="choice-box">
-
-        <div>
-            <table style="width: 100%">
-                <tr>
-                    <td>
-                        <input id="inn" type="text" placeholder="Введіть ІНН для пошуку" style="width: 100%">
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <input id="idBars" type="text" placeholder="Введіть ID_BARS"
-                               style="background-color: aliceblue; width: 100%">
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <button id="findObjBut" class="button" style="width: 100%">Знайти</button>
-                        <button id="objHistoryBut" class="button" style="width: 20%">Історія</button>
-                    </td>
-                </tr>
-            </table>
+<header>
+    <div id="div_left_side" class="div_header_additions">
+        <div id="div_beck_img" title="назад" onclick="location.href='index'">
+            <img src="resources/css/images/back.png">
         </div>
+    </div>
+    <div id="div_sheet_header">
+        <h1>Пошук кредитів</h1>
+    </div>
+    <div id="div_right_side" class="div_header_additions" >
 
     </div>
-    <div id="listSearchBlock">
+</header>
+
+<div id="div_search">
+
+    <div id="div_search_inn" class="div_search_block" style="width: 60%">
+        <input id="inn" type="text" placeholder="Введіть ІНН для пошуку" style="width: 50%; font-size: large">
+
+        <input id="idBars" type="text" placeholder="Введіть ID_BARS"
+               style=" width: 50%">
+
+
+        <br/>
+        <img id="findObjBut" class="icon_button" src="resources/css/images/search.png" title="Знайти" width="40px"
+             height="40px">
+        <br/>
+        <button id="objHistoryBut">Показати історію</button>
+
+    </div>
+    <div class="div_search_block" style="width: 40%">
 
         <form method="POST" action="" enctype="multipart/form-data" lang="utf8">
-            <h3>Обрати файл зі списком ID_Bars:</h3>
+            <h4>Обрати файл зі списком ID_Bars:</h4>
             <input align="center" type="file" name="file" title="натисніть для обрання файлу"><br/>
             <input name="idType" value="0" type="number" hidden="hidden">
         </form>
+        <img id="sendBut" class="icon_button" src="resources/css/images/search.png" title="Знайти по списку з файлу" width="40px" height="40px">
 
-        <button id="sendBut">Знайти по списку з файлу</button>
-    </div>
-    <div style="width: 10%">
-        <button id="formDownld" title="Завантажити зразок файлу зі списком ID для пошуку">форма(.xls)</button>
     </div>
 </div>
-<br/>
 
-<div class="view">
-    <table class="findTab" border="2" hidden="hidden">
-        <tr align="center" style="background-color: darkblue; color: white">
+<div class="div_obj_table">
+    <table class="findTab" border="2" hidden="hidden" width="100%">
+        <tr align="center" style="color: lightskyblue;">
             <th hidden="hidden">Key_N</th>
             <th>ID_BARS</th>
             <th>ІНН</th>
@@ -209,11 +229,11 @@
     </table>
 </div>
 
-<div id="asset_history_block" hidden="hidden">
+<div id="div_asset_history" hidden="hidden">
     <div>
         <h2>Історія торгів</h2>
         <table class="history_table" border="1">
-            <tr align="center" style="background-color: #edff9a">
+            <tr align="center" style="color: #edff9a">
                 <th>Інвентарний №</th>
                 <th>Лот</th>
                 <th>Біржа</th>
@@ -225,12 +245,18 @@
     <div>
         <h2>Історія зміни ціни</h2>
         <table class="history_accPrice_table" border="1">
-            <tr align="center" style="background-color: #fffe9f">
+            <tr align="center" style="color: #fffe9f">
                 <th>Дата запису</th>
                 <th>Затверджена ціна, грн.</th>
             </tr>
         </table>
     </div>
 </div>
+
+<footer >
+    <div style="width: 100%; text-align: center">
+        Форма для завантаження <img class="icon_button" id="formDownld" style="width: 40px; height: 40px" src="resources/css/images/excel.jpg" title="Завантажити зразок файлу зі списком ID для пошуку (.xls)" >
+    </div>
+</footer>
 </body>
 </html>

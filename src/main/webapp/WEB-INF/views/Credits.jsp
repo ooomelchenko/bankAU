@@ -1,11 +1,13 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<base href="${pageContext.request.contextPath}/"/>
 <html>
 <head>
     <title>Список кредитів</title>
 
-    <script src="js/jquery-1.11.1.js"></script>
+    <script type="text/javascript" src="resources/js/jquery-3.2.1.js"></script>
+
     <script src="js/Monthpicker.js"></script>
-    <link rel="stylesheet" media="screen" type="text/css" href="css/monthpicker.css"/>
+
     <script>
         $(document).ready(function(){
 
@@ -254,14 +256,19 @@
             });
         })
     </script>
+
+    <link rel="stylesheet" media="screen" type="text/css" href="resources/css/monthpicker.css"/>
+    <link rel="stylesheet" media="screen" type="text/css" href="resources/css/general_style.css"/>
     <style type="text/css">
         .tr:hover{
-            color: darkblue;
             cursor: pointer;
-            background-color: lightcyan;
+            color: ghostwhite;
         }
         #headTr{
-            background-color: skyblue;
+            color: skyblue;
+        }
+        table{
+            font-size: xx-small;
         }
         select{
             width: 100%;
@@ -274,9 +281,8 @@
             border: solid;
         }
         #filterTab tr:hover{
-            border: solid;
+            border: 1px solid ghostwhite;
             cursor: pointer;
-            font-weight: bold;
         }
     </style>
 </head>

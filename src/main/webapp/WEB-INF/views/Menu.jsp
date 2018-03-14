@@ -41,19 +41,19 @@
             padding: 3%;
         }
         #button_lots_direction:hover{
-            border: double cyan;
+            border: 1px solid cyan;
         }
         #button_bids_direction:hover{
-            border: double sandybrown;
+            border: 1px solid sandybrown;
         }
         #button_exchanges_direction:hover{
-            border: double darkblue;
+            border: 1px solid mediumvioletred;
         }
         #button_assets:hover{
-            border: double darkgreen;
+            border: 1px solid darkgreen;
         }
         #button_credits:hover{
-            border: double blue;
+            border: 1px solid blue;
         }
         #search_img, #search_cr_img{
             width: 75px;
@@ -113,7 +113,7 @@
     </div>
 </header>
 
-<div id="div_mainMenu" align="center">
+<div id="div_mainMenu" align="center" style="width: 100%; position: fixed">
     <div id="div_direct_menu">
         <%--<img class="menuImg" src="images/menu/lot.jpg" onclick="location.href = 'lotMenu'" title="ЛОТИ">
         <img class="menuImg" src="images/menu/bid.jpg" onclick="location.href = 'bidMenu'" title="ТОРГИ">

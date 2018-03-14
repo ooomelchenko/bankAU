@@ -31,7 +31,7 @@ public class ExchangeDaoImpl implements ExchangeDao {
     }
     @Override
     public Exchange read(Long id) {
-        return (Exchange)factory.getCurrentSession().get(Exchange.class, id);
+        return factory.getCurrentSession().get(Exchange.class, id);
     }
     @Override
     public boolean update(Exchange exchange) {
@@ -45,9 +45,7 @@ public class ExchangeDaoImpl implements ExchangeDao {
     }
     @Override
     public List findAll() {
-        List<Exchange>list;
-        list =factory.getCurrentSession().createQuery("from nb.domain.Exchange ex order by ex.id").list();
-        return list;
+        return factory.getCurrentSession().createQuery("from nb.domain.Exchange ex order by ex.id").list();
     }
 
     @Override

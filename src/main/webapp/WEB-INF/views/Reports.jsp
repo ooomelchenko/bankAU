@@ -1,130 +1,84 @@
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page contentType="text/html;charset=UTF-8" %>
+<base href="${pageContext.request.contextPath}/"/>
 <html>
 <head>
     <title>Звіти</title>
-    <script src="js/jquery-1.11.1.js"></script>
-    <link rel="stylesheet" media="screen" type="text/css" href="css/jquery-ui.css"/>
-    <link rel="stylesheet" media="screen" type="text/css" href="css/jquery-ui.structure.css"/>
-    <link rel="stylesheet" media="screen" type="text/css" href="css/jquery-ui.theme.css"/>
-    <script type="text/javascript" src="js/jquery-ui.js"></script>
+
+    <script src="resources/js/jquery-3.2.1.js"></script>
+    <script type="text/javascript" src="resources/js/jquery-ui.js"></script>
     <script>
         $(document).ready(function() {
             var dp = $('.datepicker');
             dp.datepicker({dateFormat: "yy-mm-dd", dayNamesMin: ["Нд","Пн","Вт","Ср","Чт","Пт","Сб"], monthNames: ["січень","лютий","березень", "квітень", "травень","червень",
-                "липень","серпень","вересень","жовтень","листопад","грудень"] });
+                    "липень","серпень","вересень","жовтень","листопад","грудень"] });
             $('.reportName').click(function(){
                 if($(this).parent().find(".dateTd").is(":hidden"))
-               $(this).parent().find(".dateTd").show();
+                    $(this).parent().find(".dateTd").show();
                 else
                     $(this).parent().find(".dateTd").hide();
             });
+
             $('#doAUreport1').click(function(){
-                $.ajax({
-                    url: "setReportPath",
-                    type: "GET",
-                    data: {reportNum: $(this).val(),
-                    startDate: $('#startDate1').val(),
-                    endDate: $('#endDate1').val() },
-                    success: function(res){
-                        if(res=='1') {
-                            window.open("reportDownload");
-                        }
-                    }
-                });
+                var startDate = $('#startDate1').val();
+                var endDate = $('#endDate1').val();
+                window.open("getReport/1/"+startDate+"/"+endDate);
             });
             $('#downloadCrdts').click(function(){
-                $.ajax({
-                    url: "setReportPath",
-                    type: "GET",
-                    data: {reportNum: $(this).val(),
-                        startDate: null,
-                        endDate: null },
-                    success: function(res){
-                        if(res=='1') {
-                            window.open("reportDownload");
-                        }
-                    }
-                });
+                window.open("getReport/3/"+null+"/"+null);
             });
             $('#downloadAss').click(function(){
-                $.ajax({
-                    url: "setReportPath",
-                    type: "GET",
-                    data: {reportNum: $(this).val(),
-                        startDate: null,
-                        endDate: null },
-                    success: function(res){
-                        if(res=='1') {
-                            window.open("reportDownload");
-                        }
-                    }
-                });
+                window.open("getReport/4/"+null+"/"+null);
             });
             $('#downloadPays').click(function(){
-                $.ajax({
-                    url: "setReportPath",
-                    type: "GET",
-                    data: {reportNum: $(this).val(),
-                        startDate: $('#startPayDate').val(),
-                        endDate: $('#endPayDate').val() },
-                    success: function(res){
-                        if(res=='1') {
-                            window.open("reportDownload");
-                        }
-                    }
-                });
+                var startDate = $('#startPayDate').val();
+                var endDate = $('#endPayDate').val();
+                window.open("getReport/5/"+startDate+"/"+endDate);
             });
             $('#downloadBidReport').click(function(){
-                $.ajax({
-                    url: "setReportPath",
-                    type: "GET",
-                    data: {reportNum: $(this).val(),
-                        startDate: $('#minBidDate').val(),
-                        endDate: $('#maxBidDate').val() },
-                    success: function(res){
-                        if(res=='1') {
-                            window.open("reportDownload");
-                        }
-                    }
-                });
+                var startDate = $('#minBidDate').val();
+                var endDate = $('#maxBidDate').val();
+                window.open("getReport/6/"+startDate+"/"+endDate);
             })
         })
     </script>
+
+    <link rel="stylesheet" type="text/css" href="resources/css/general_style.css" >
+    <link rel="stylesheet" media="screen" type="text/css" href="resources/css/jquery-ui.css"/>
+    <link rel="stylesheet" media="screen" type="text/css" href="resources/css/jquery-ui.structure.css"/>
+    <link rel="stylesheet" media="screen" type="text/css" href="resources/css/jquery-ui.theme.css"/>
     <style type="text/css">
-        body {
-            background-image: url(images/reports_font.jpg);
-            background-size: 100%;
-        }
-        body img{
-            opacity: 0.5;
-        }
         .reportTr:hover {
-            color: darkblue;
-            background-color: lightcyan;
+            color: whitesmoke;
+            border-bottom: 1px solid lightcyan;
         }
-        #reportTable{
+        #table_reports{
+            position: fixed;
+            border: 1px solid yellow;
             cursor: pointer;
-            background-color: whitesmoke;
-            border: lawngreen;
             font-size: x-large;
-            font-weight: bold;
         }
-        button{
-            font-weight: bold;
-            font-size: large;
-            cursor: pointer;
+       .icon_button{
+           width: 28px;
+           height: 28px;
         }
     </style>
 </head>
 <body>
-<button onclick="location.href='index'">Назад до меню</button>
+<header>
+    <div id="div_left_side" class="div_header_additions">
+        <div id="div_beck_img" title="назад" onclick="location.href='index'">
+            <img src="resources/css/images/back.png">
+        </div>
+    </div>
+    <div id="div_sheet_header">
+        <h1>ЗВІТИ</h1>
+    </div>
+    <div id="div_right_side" class="div_header_additions" >
+    </div>
+</header>
 
-<div align="center">
-    <H1>
-        ЗВІТИ
-    </H1>
-    <table id="reportTable">
-
+<div >
+    <table id="table_reports">
         <tr class="reportTr">
             <td id="report1" class="reportName">
                 Таблиця продажів
@@ -136,39 +90,28 @@
                 <input id="endDate1" class="datepicker" about="кінцева дата аукціонів" title="оберіть кінцеву дату торгів">
             </td>
             <td hidden="hidden" class="dateTd">
-                <button id="doAUreport1" value="1">завантажити</button>
+                <img id="doAUreport1" class="icon_button" src="resources/css/images/excel.jpg" title="завантажити">
             </td>
         </tr>
-        <%--<tr class="reportTr">
-            <td id="report2" class="reportName">
-                Додаток 2.14
-            </td>
-            <td hidden="hidden" class="dateTd">
-                <input id="startDate2" class="datepicker" about="початкова дата аукціонів" title="оберіть початкову дату торгів">
-            </td>
-            <td hidden="hidden" class="dateTd">
-                <input id="endDate2" class="datepicker" about="кінцева дата аукціонів" title="оберіть кінцеву дату торгів">
-            </td>
-            <td hidden="hidden" class="dateTd">
-                <button id="doAUreport2" value="2">завантажити</button>
-            </td>
-        </tr>--%>
+
         <tr class="reportTr">
             <td id="report3" class="reportName">
                 Таблиця кредитів
             </td>
             <td hidden="hidden" class="dateTd">
-                <button id="downloadCrdts" value="3">завантажити</button>
+                <img id="downloadCrdts" class="icon_button" src="resources/css/images/excel.jpg" title="завантажити">
             </td>
         </tr>
+
         <tr class="reportTr">
             <td id="report4" class="reportName">
                 Таблиця активів
             </td>
             <td hidden="hidden" class="dateTd">
-                <button id="downloadAss" value="4">завантажити</button>
+                <img id="downloadAss" class="icon_button" src="resources/css/images/excel.jpg" title="завантажити">
             </td>
         </tr>
+
         <tr class="reportTr">
             <td id="report5" class="reportName">
                 Звіт по платежам
@@ -180,9 +123,10 @@
                 <input id="endPayDate" class="datepicker" about="кінцева дата платежів" title="оберіть кінцеву дату платежів">
             </td>
             <td hidden="hidden" class="dateTd">
-                <button id="downloadPays" value="5">завантажити</button>
+                <img id="downloadPays" class="icon_button" src="resources/css/images/excel.jpg" title="завантажити">
             </td>
         </tr>
+
         <tr class="reportTr">
             <td id="report6" class="reportName">
                 Звіт по сумам торгів
@@ -194,10 +138,13 @@
                 <input id="maxBidDate" class="datepicker" about="кінцева дата платежів" title="оберіть кінцеву дату платежів">
             </td>
             <td hidden="hidden" class="dateTd">
-                <button id="downloadBidReport" value="6">завантажити</button>
+                <img id="downloadBidReport" class="icon_button" src="resources/css/images/excel.jpg" title="завантажити">
             </td>
         </tr>
     </table>
 </div>
+
+<footer>
+</footer>
 </body>
 </html>

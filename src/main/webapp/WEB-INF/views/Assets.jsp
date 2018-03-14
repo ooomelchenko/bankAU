@@ -1,11 +1,12 @@
-<%@ page import="nadrabank.domain.Asset" %>
+<%@ page import="nb.domain.Asset" %>
 <%@ page import="java.math.BigDecimal" %>
 <%@ page import="java.text.SimpleDateFormat" %>
 <%@ page import="java.util.Date" %>
 <%@ page import="java.util.List" %>
 <%@ page import="java.util.Locale" %>
-<%@ page import="nadrabank.domain.Exchange" %>
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page import="nb.domain.Exchange" %>
+<%@ page contentType="text/html;charset=UTF-8" %>
+<base href="${pageContext.request.contextPath}/"/>
 <html>
 <head>
     <%
@@ -23,13 +24,17 @@
         List<Exchange> allExchangeList = (List<Exchange>) request.getAttribute("allExchangeList");
     %>
     <title>Список об'єктів</title>
-    <script src="js/jquery-1.11.1.js"></script>
-    <script src="js/Monthpicker.js"></script>
-    <link rel="stylesheet" media="screen" type="text/css" href="css/monthpicker.css"/>
-    <link rel="stylesheet" media="screen" type="text/css" href="css/jquery-ui.css"/>
-    <link rel="stylesheet" media="screen" type="text/css" href="css/jquery-ui.structure.css"/>
-    <link rel="stylesheet" media="screen" type="text/css" href="css/jquery-ui.theme.css"/>
-    <script type="text/javascript" src="js/jquery-ui.js"></script>
+
+    <script type="text/javascript" src="resources/js/jquery-3.2.1.js"></script>
+    <script type="text/javascript" src="resources/js/jquery-ui.js"></script>
+    <script type="text/javascript" src="resources/js/Monthpicker.js"></script>
+
+    <link rel="stylesheet" media="screen" type="text/css" href="resources/css/general_style.css"/>
+    <link rel="stylesheet" media="screen" type="text/css" href="resources/css/monthpicker.css"/>
+    <link rel="stylesheet" media="screen" type="text/css" href="resources/css/jquery-ui.css"/>
+    <link rel="stylesheet" media="screen" type="text/css" href="resources/css/jquery-ui.structure.css"/>
+    <link rel="stylesheet" media="screen" type="text/css" href="resources/css/jquery-ui.theme.css"/>
+
     <script>
         $(document).ready(function(){
             var portionNum = $('#portion');
@@ -127,22 +132,21 @@
             });
             $('.check-asset').change(function(){
                 if($(this).is(':checked')){
-                    $(this).parent().parent().css({'background-color': "#00ffff"});
+                    $(this).parent().parent().css({'color': "#00ffff"});
                 }
                 else{
-                    $(this).parent().parent().css({'background-color': "white"});
+                    $(this).parent().parent().css({'color': ""});
                 }
             });
             $('.inn').click(function(){
                 var checkBox = $(this).parent().find('.check-asset');
                 if(checkBox.is(':checked')){
                     checkBox.prop('checked', false);
-                    $(this).parent().css({'background-color': "white"});
+                    $(this).parent().css({'color': "#00ffff"});
                 }
                 else{
                     checkBox.prop('checked', true);
-                    $(this).parent().css({'background-color': "#00ffff"});
-
+                    $(this).parent().css({'color': ""});
                 }
             });
 
@@ -157,10 +161,10 @@
             var selectors = $('.bidDateSelector, .nbuZastSelector, .payStatusSelector, .bidResSelector, .workStageSelector, .exchangeSelector, .fondDecNumSelector, .lotIDSelector');
             selectors.hover(function(){
                 $(this).css(
-                        {'background-color': "white"})
+                        {'color': "white"})
             })
                     .mouseout( function(){
-                        $(this).css({'background-color': "lightcyan"})
+                        $(this).css({'color': ""})
             });
 
             bidDateSelector.click(function () {
@@ -425,36 +429,33 @@
         })
     </script>
     <style type="text/css">
-        #headBlock, #viewBlock{
+        table{
+            border-collapse: collapse;
+            font-size: x-small;
+        }
+        #div_functions {
+            margin-top: -40px;
             width: 100%;
+            display: inline-table;
         }
-        #buttBlock{
-            display: table;
+        #div_obj_table {
             width: 100%;
-        }
-        #buttBlock div{
-            display: table-cell;
-            width: 50%;
-        }
-        #fileLoadBlock{
-            text-align: right;
+            margin-top: 1px;
         }
         .assetTr:hover{
-            background-color: lightcyan;
-        }
-        .lotId {
-            cursor: pointer;
+            color: ghostwhite;
+            background: #37415d;
         }
         .lotId:hover {
-            font-style: italic ;
-            font-size: x-large;
+            cursor: pointer;
+            font-style: italic;
         }
         .spoiler_body {
             display:none;
             cursor:pointer;
             float:left;
             width:auto;
-            background-color: lightcyan;
+            background: #37415d;
             text-align:center;
             position:absolute;
             z-index:99;}
@@ -469,50 +470,55 @@
         .assetTr {
             cursor: default;
         }
-        button {
-            font-weight: bold;
-            cursor: pointer;
-        }
+
     </style>
 </head>
 <body>
 
-<div style="width: 100%">
-    <div id="headBlock">
-        <div id="buttBlock">
-            <div>
-                <button id="createLot">СТВОРИТИ ЛОТ</button>
-            </div>
-            <div id="fileLoadBlock">
-                <form method="POST" action="" enctype="multipart/form-data" lang="utf8" hidden="hidden">
-                    <h3>Обрати файл зі списком Інвентарних номерів:</h3>
-                    <input align="center" type="file" name="file" title="натисніть для обрання файлу"><br/>
-                    <input name="idType" value="1" type="number" hidden="hidden">
-                </form>
-                <button id="addPriceByFileBut" value="0">ДОДАТИ ЗАТВЕРДЖЕНУ ФГВФО ЦІНУ</button>
-            </div>
-        </div>
-        <div id="portionSelectorBlock">
-            <table align="center">
-                <tr>
-                    <td id="range" colspan="3" align="center">
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <button id="back">назад</button>
-                    </td>
-                    <td><input value="<%out.print(assetPortion);%>" type="number" id="portion"/></td>
-                    <td>
-                        <button id="forward">вперед</button>
-                    </td>
-                </tr>
-            </table>
+<header>
+    <div id="div_left_side" class="div_header_additions">
+    </div>
+    <div id="div_sheet_header">
+        <table align="center">
+            <tr>
+                <td id="range" colspan="3" align="center">
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <button id="back">назад</button>
+                </td>
+                <td><input value="<%out.print(assetPortion);%>" type="number" id="portion"/></td>
+                <td>
+                    <button id="forward">вперед</button>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <div id="div_right_side" class="div_header_additions">
+    </div>
+</header>
+
+<div id="div_functions" >
+    <div id="div_left" class="div_header_additions" style="display: table-cell; width: 50%">
+        <button id="createLot">СТВОРИТИ ЛОТ</button>
+    </div>
+    <div id="div_right" class="div_header_additions" style="display: table-cell; width: 50%">
+        <div id="fileLoadBlock">
+            <form method="POST" action="" enctype="multipart/form-data" lang="utf8" hidden="hidden">
+                <h3>Обрати файл зі списком Інвентарних номерів:</h3>
+                <input align="center" type="file" name="file" title="натисніть для обрання файлу"><br/>
+                <input name="idType" value="1" type="number" hidden="hidden">
+            </form>
+            <button id="addPriceByFileBut" value="0">ДОДАТИ ЗАТВЕРДЖЕНУ ФГВФО ЦІНУ</button>
         </div>
     </div>
-    <div id="viewBlock">
-    <table id="crdsTab" border="light" class="table">
-        <tr style="background-color: limegreen">
+</div>
+
+
+    <div id="div_obj_table">
+    <table border="1px">
+        <tr style="color: limegreen; border-bottom: 1px solid limegreen">
             <th></th>
             <th hidden="hidden">ID</th>
             <th>
@@ -612,14 +618,13 @@
             <th>Необхідно перепогодити</th>
             <th>Заплановано реалізувати</th>
             <th>Акт підписано</th>
-
         </tr>
 
         <%for(Asset asset: assetList){%>
         <tr align="center" class="assetTr">
             <td class="checkTd"><input size="120%" type="checkbox" class="check-asset" title="Обрання активів для подальшої обробки"></td>
             <td class="objId" hidden="hidden"><%=asset.getId()%></td>
-            <td class="lotId" style="font-weight: bold; background-color: #00ffff" title="для переходу до ЛОТу подвійний клік"><%if(asset.getLot()!=null)out.print(asset.getLot().getId());%></td>
+            <td class="lotId" style="font-weight: bold; color: #00ffff" title="для переходу до ЛОТу подвійний клік"><%if(asset.getLot()!=null)out.print(asset.getLot().getId());%></td>
             <td><%if(asset.getLot()!=null) out.print(asset.getLot().getLotNum());%></td>
             <td class="inn"><%=asset.getInn()%></td>
             <td class="bidDate"><%if(asset.getLot()!=null&&asset.getLot().getBid()!=null) out.print(sdf.format(asset.getLot().getBid().getBidDate()));%></td>
@@ -693,7 +698,7 @@
 
     </table>
     </div>
-</div>
+
 
 </body>
 </html>

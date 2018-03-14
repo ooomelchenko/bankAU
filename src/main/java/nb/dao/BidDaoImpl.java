@@ -36,7 +36,7 @@ public class BidDaoImpl implements BidDao {
     }
     @Override
     public Bid read(Long id) {
-        return (Bid)factory.getCurrentSession().get(Bid.class, id);
+        return factory.getCurrentSession().get(Bid.class, id);
     }
     @Override
     public boolean update(Bid bid) {

@@ -124,7 +124,7 @@ public class DirectController {
         }
     }
 
-    /*@RequestMapping(value = "/assets", method = RequestMethod.GET)
+    @RequestMapping(value = "/assets", method = RequestMethod.GET)
     private String assets(HttpSession session, Model model) {
         if (!isAuth(session)) {
             return "LogIN";
@@ -148,7 +148,7 @@ public class DirectController {
             model.addAttribute("allExchangeList", exchangeService.getAllExchanges());
             return "Assets";
         }
-    }*/
+    }
 
     @RequestMapping(value = "/credits", method = RequestMethod.GET)
     private String credits(HttpSession session, Model model) {
@@ -257,10 +257,9 @@ public class DirectController {
 
     }
 
-    @RequestMapping(value = "/exLots", method = RequestMethod.GET)
-    private String exRedactor(HttpSession session, Model model) {
-        String exId = (String) session.getAttribute("exRid");
-        Exchange exchange = exchangeService.getExchange(Long.parseLong(exId));
+    @RequestMapping(value = "/exLots/{exId}", method = RequestMethod.GET)
+    private String exRedactor(HttpSession session, Model model, @PathVariable Long exId) {
+        Exchange exchange = exchangeService.getExchange(exId);
         List<Bid> bidList = bidService.getBidsByExchange(exchange);
 
         List<Lot> lotList = new ArrayList<>();
