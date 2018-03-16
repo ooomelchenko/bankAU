@@ -1,28 +1,44 @@
-<%@ page import="nadrabank.domain.Asset" %>
-<%@ page import="nadrabank.domain.Credit" %>
+<%@ page import="nb.domain.Asset" %>
+<%@ page import="nb.domain.Credit" %>
 <%@ page import="java.util.List" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
 <% List<Asset> assetList = (List<Asset>) request.getAttribute("assetList"); %>
 <% List<Credit> creditList = (List<Credit>) request.getAttribute("creditList"); %>
 <% int lotType = (Integer) request.getAttribute("lotType"); %>
+<base href="${pageContext.request.contextPath}/"/>
 <head>
     <title>Створення лоту</title>
-    <link rel="stylesheet" media="screen" type="text/css" href="css/lotCreatorStyle.css"/>
-    <script src="js/jquery-1.11.1.js"></script>
+
+    <script type="text/javascript" src="resources/js/jquery-3.2.1.js"></script>
+
     <%if (lotType == 0) {%>
-    <script src="js/lotCrCreator.js"></script>
+    <script src="resources/js/lotCrCreator.js"></script>
     <%}%>
     <%if (lotType == 1) {%>
-    <script src="js/lotCreator.js"></script>
+    <script src="resources/js/lotCreator.js"></script>
     <%}%>
+
+    <link rel="stylesheet" media="screen" type="text/css" href="resources/css/general_style.css"/>
+    <style>
+
+    </style>
 </head>
 
-<body style="background-color: mintcream">
-<div id="b0">
-    <button onclick="location.href='lotMenu'">Назад</button>
-    <H1 align="center">Створення нового лоту</H1>
-</div>
+<header>
+    <div id="div_left_side" class="div_header_additions">
+        <div id="div_beck_img" title="головна" onclick="location.href='index'">
+            <img src="resources/css/images/back.png">
+        </div>
+    </div>
+    <div id="div_sheet_header">
+        <h1>Створення нового лоту</h1>
+    </div>
+    <div id="div_right_side" class="div_header_additions">
+    </div>
+</header>
+
+<body>
 
 <div id="mainBlock">
 

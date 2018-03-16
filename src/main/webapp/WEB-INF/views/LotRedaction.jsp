@@ -13,7 +13,6 @@
 <%response.setCharacterEncoding("UTF-8");%>
 <%
     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
-
     Lot lot = (Lot) request.getAttribute("lott");
     List<String> bidStatusList = (List<String>) request.getAttribute("bidStatusList");
     List<String> statusList = (List<String>) request.getAttribute("statusList");
@@ -687,7 +686,6 @@
 
         #div_b2{
             display: table;
-            background-color: #37415d;
         }
         #button_del_lot{
             width: 100px;
@@ -784,18 +782,18 @@
             height: 100%;
             width: 90%;
             display: table-cell;
-            border: solid 1px #00ffff;
         }
-        #div_finance table {
+        #table_finance {
+            background-color: #37415d;
             font-size: small;
             height: 100%;
         }
-        #div_finance table td{
+        #table_finance td{
             border: solid 1px #00ffff;
         }
-        #div_finance table th{
+        #table_finance th{
             color: #00ffff;
-            border: solid 1px #00ffff;
+            border: solid 1px;
         }
         #div_b2 div{
             display: table-cell;

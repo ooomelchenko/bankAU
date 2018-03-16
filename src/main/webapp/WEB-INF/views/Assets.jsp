@@ -515,8 +515,7 @@
     </div>
 </div>
 
-
-    <div id="div_obj_table">
+<div id="div_obj_table">
     <table border="1px">
         <tr style="color: limegreen; border-bottom: 1px solid limegreen">
             <th></th>

@@ -95,12 +95,11 @@ public class LotDaoImpl implements LotDao {
             queryS = factory.getCurrentSession().createQuery("SELECT sum(asset.rv) FROM nb.domain.Asset asset WHERE asset.lot=:lot");
             queryS.setParameter("lot", lot);
         }
-        try {
-            return (BigDecimal) queryS.list().get(0);
-        }
-        catch (IndexOutOfBoundsException iobe){
+        BigDecimal queryRes = (BigDecimal) queryS.list().get(0);
+        if(queryRes ==null)
             return BigDecimal.valueOf(0);
-        }
+        else
+            return queryRes;
     }
     @Override
     public BigDecimal lotAcceptedSum(Lot lot){
@@ -117,12 +116,12 @@ public class LotDaoImpl implements LotDao {
             queryS = factory.getCurrentSession().createQuery("SELECT sum(asset.acceptPrice) FROM nb.domain.Asset asset WHERE asset.lot=:lot");
             queryS.setParameter("lot", lot);
         }
-        try {
-            return (BigDecimal) queryS.list().get(0);
-        }
-        catch (IndexOutOfBoundsException iobe){
+
+        BigDecimal queryRes = (BigDecimal) queryS.list().get(0);
+        if(queryRes ==null)
             return BigDecimal.valueOf(0);
-        }
+        else
+            return queryRes;
     }
     @Override
     public Long lotCount(Lot lot){
@@ -139,12 +138,7 @@ public class LotDaoImpl implements LotDao {
             query = factory.getCurrentSession().createQuery("SELECT count(asset.rv) FROM nb.domain.Asset asset WHERE asset.lot=:lot");
             query.setParameter("lot", lot);
         }
-        try {
             return (Long) query.list().get(0);
-        }
-        catch (IndexOutOfBoundsException iobe){
-            return 0L;
-        }
     }
     @Override
     public List getAssetsByLot(Lot lot) {
