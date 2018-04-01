@@ -212,33 +212,11 @@
             });
 
             $('.getOgolosh').click(function () {
-                $.ajax({
-                    url: "setDocToDownload",
-                    type: "GET",
-                    //data: {objId: $(this).parent().parent().find('.idBid').text(),
-                    data: {
-                        objId: $('#objId').val(),
-                        objType: "bid",
-                        docName: null
-                    },
-                    success: function (res) {
-                        if (res == '1') {
-                            window.open("downloadOgolosh");
-                        }
-                    }
+                window.open("downloadOgolosh/"+bidN);
                 });
-            });
+
             $('.getObjTab').click(function () {
-                $.ajax({
-                    url: "setLotToPrint",
-                    type: "GET",
-                    data: {objId: $('#objId').val()},
-                    success: function (res) {
-                        if (res == '1') {
-                            window.open("downloadT");
-                        }
-                    }
-                });
+                window.open("downloadT/"+bidN);
             });
         })
     </script>
@@ -429,7 +407,7 @@
                         <a class="getOgolosh">Оголошення (.xls)</a>
                     </td>
                     <td id="objTab" title="Клікніть двічі для завантаження таблиці об'єктів">
-                        <a class="getObjTab">Таблицю об'єктів (.xls)</a>
+                        <a class="getObjTab">Таблиця об'єктів (.xls)</a>
                     </td>
                 </tr>
             </table>

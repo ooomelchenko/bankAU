@@ -68,6 +68,7 @@ header img:hover {
 }
 
 footer {
+    display: inline-table;
     padding: 0;
     margin: 0;
     font: 14px 'Open Sans', sans-serif;
@@ -81,13 +82,8 @@ footer {
 }
 
 footer div {
-    display: inline-block;
+    display: table-cell;
 }
-
-footer ul {
-     display: inline-block;
-     vertical-align: top;
- }
 
 .icon_button{
     opacity: 0.7;

@@ -1675,12 +1675,10 @@ public class AssetController {
         file.delete();
     }
 
-    @RequestMapping(value = "/downloadT", method = RequestMethod.GET)
-    public void downloadT(HttpServletResponse response, HttpSession session) throws IOException {
+    @RequestMapping(value = "/downloadT/{id}", method = RequestMethod.GET)
+    public void downloadT(HttpServletResponse response, @PathVariable Long id) throws IOException {
 
-        String objIdToDownload = (String) session.getAttribute("objIdToDownload");
-
-        Bid bid = bidService.getBid(Long.parseLong(objIdToDownload));
+        Bid bid = bidService.getBid(id);
 
         List<Lot> lotList ;
         List<Asset> assetList ;
@@ -1757,12 +1755,11 @@ public class AssetController {
         os.close();
     }
 
-    @RequestMapping(value = "/downloadOgolosh", method = RequestMethod.GET)
-    public void downloadOgoloshennya(HttpServletResponse response, HttpSession session) throws IOException {
-        String objId = (String) session.getAttribute("objIdToDownload");
+    @RequestMapping(value = "/downloadOgolosh/{id}", method = RequestMethod.GET)
+    public void downloadOgoloshennya(HttpServletResponse response, @PathVariable Long id) throws IOException {
 
         File file ;
-        String docName = makeOgoloshennya(Long.parseLong(objId));
+        String docName = makeOgoloshennya(id);
         file = new File(docName);
 
         InputStream is = new FileInputStream(file);
@@ -2292,9 +2289,23 @@ public class AssetController {
                               @RequestParam("inIDBarses") String inIDBarses,
                               @RequestParam("inINNs") String inINNs,
                               @RequestParam("inIDLots") String inIDLots) {
-        String [] idBarsMass = inIDBarses.split(",");
-        String [] innMass = inINNs.split(",");
-        String [] idLotMass = inIDLots.split(",");
+        String [] idBarsMass;
+        String [] innMass;
+        String [] idLotMass;
+        if(inIDBarses.equals("")){
+            idBarsMass=new String [0];
+        }
+        else idBarsMass = inIDBarses.split(",");
+
+        if(inINNs.equals("")){
+            innMass=new String [0];
+        }
+        else innMass = inINNs.split(",");
+
+        if(inIDLots.equals("")){
+            idLotMass=new String [0];
+        }
+        else idLotMass = inIDLots.split(",");
         return creditService.countOfFilteredCredits(isSold, isInLot, clientType, isNbu, isFondDec, idBarsMass , innMass, idLotMass);
     }
 
@@ -2310,9 +2321,23 @@ public class AssetController {
                                    @RequestParam("inINNs") String inINNs,
                                    @RequestParam("inIDLots") String inIDLots
                                                          ) {
-        String [] idBarsMass = inIDBarses.split(",");
-        String [] innMass = inINNs.split(",");
-        String [] idLotMass = inIDLots.split(",");
+        String [] idBarsMass;
+        String [] innMass;
+        String [] idLotMass;
+        if(inIDBarses.equals("")){
+            idBarsMass=new String [0];
+        }
+        else idBarsMass = inIDBarses.split(",");
+
+        if(inINNs.equals("")){
+            innMass=new String [0];
+        }
+        else innMass = inINNs.split(",");
+
+        if(inIDLots.equals("")){
+            idLotMass=new String [0];
+        }
+        else idLotMass = inIDLots.split(",");
 
         List<Credit> crList = creditService.getCreditsByPortion(portionNumber, isSold, isInLot, clientType, isNbu, isFondDec, idBarsMass , innMass, idLotMass);
         List<String> rezList = new ArrayList<>();
@@ -2716,8 +2741,7 @@ public class AssetController {
 
         lotService.updateLot(newlot);
 
-        model.addAttribute("lotRid", lotRid.toString());
-        return "1";
+        return lotRid.toString();
     }
 
     @RequestMapping(value = "/createCreditLot", method = RequestMethod.POST)
@@ -2759,8 +2783,7 @@ public class AssetController {
         newlot.setFirstStartPrice(startPrice);
         lotService.updateLot(newlot);
 
-        model.addAttribute("lotRid", lotRid.toString());
-        return "1";
+        return lotRid.toString();
     }
 
     @RequestMapping(value = "/createBid", method = RequestMethod.GET)

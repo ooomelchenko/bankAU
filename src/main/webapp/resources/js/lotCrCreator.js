@@ -107,13 +107,15 @@ $(document).ready(function () {
                 idMass: idl,
                 comment: $('#commIn').val()
             },
-            success(ok){
-                if (ok == '1') {
-                    alert("Лот створено!");
-                    location.href = "lotRedactor";
-                }
-                else
+            success: function(newLotId){
+                if (newLotId === '0') {
                     alert("Лот не створено!");
+                }
+                else{
+                    alert("Лот створено!");
+                    location.reload();
+                    window.open("lotRedactor/"+newLotId);
+                }
             }
         });
     });

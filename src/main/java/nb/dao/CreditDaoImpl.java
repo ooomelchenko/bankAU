@@ -7,10 +7,7 @@ import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Formatter;
-import java.util.List;
+import java.util.*;
 
 @Repository
 public class CreditDaoImpl implements CreditDao {
@@ -67,7 +64,6 @@ public class CreditDaoImpl implements CreditDao {
         else if(isFondDec==1){
             queryText+="and cr.lot in (SELECT id from Lot lot WHERE lot.fondDecisionDate is not null)) ";
         }
-
 
         if(idBarsMass.length>0||innMass.length>0||idLotMass.length>0){
             int i=0;
@@ -142,6 +138,7 @@ public class CreditDaoImpl implements CreditDao {
         Query query = factory.getCurrentSession().createQuery("from nb.domain.Credit cr ORDER BY cr.lot ASC, cr.zb DESC ");
         query.setFirstResult(portionNum*5000);
         query.setMaxResults(5000);
+        System.out.println("queryText1 = "+query.getQueryString());
         List<Credit>list;
         list =(List<Credit>)query.list();
         return list;

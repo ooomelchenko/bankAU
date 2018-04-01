@@ -22,6 +22,27 @@
     <link rel="stylesheet" media="screen" type="text/css" href="resources/css/general_style.css"/>
     <style>
 
+        table{
+            width: 100%;
+            border-collapse: collapse;
+            font-size: small;
+        }
+        input{
+            width: 100%;
+        }
+
+        #div_search{
+            text-align: center;
+            margin-top: -40px;
+            width: 100%;
+            display: inline-table;
+        }
+        #div_search div{
+            border: 1px solid;
+            padding: 10px;
+            width: 33%;
+            display: table-cell;
+        }
     </style>
 </head>
 
@@ -35,67 +56,58 @@
         <h1>Створення нового лоту</h1>
     </div>
     <div id="div_right_side" class="div_header_additions">
+        <img id="createLot" src="resources/css/images/ok_icon.png" class="icon_button" title="Натисніть для створення лоту з обраних об'єктів">
     </div>
 </header>
 
 <body>
 
-<div id="mainBlock">
+<div id="div_search">
 
-    <div id="searchBlock" class="choice-box">
-
-        <div>
-            <table border="1" class="table" style="background-color: lightcyan; width: 100%" id="tblParam">
-                <tr>
-                    <td colspan="2"><input id="commIn" type="text" style="width: 100%" placeholder="Коментар"></td>
-                </tr>
-                <tr>
-                    <th>Ціна лоту, грн.</th>
-                    <th>К-ть об'єктів</th>
-                </tr>
-                <tr>
-                    <td id="priceId" align="center">0</td>
-                    <td id="kolId" align="center">0</td>
-                </tr>
-                <tr>
-                    <td style="border: none" colspan="2">
-                        <button id="showLCrdts" class="button"
-                                style="background-color: cyan; width: 100%"> Показати список лоту
-                        </button>
-                    </td>
-                </tr>
-            </table>
-        </div>
-        <div align="center">
-            <button id="createLot" class="button" title="Натисніть для створення лоту з обраних об'єктів">
-                СТВОРИТИ ЛОТ
-            </button>
-        </div>
-        <div>
-            <table style="width: 100%">
-                <tr>
-                    <td>
-                        <input id="inn" type="text" placeholder="Введіть ІНН для пошуку" style="width: 100%">
-                    </td>
-                </tr>
-                <%if (lotType == 0) {%>
-                <tr>
-                    <td>
-                        <input id="idBars" type="text" placeholder="Введіть ID_BARS"
-                               style="background-color: aliceblue; width: 100%">
-                    </td>
-                </tr>
-                <%}%>
-                <tr>
-                    <td>
-                        <button id="findObjBut" class="button" style="width: 100%">Знайти</button>
-                    </td>
-                </tr>
-            </table>
-        </div>
-
+    <div >
+        <table border="1" class="table" id="tblParam">
+            <tr>
+                <td colspan="2"><input id="commIn" type="text" style="width: 100%" placeholder="Коментар"></td>
+            </tr>
+            <tr>
+                <th>Ціна лоту, грн.</th>
+                <th>К-ть об'єктів</th>
+            </tr>
+            <tr>
+                <td id="priceId" align="center">0</td>
+                <td id="kolId" align="center">0</td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <button id="showLCrdts" class="button" style="width: 100%"> Показати список лоту</button>
+                </td>
+            </tr>
+        </table>
     </div>
-    <div id="listSearchBlock">
+
+    <div >
+        <table>
+            <tr>
+                <td>
+                    <input id="inn" type="text" placeholder="Введіть ІНН для пошуку" >
+                </td>
+            </tr>
+            <%if (lotType == 0) {%>
+            <tr>
+                <td>
+                    <input id="idBars" type="text" placeholder="Введіть ID_BARS">
+                </td>
+            </tr>
+            <%}%>
+            <tr>
+                <td>
+                    <button id="findObjBut" class="button" style="width: 100%">Знайти</button>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <div >
         <%if (lotType == 0) {%>
         <form method="POST" action="" enctype="multipart/form-data" lang="utf8">
             <h3>Обрати файл зі списком ID_Bars:</h3>
@@ -112,15 +124,14 @@
         <%}%>
         <button id="sendBut">Знайти по списку з файлу</button>
     </div>
-    <div style="width: 10%">
-        <button id="formDownld" title="Завантажити зразок файлу зі списком ID для пошуку">форма(.xls)</button>
-    </div>
+
 </div>
-<br/>
+
+
 <%if (lotType == 0) {%>
-<div class="view">
-    <table class="findTab" border="2" hidden="hidden">
-        <tr align="center" style="background-color: darkblue; color: white">
+<div >
+    <table class="findTab" border="1px solid" hidden="hidden">
+        <tr align="center" style="color: darkblue; color: white">
             <th hidden="hidden">Key_N</th>
             <th>ID_BARS</th>
             <th>ІНН</th>
@@ -135,8 +146,8 @@
             </th>
         </tr>
     </table>
-    <table class="lotTab" border="2" hidden="hidden">
-        <tr align="center" style="background-color: cyan">
+    <table class="lotTab" border="1px solid" hidden="hidden">
+        <tr align="center" style="color: cyan">
             <th hidden="hidden">Key_N</th>
             <th>ID_BARS</th>
             <th>ІНН</th>
@@ -169,9 +180,9 @@
 </div>
 <%}%>
 <%if (lotType == 1) {%>
-<div class="view">
-    <table class="findTab" border="2" hidden="hidden">
-        <tr align="center" style="background-color: #27d927">
+<div>
+    <table class="findTab" border="1px solid" hidden="hidden">
+        <tr align="center" style="color: #27d927">
             <th>ID</th>
             <th>Інвентарний №</th>
             <th>Назва активу</th>
@@ -185,8 +196,8 @@
             </th>
         </tr>
     </table>
-    <table class="lotTab" border="2" hidden="hidden">
-        <tr align="center" style="background-color: cyan">
+    <table class="lotTab" border="1px solid" hidden="hidden">
+        <tr align="center" style="color: cyan">
             <th>ID</th>
             <th>Інвентарний №</th>
             <th>Назва активу</th>
@@ -225,5 +236,11 @@
     </table>
 </div>
 <%}%>
+
+<footer>
+    <div style="width: 100%; text-align: center">
+        Форма для завантаження <img class="icon_button" id="formDownld" style="width: 40px; height: 40px" src="resources/css/images/excel.jpg" title="Завантажити зразок файлу зі списком ID для пошуку (.xls)" >
+    </div>
+</footer>
 </body>
 </html>

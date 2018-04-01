@@ -91,16 +91,9 @@
                 });
             });
             $('.lotId').dblclick(function(){
-                var idL =$(this).text();
-                if(idL!=""){
-                $.ajax({
-                    url: "setRlot",
-                    type: "GET",
-                    data: {lotID: idL},
-                    success: function(){
-                        window.open("lotRedactor")
-                    }
-                })
+                var lotId =$(this).text();
+                if(lotId!=""){
+                    window.open("lotRedactor/"+lotId)
                 }
             });
 
@@ -123,7 +116,7 @@
                     type: "POST",
                     data: {idList: idList.substring(1)},
                     success: function(result){
-                        if(result==1) {
+                        if(result===1) {
                             window.open("lotCreator1");
                         }
                         else alert("Не обрано жодного об'єкта");
@@ -142,11 +135,11 @@
                 var checkBox = $(this).parent().find('.check-asset');
                 if(checkBox.is(':checked')){
                     checkBox.prop('checked', false);
-                    $(this).parent().css({'color': "#00ffff"});
+                    $(this).parent().css({'color': ""});
                 }
                 else{
                     checkBox.prop('checked', true);
-                    $(this).parent().css({'color': ""});
+                    $(this).parent().css({'color': "#00ffff"});
                 }
             });
 
@@ -416,16 +409,23 @@
                     }
                 })
             }
+
             $('#addPriceByFileBut').click(function(){
                 if($(this).val()==0) {
-                    $('form').show();
+                    $('#div_add_dec_form').show();
                     $(this).val(1);
-                    $(this).text("OK");
+                    $(this).text("Приховати");
                 }
-               else if($(this).val()==1) {
-                    loadFile();
+                else if($(this).val()==1) {
+                    $('#div_add_dec_form').hide();
+                    $(this).val(0);
+                    $(this).text("ДОДАТИ ЗАТВЕРДЖЕНУ ФГВФО ЦІНУ");
                 }
             });
+            $('#button_addPriceByFile').click(function(){
+                loadFile();
+            });
+
         })
     </script>
     <style type="text/css">
@@ -433,10 +433,8 @@
             border-collapse: collapse;
             font-size: x-small;
         }
-        #div_functions {
+        #div_b0{
             margin-top: -40px;
-            width: 100%;
-            display: inline-table;
         }
         #div_obj_table {
             width: 100%;
@@ -477,6 +475,7 @@
 
 <header>
     <div id="div_left_side" class="div_header_additions">
+        <img id="createLot" class="icon_button" title="СТВОРИТИ ЛОТ З ОБРАНИХ ОБ'ЄКТІВ" src="resources/css/images/create_lot.png">
     </div>
     <div id="div_sheet_header">
         <table align="center">
@@ -496,27 +495,24 @@
         </table>
     </div>
     <div id="div_right_side" class="div_header_additions">
+        <button id="addPriceByFileBut" value="0">ДОДАТИ ЗАТВЕРДЖЕНУ ФГВФО ЦІНУ</button>
     </div>
 </header>
 
-<div id="div_functions" >
-    <div id="div_left" class="div_header_additions" style="display: table-cell; width: 50%">
-        <button id="createLot">СТВОРИТИ ЛОТ</button>
-    </div>
-    <div id="div_right" class="div_header_additions" style="display: table-cell; width: 50%">
-        <div id="fileLoadBlock">
-            <form method="POST" action="" enctype="multipart/form-data" lang="utf8" hidden="hidden">
+<div id="div_b0" >
+        <div id="div_add_dec_form" hidden="hidden">
+            <form method="POST" action="" enctype="multipart/form-data" lang="utf8" >
                 <h3>Обрати файл зі списком Інвентарних номерів:</h3>
                 <input align="center" type="file" name="file" title="натисніть для обрання файлу"><br/>
                 <input name="idType" value="1" type="number" hidden="hidden">
+                <button id="button_addPriceByFile" title="завантажити ціну з файлу">Завантажити</button>
             </form>
-            <button id="addPriceByFileBut" value="0">ДОДАТИ ЗАТВЕРДЖЕНУ ФГВФО ЦІНУ</button>
+
         </div>
-    </div>
 </div>
 
 <div id="div_obj_table">
-    <table border="1px">
+    <table id="table_objects" border="1px">
         <tr style="color: limegreen; border-bottom: 1px solid limegreen">
             <th></th>
             <th hidden="hidden">ID</th>

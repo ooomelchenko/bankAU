@@ -76,7 +76,7 @@ public class DirectController {
     @RequestMapping(value = "/logout", method = RequestMethod.GET)
     private String logOut( HttpSession session) {
         session.removeAttribute("userId");
-            return "LogIN";
+        return "LogIN";
     }
 
     @RequestMapping(value = "/lotMenu/{saleStatus}", method = RequestMethod.GET)
@@ -285,6 +285,17 @@ public class DirectController {
             return "LogIN";
         } else {
             return "CreditsSearch";
+        }
+    }
+
+    @RequestMapping(value = "/contract/{lotId}", method = RequestMethod.GET)
+    private String contractDwnld(HttpSession session, Model model, @PathVariable long lotId) {
+        if (!isAuth(session)) {
+            return "LogIN";
+        } else {
+            Lot lot = lotService.getLot(lotId);
+            model.addAttribute("lot", lot);
+            return "Contract";
         }
     }
 }

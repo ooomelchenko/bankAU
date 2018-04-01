@@ -6,7 +6,7 @@
 
     <script type="text/javascript" src="resources/js/jquery-3.2.1.js"></script>
 
-    <script src="js/Monthpicker.js"></script>
+    <script type="text/javascript" src="resources/js/Monthpicker.js"></script>
 
     <script>
         $(document).ready(function(){
@@ -17,7 +17,7 @@
                     getPortion();
             });
             function getPortion(inIDBarses, inINNs, inIDLots) {
-                var tab = $('#crdsTab');
+                var tab = $('#table_objects');
 
                 $('.tr').remove();
                 $.ajax({
@@ -40,7 +40,7 @@
 
                             var trR = $('<tr align="center" class="tr">' +
                                     '<td class="checkTd"><input size="120%" type="checkbox" class="check-asset" title="Обрання кредитів для подальшої обробки"></td>'+
-                                    '<td class="lotId" style="background-color: cyan">'+ creditFields[0] +'</td>' +
+                                    '<td class="lotId" style="color: cyan">'+ creditFields[0] +'</td>' +
                                     '<td class="objId">' + creditFields[1] + '</td>' +
                                     '<td class="inn">' + creditFields[2] + '</td>' +
                                     '<td>' + creditFields[3] + '</td>' +
@@ -79,35 +79,27 @@
                         $('#crdDiv').append(tab);
                         $('.check-asset').change(function(){
                             if($(this).is(':checked')){
-                                $(this).parent().parent().css({'background-color': "#00ffff"});
+                                $(this).parent().parent().css({'color': "#00ffff"});
                             }
                             else{
-                                $(this).parent().parent().css({'background-color': "white"});
+                                $(this).parent().parent().css({'color': ""});
                             }
                         });
                         $('.inn, .objId').click(function(){
                             var checkBox = $(this).parent().find('.check-asset');
                             if(checkBox.is(':checked')){
                                 checkBox.prop('checked', false);
-                                $(this).parent().css({'background-color': "white"});
+                                $(this).parent().css({'color': "white"});
                             }
                             else{
                                 checkBox.prop('checked', true);
-                                $(this).parent().css({'background-color': "#00ffff"});
-
+                                $(this).parent().css({'color': ""});
                             }
                         });
                         $('.lotId').dblclick(function(){
-                            var idL =$(this).text();
-                            if(idL!=""){
-                                $.ajax({
-                                    url: "setRlot",
-                                    type: "GET",
-                                    data: {lotID: idL},
-                                    success: function(){
-                                        window.open("lotRedactor")
-                                    }
-                                })
+                            var lot_Id =$(this).text();
+                            if(lot_Id!=""){
+                                window.open("lotRedactor/"+lot_Id)
                             }
                         });
                         $('.planSaleDate').dblclick(function(){
@@ -246,20 +238,40 @@
             }
             $('#addPriceByFileBut').click(function(){
                 if($(this).val()==0) {
-                    $('form').show();
+                    $('#div_add_dec_form').show();
                     $(this).val(1);
-                    $(this).text("OK");
+                    $(this).text("Приховати");
                 }
                 else if($(this).val()==1) {
-                    loadFile();
+                    $('#div_add_dec_form').hide();
+                    $(this).val(0);
+                    $(this).text("ДОДАТИ ЗАТВЕРДЖЕНУ ФГВФО ЦІНУ");
                 }
             });
+            $('#button_addPriceByFile').click(function(){
+                loadFile();
+            })
         })
     </script>
 
-    <link rel="stylesheet" media="screen" type="text/css" href="resources/css/monthpicker.css"/>
     <link rel="stylesheet" media="screen" type="text/css" href="resources/css/general_style.css"/>
+    <link rel="stylesheet" media="screen" type="text/css" href="resources/css/monthpicker.css"/>
     <style type="text/css">
+
+        table{
+            border-collapse: collapse;
+            font-size: xx-small;
+        }
+        select{
+            width: 100%;
+        }
+        #div_b0{
+            margin-top: -40px;
+        }
+        .addIn:hover{
+            cursor: pointer;
+            color: ghostwhite;
+        }
         .tr:hover{
             cursor: pointer;
             color: ghostwhite;
@@ -267,43 +279,22 @@
         #headTr{
             color: skyblue;
         }
-        table{
-            font-size: xx-small;
-        }
-        select{
-            width: 100%;
-        }
-        .addIn:hover{
-            cursor: pointer;
-            color: darkblue;
-        }
         #filterTab{
-            border: solid;
+            border: 1px solid;
         }
         #filterTab tr:hover{
-            border: 1px solid ghostwhite;
+            border-bottom: 1px solid ghostwhite;
             cursor: pointer;
         }
     </style>
 </head>
 <body>
-<div id="headBlock">
-    <div id="buttBlock">
-        <div>
-            <button id="createLot">СТВОРИТИ ЛОТ</button>
-        </div>
-        <div id="fileLoadBlock">
-            <form method="POST" action="" enctype="multipart/form-data" lang="utf8" hidden="hidden">
-                <h3>Обрати файл зі списком Інвентарних номерів:</h3>
-                <input align="center" type="file" name="file" title="натисніть для обрання файлу"><br/>
-                <input name="idType" value="0" type="number" hidden="hidden">
-            </form>
-            <button id="addPriceByFileBut" value="0">ДОДАТИ ЗАТВЕРДЖЕНУ ФГВФО ЦІНУ</button>
-        </div>
+
+<header>
+    <div id="div_left_side" class="div_header_additions">
+        <img id="createLot" class="icon_button" title="СТВОРИТИ ЛОТ З ОБРАНИХ ОБ'ЄКТІВ" src="resources/css/images/create_lot.png">
     </div>
-</div>
-<div>
-    <div>
+    <div id="div_sheet_header">
         <table align="center">
             <tr>
                 <%
@@ -320,100 +311,106 @@
             </tr>
         </table>
     </div>
-    <div>
-        <table align="right">
-            <tr>
-                <td >
-                    <button id="showFilters">Фільтри</button>
-                </td>
-            </tr>
-        </table>
-        <table id="filterTab" align="right" hidden="hidden">
-            <tr>
-                <td>Продані кредити</td>
-                <td>
-                    <select id="isSold" title="Оберіть чи продані кредити">
-                        <option value="10" selected="selected">Всі</option>
-                        <option value="0">Ні</option>
-                        <option value="1">Так</option>
-                    </select>
-                </td>
-            </tr>
-            <tr>
-                <td>В лотах</td>
-                <td>
-                    <select id="isInLot" title="Оберіть чи кредити в лотах">
-                        <option value="10" selected="selected">Всі</option>
-                        <option value="0">Ні</option>
-                        <option value="1">Так</option>
-                    </select>
-                </td>
-            </tr>
-            <tr>
-                <td>Фіз.особи/Юр.особи</td>
-                <td>
-                    <select id="fiz_ur_Type" title="Оберіть тип боржника">
-                        <option value="10" selected="selected">Всі</option>
-                        <option value="0">Фізичні особи</option>
-                        <option value="1">Юридичні особи</option>
-                        <option value="2">Списані</option>
-                    </select>
-                </td>
-            </tr>
-            <tr>
-                <td>В заставі НБУ</td>
-                <td>
-                    <select id="isNbu" title="Оберіть чи кредит в заставі НБУ">
-                        <option value="10" selected="selected">Всі</option>
-                        <option value="0">Ні</option>
-                        <option value="1">Так</option>
-                    </select>
-                </td>
-            </tr>
-            <tr>
-                <td>Чи є рішення ФГВФО</td>
-                <td>
-                    <select id="isFondDec" title="Оберіть чи по кредиту є рішення фонду">
-                        <option value="10" selected="selected">Всі</option>
-                        <option value="0">Ні</option>
-                        <option value="1">Так</option>
-                    </select>
-                </td>
-            </tr>
-            <tr>
-                <td>ID_BARS</td>
-                <td>
-                    <input class="inIDBars" type="text"/>
-                </td>
-                <td class="addIn">додати</td>
-            </tr>
-            <tr>
-                <td>INN</td>
-                <td>
-                    <input class="inINN" type="text"/>
-                </td>
-                <td class="addIn">додати</td>
-            </tr>
-            <tr>
-                <td>ID лоту</td>
-                <td>
-                    <input class="inIDLot" type="text"/>
-                </td>
-                <td class="addIn">додати</td>
-            </tr>
-            <tr>
-                <td rowspan="2" align="center">
-                    <button id="filterButton">Застосувати фільтри</button>
-                </td>
-            </tr>
-        </table>
+    <div id="div_right_side" class="div_header_additions">
+        <button id="addPriceByFileBut" value="0">ДОДАТИ ЗАТВЕРДЖЕНУ ФГВФО ЦІНУ</button>
+        <button id="showFilters">Фільтри</button>
     </div>
+</header>
+
+<div id="div_b0">
+        <div id="div_add_dec_form" hidden="hidden">
+            <form method="POST" action="" enctype="multipart/form-data" lang="utf8" >
+                <h4>Обрати файл зі списком Інвентарних номерів:</h4>
+                <input align="center" type="file" name="file" title="натисніть для обрання файлу"><br/>
+                <input name="idType" value="0" type="number" hidden="hidden">
+                <button id="button_addPriceByFile" title="завантажити ціну з файлу">Завантажити</button>
+            </form>
+        </div>
+        <div>
+            <table id="filterTab" align="right" hidden="hidden">
+                <tr>
+                    <td>Продані кредити</td>
+                    <td>
+                        <select id="isSold" title="Оберіть чи продані кредити">
+                            <option value="10" selected="selected">Всі</option>
+                            <option value="0">Ні</option>
+                            <option value="1">Так</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td>В лотах</td>
+                    <td>
+                        <select id="isInLot" title="Оберіть чи кредити в лотах">
+                            <option value="10" selected="selected">Всі</option>
+                            <option value="0">Ні</option>
+                            <option value="1">Так</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Фіз.особи/Юр.особи</td>
+                    <td>
+                        <select id="fiz_ur_Type" title="Оберіть тип боржника">
+                            <option value="10" selected="selected">Всі</option>
+                            <option value="0">Фізичні особи</option>
+                            <option value="1">Юридичні особи</option>
+                            <option value="2">Списані</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td>В заставі НБУ</td>
+                    <td>
+                        <select id="isNbu" title="Оберіть чи кредит в заставі НБУ">
+                            <option value="10" selected="selected">Всі</option>
+                            <option value="0">Ні</option>
+                            <option value="1">Так</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Чи є рішення ФГВФО</td>
+                    <td>
+                        <select id="isFondDec" title="Оберіть чи по кредиту є рішення фонду">
+                            <option value="10" selected="selected">Всі</option>
+                            <option value="0">Ні</option>
+                            <option value="1">Так</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td>ID_BARS</td>
+                    <td>
+                        <input class="inIDBars" type="text"/>
+                    </td>
+                    <td class="addIn">додати</td>
+                </tr>
+                <tr>
+                    <td>INN</td>
+                    <td>
+                        <input class="inINN" type="text"/>
+                    </td>
+                    <td class="addIn">додати</td>
+                </tr>
+                <tr>
+                    <td>ID лоту</td>
+                    <td>
+                        <input class="inIDLot" type="text"/>
+                    </td>
+                    <td class="addIn">додати</td>
+                </tr>
+                <tr>
+                    <td rowspan="2" align="center">
+                        <button id="filterButton">Застосувати фільтри</button>
+                    </td>
+                </tr>
+            </table>
+        </div>
 </div>
 
-<br>
-<div id="viewBlock">
-
-    <table id="crdsTab" border="light" class="table">
+<div id="div_obj_table">
+    <table id="table_objects" border="1px">
         <tr id="headTr">
             <th></th>
             <th>ID лоту</th>
@@ -442,7 +439,7 @@
             <th>Сплачено, грн.</th>
             <th>Залишок оплати, грн.</th>
             <th>Покупець</th>
-            <th>Стадія роботи></th>
+            <th>Стадія роботи</th>
             <th>Дата прийняття рішення ФГВФО</th>
             <th>Рівень прийняття рішення</th>
             <th>Номер рішення ФГВФО</th>

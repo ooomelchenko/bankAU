@@ -410,6 +410,9 @@
                     addDocForm.show();
                 }
             });
+            $('#icon_contract').click(function(){
+                window.open("contract/"+lotID);
+            });
 
             $('#icon_excel_download').click(function () {
                 $.ajax({
@@ -1134,7 +1137,9 @@
     </div>
     <div id="div_documents">
         <div class="div_menu_block_header">
-            Документи <img id="icon_add_document" class="icon_button" src="resources/css/images/add_document.png" style="width: 20px; height: 20px" title="додати документ">
+            <img id="icon_contract" class="icon_button" src="resources/css/images/contract_icon.png" style="width: 20px; height: 20px" title="завантажити договір">
+            Документи
+            <img id="icon_add_document" class="icon_button" src="resources/css/images/add_document.png" style="width: 20px; height: 20px" title="додати документ">
         </div>
         <div>
             <table id="table_documents_scan" border="1">
