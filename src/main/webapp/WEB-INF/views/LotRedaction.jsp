@@ -125,9 +125,12 @@
                         reqType: reType
                     },
                     success: function (res) {
-                        if (res === 1)
-                            location.reload(true);
-                        else alert("Якась халепа!");
+                        if (res == 1) {
+                        location.reload(true);
+                    }
+                        else {
+                            alert("Якась халепа!");
+                        }
                     }
                 })
             }
@@ -140,7 +143,7 @@
             });
 
             $('#button_del_lot').click(function () {
-                if ($(this).val() === '1') {
+                if ($(this).val() == '1') {
                     $(this).val('0');
                     table_finance.css('border', "none");
                     table_finance.find('th').css('color', "#d2d7ff");
@@ -156,7 +159,7 @@
             });
             $('#button_setSold_lot').click(function () {
 
-                if ($(this).val() === '1') {
+                if ($(this).val() == '1') {
                     $(this).val('0');
                     table_finance.css('border', "none");
                     table_finance.find('th').css('color', "#d2d7ff");
@@ -228,7 +231,7 @@
                                     var delCrButt = $('<button class="delCrdButt icon_button" value="0" title="Видалити обєкт" style="width: 30px; height: 100%">' +
                                         '<img height="15px" width="15px" src="resources/css/images/delete.png">' +
                                         '</button>').click(function () {
-                                        if ($(this).val() === '0') {
+                                        if ($(this).val() == '0') {
                                             $(this).val('1');
                                             $(this).parent().css('color', "red");
                                             $(this).parent().attr('title', "Об'єкт буде видалено зі списку!")
@@ -287,7 +290,7 @@
                                     var delCrButt = $('<button class="delCrdButt icon_button" value="0" title="Видалити обєкт" style="width: 30px; height: 100%">' +
                                         '<img height="15px" width="15px" src="resources/css/images/delete.png">' +
                                         '</button>').click(function () {
-                                        if ($(this).val() === '0') {
+                                        if ($(this).val() == '0') {
                                             $(this).val('1');
                                             $(this).parent().css('color', "red");
                                             $(this).parent().attr('title', "Об'єкт буде видалено зі списку!")
@@ -318,10 +321,10 @@
             });
 
             $('#button_Accept').click(function () {
-                if ($('#button_del_lot').val() === '0') {
+                if ($('#button_del_lot').val() == '0') {
 
                     $('.delCrdButt').each(function () {
-                        if ($(this).val() === '1') {
+                        if ($(this).val() == '1') {
                             var idL = $(this).parent().children().first().text();
                             $.ajax({
                                 url: "delObjectFromLot",
@@ -377,7 +380,7 @@
                             bidScenario: bidScenario
                         },
                         success: function (rez) {
-                            if (rez === "1") {
+                            if (rez == "1") {
                                 alert("Лот змінено!");
                                 location.reload(true);
                             }
@@ -428,7 +431,7 @@
             });
 
             $('#icon_add_pay').click(function(){
-                if(button_addPay.val()==='0'){
+                if(button_addPay.val()=='0'){
                     table_addPay.show();
                     button_addPay.val('1');
                 }
@@ -457,7 +460,7 @@
                                 paySource: paySource.val()
                             },
                             success: function(rez){
-                                if (rez === "1") {
+                                if (rez == "1") {
                                     alert("Платіж додано!");
                                     getCountSum();
                                     payDate.val(null);
@@ -480,7 +483,7 @@
 
             var redactButton = $('#redactButton');
             redactButton.click(function () {
-                if (redactButton.val() === "0") {
+                if (redactButton.val() == "0") {
                     redactButton.val(1);
                     redactButton.text("Прийняти");
                     $('#fdChoose').show();
@@ -510,7 +513,7 @@
 
             var redactNBUButton = $('#redactNBUButton');
             redactNBUButton.click(function () {
-                if (redactNBUButton.val() === "0") {
+                if (redactNBUButton.val() == "0") {
                     redactNBUButton.val(1);
                     redactNBUButton.text("Прийняти");
                     $('#nbuChoose').show();

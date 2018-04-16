@@ -73,6 +73,24 @@ public class AssetController {
         }
     }
 
+    private String replaceRunText(String text, String kd, String year, String fio, String address, String inn, String prn, String prd, String pmb, String fpr, String knd, String subscr){
+        text = text.replace("kd", kd);
+        text = text.replace("year", year);
+        text = text.replace("fio", fio);
+        text = text.replace("address", address);
+        text = text.replace("inn", inn);
+        text = text.replace("prn", prn);
+        text = text.replace("prd", prd);
+        text = text.replace("pmb", pmb);
+        text = text.replace("fpr", fpr);
+        text = text.replace("knd", knd);
+        if(subscr.equals("null"))
+            text = text.replace("sub", fio);
+        else
+            text = text.replace("sub", subscr);
+        return text;
+    }
+
     private String makeDodatok(List<Asset> assetList, List<Credit> creditList, String startDate, String endDate) throws IOException {
         POIFSFileSystem fs = new POIFSFileSystem(new FileInputStream("C:\\projectFiles\\Table prodaj.xls"));
         HSSFWorkbook wb = new HSSFWorkbook(fs);
@@ -989,6 +1007,496 @@ public class AssetController {
         return fileName;
     }
 
+    private String creditContract(Lot lot, String contract_year, String contract_address, String contract_protokol_num, String contract_protokol_date, String protocol_made_by, String subscriber) throws IOException {
+
+        List <Credit> creditList = lotService.getCRDTSByLot(lot);
+
+        InputStream fs = new FileInputStream("C:\\projectFiles\\Lot_Credits_Docs\\Dogovir.docx");
+
+        XWPFDocument docx = new XWPFDocument(fs);
+
+        for (XWPFParagraph p : docx.getParagraphs()) {
+
+            List<XWPFRun> runs = p.getRuns();
+            if (runs != null) {
+                for (XWPFRun r : runs) {
+                    String text = r.getText(0);
+                    if (text != null) {
+                        String tempText = "";
+                        if (!creditList.isEmpty() && text.contains("knd")){
+                            for(Credit credit: creditList){
+                                tempText+="№"+credit.getContractNum()+" від "+ sdfpoints.format(credit.getContractStart())+"року,";
+                            }
+                        }
+                        r.setText(replaceRunText(text, String.valueOf(creditList.get(0).getContractNum()), contract_year, String.valueOf(lot.getCustomerName()),
+                                String.valueOf(contract_address),  String.valueOf(lot.getCustomerInn()),
+                                String.valueOf(contract_protokol_num), String.valueOf(contract_protokol_date),
+                                String.valueOf(protocol_made_by), String.valueOf(lot.getFactPrice()), tempText, subscriber), 0);
+                    }
+                }
+            }
+        }
+        for (XWPFTable tbl : docx.getTables()) {
+
+            for (XWPFTableRow row : tbl.getRows()) {
+                for (XWPFTableCell cell : row.getTableCells()) {
+                    for (XWPFParagraph p : cell.getParagraphs()) {
+
+                        List<XWPFRun> runs = p.getRuns();
+                        if (runs != null) {
+                            for (XWPFRun r : runs) {
+                                String text = r.getText(0);
+                                if (text != null) {
+                                    String tempText = "";
+                                    if (!creditList.isEmpty() && text.contains("knd")){
+                                        for(Credit credit: creditList){
+                                            tempText+="№"+credit.getContractNum()+" від "+ sdfpoints.format(credit.getContractStart())+"року,";
+                                        }
+                                    }
+
+                                    r.setText(replaceRunText(text, String.valueOf(creditList.get(0).getContractNum()), contract_year, String.valueOf(lot.getCustomerName()),
+                                            String.valueOf(contract_address),  String.valueOf(lot.getCustomerInn()),
+                                            String.valueOf(contract_protokol_num), String.valueOf(contract_protokol_date),
+                                            String.valueOf(protocol_made_by), String.valueOf(lot.getFactPrice()), tempText, subscriber), 0);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        String fileName = "C:\\projectFiles\\Lot_Credits_Docs\\Dogovir_" + lot.getId() + ".docx";
+        OutputStream fileOut = new FileOutputStream(fileName);
+
+        docx.write(fileOut);
+        fileOut.close();
+        return fileName;
+    }
+
+    private String assetContract(Lot lot, String contract_year, String contract_address, String contract_protokol_num, String contract_protokol_date, String protocol_made_by, String subscriber) throws IOException{
+
+        List<Asset> assetList = lotService.getAssetsByLot(lot);
+
+        InputStream fs = new FileInputStream("C:\\projectFiles\\Lot_Assets_Docs\\Dogovir.docx");
+
+        XWPFDocument docx = new XWPFDocument(fs);
+
+        for (XWPFParagraph p : docx.getParagraphs()) {
+
+            List<XWPFRun> runs = p.getRuns();
+            if (runs != null) {
+                for (XWPFRun r : runs) {
+                    String text = r.getText(0);
+                    if (text != null) {
+                        String tempText = "";
+                        if (!assetList.isEmpty() && text.contains("knd")){
+                            for(Asset asset: assetList){
+
+                            }
+                        }
+                        r.setText(replaceRunText(text, lot.getLotNum(), contract_year, String.valueOf(lot.getCustomerName()),
+                                String.valueOf(contract_address),  String.valueOf(lot.getCustomerInn()),
+                                String.valueOf(contract_protokol_num), String.valueOf(contract_protokol_date),
+                                String.valueOf(protocol_made_by), String.valueOf(lot.getFactPrice()), tempText, subscriber), 0);
+                    }
+                }
+            }
+        }
+        for (XWPFTable tbl : docx.getTables()) {
+
+            for (XWPFTableRow row : tbl.getRows()) {
+                for (XWPFTableCell cell : row.getTableCells()) {
+                    for (XWPFParagraph p : cell.getParagraphs()) {
+
+                        List<XWPFRun> runs = p.getRuns();
+                        if (runs != null) {
+                            for (XWPFRun r : runs) {
+                                String text = r.getText(0);
+                                if (text != null) {
+                                    String tempText = "";
+                                    if (!assetList.isEmpty() && text.contains("knd")){
+                                        for(Asset asset: assetList){
+
+                                        }
+                                    }
+                                    r.setText(replaceRunText(text, lot.getLotNum(), contract_year, String.valueOf(lot.getCustomerName()),
+                                            String.valueOf(contract_address),  String.valueOf(lot.getCustomerInn()),
+                                            String.valueOf(contract_protokol_num), String.valueOf(contract_protokol_date),
+                                            String.valueOf(protocol_made_by), String.valueOf(lot.getFactPrice()), tempText, subscriber), 0);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        String fileName = "C:\\projectFiles\\Lot_Assets_Docs\\Dogovir_" + lot.getId() + ".docx";
+        OutputStream fileOut = new FileOutputStream(fileName);
+
+        docx.write(fileOut);
+        fileOut.close();
+        return fileName;
+    }
+
+    private String creditContract_Akt(Lot lot, String contract_year, String contract_address, String contract_protokol_num, String contract_protokol_date, String protocol_made_by, String subscriber) throws IOException {
+
+        List <Credit> creditList = lotService.getCRDTSByLot(lot);
+
+        InputStream fs = new FileInputStream("C:\\projectFiles\\Lot_Credits_Docs\\Dogovir_Akt.docx");
+
+        XWPFDocument docx = new XWPFDocument(fs);
+
+        for (XWPFParagraph p : docx.getParagraphs()) {
+
+            List<XWPFRun> runs = p.getRuns();
+            if (runs != null) {
+                for (XWPFRun r : runs) {
+                    String text = r.getText(0);
+                    if (text != null) {
+                        String tempText = "";
+                        if (!creditList.isEmpty() && text.contains("knd")){
+                            for(Credit credit: creditList){
+                                tempText+="№"+credit.getContractNum()+" від "+ sdfpoints.format(credit.getContractStart())+"року,";
+                            }
+                        }
+                        r.setText(replaceRunText(text, String.valueOf(creditList.get(0).getContractNum()), contract_year, String.valueOf(lot.getCustomerName()),
+                                String.valueOf(contract_address),  String.valueOf(lot.getCustomerInn()),
+                                String.valueOf(contract_protokol_num), String.valueOf(contract_protokol_date),
+                                String.valueOf(protocol_made_by), String.valueOf(lot.getFactPrice()), tempText, subscriber), 0);
+                    }
+                }
+            }
+        }
+        List<XWPFTable> tableList = docx.getTables();
+
+        for (XWPFTable tbl : tableList) {
+
+            for (XWPFTableRow row : tbl.getRows()) {
+                for (XWPFTableCell cell : row.getTableCells()) {
+                    for (XWPFParagraph p : cell.getParagraphs()) {
+
+                        List<XWPFRun> runs = p.getRuns();
+                        if (runs != null) {
+                            for (XWPFRun r : runs) {
+                                String text = r.getText(0);
+                                if (text != null) {
+                                    String tempText = "";
+                                    if (!creditList.isEmpty() && text.contains("knd")){
+                                        for(Credit credit: creditList){
+                                            tempText+="№"+credit.getContractNum()+" від "+ sdfpoints.format(credit.getContractStart())+"року,";
+                                        }
+                                    }
+
+                                    r.setText(replaceRunText(text, String.valueOf(creditList.get(0).getContractNum()), contract_year, String.valueOf(lot.getCustomerName()),
+                                            String.valueOf(contract_address),  String.valueOf(lot.getCustomerInn()),
+                                            String.valueOf(contract_protokol_num), String.valueOf(contract_protokol_date),
+                                            String.valueOf(protocol_made_by), String.valueOf(lot.getFactPrice()), tempText, subscriber), 0);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        XWPFTable objTable = tableList.get(0);
+        int i =0;
+        for (Credit credit : creditList) {
+            i++;
+
+            XWPFTableRow newRow = objTable.createRow();
+            newRow.getCell(0).setText(i + ".");
+            newRow.getCell(1).setText("Кредитний договір");
+            String creditStartDate="";
+            try {
+                creditStartDate = sdfpoints.format(credit.getContractStart());
+            }
+            catch (NullPointerException e){
+            }
+            newRow.getCell(2).setText(credit.getContractNum()+" від "+ creditStartDate);
+            newRow.getCell(3).setText("оригінал");
+
+        }
+        objTable.setInsideVBorder( XWPFTable.XWPFBorderType.SINGLE, 2, 0, "000000");
+        objTable.setInsideHBorder( XWPFTable.XWPFBorderType.SINGLE, 2, 0, "000000");
+        objTable.removeRow(1);
+
+        String fileName = "C:\\projectFiles\\Lot_Credits_Docs\\Dogovir_Akt_" + lot.getId() + ".docx";
+        OutputStream fileOut = new FileOutputStream(fileName);
+
+        docx.write(fileOut);
+        fileOut.close();
+        return fileName;
+    }
+
+    private String assetContract_Akt(Lot lot, String contract_year, String contract_address, String contract_protokol_num, String contract_protokol_date, String protocol_made_by, String subscriber) throws IOException{
+
+        List<Asset> assetList = lotService.getAssetsByLot(lot);
+
+        InputStream fs = new FileInputStream("C:\\projectFiles\\Lot_Assets_Docs\\Dogovir_Akt.docx");
+
+        XWPFDocument docx = new XWPFDocument(fs);
+
+        for (XWPFParagraph p : docx.getParagraphs()) {
+
+            List<XWPFRun> runs = p.getRuns();
+            if (runs != null) {
+                for (XWPFRun r : runs) {
+                    String text = r.getText(0);
+                    if (text != null) {
+                        String tempText = "";
+                        if (!assetList.isEmpty() && text.contains("knd")){
+                            for(Asset asset: assetList){
+
+                            }
+                        }
+                        r.setText(replaceRunText(text, lot.getLotNum(), contract_year, String.valueOf(lot.getCustomerName()),
+                                String.valueOf(contract_address),  String.valueOf(lot.getCustomerInn()),
+                                String.valueOf(contract_protokol_num), String.valueOf(contract_protokol_date),
+                                String.valueOf(protocol_made_by), String.valueOf(lot.getFactPrice()), tempText, subscriber), 0);
+                    }
+                }
+            }
+        }
+        List<XWPFTable> tableList = docx.getTables();
+
+        for (XWPFTable tbl : tableList) {
+
+            for (XWPFTableRow row : tbl.getRows()) {
+                for (XWPFTableCell cell : row.getTableCells()) {
+                    for (XWPFParagraph p : cell.getParagraphs()) {
+
+                        List<XWPFRun> runs = p.getRuns();
+                        if (runs != null) {
+                            for (XWPFRun r : runs) {
+                                String text = r.getText(0);
+                                if (text != null) {
+                                    String tempText = "";
+                                    if (!assetList.isEmpty() && text.contains("knd")){
+                                        for(Asset asset: assetList){
+
+                                        }
+                                    }
+                                    r.setText(replaceRunText(text, lot.getLotNum(), contract_year, String.valueOf(lot.getCustomerName()),
+                                            String.valueOf(contract_address),  String.valueOf(lot.getCustomerInn()),
+                                            String.valueOf(contract_protokol_num), String.valueOf(contract_protokol_date),
+                                            String.valueOf(protocol_made_by), String.valueOf(lot.getFactPrice()), tempText, subscriber), 0);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        XWPFTable objTable = tableList.get(0);
+        int i =0;
+        for (Asset asset : assetList) {
+            i++;
+
+            XWPFTableRow newRow = objTable.createRow();
+            newRow.getCell(0).setText(i + ".");
+            newRow.getCell(1).setText(asset.getInn());
+            newRow.getCell(2).setText(asset.getAsset_name());
+            newRow.getCell(3).setText(asset.getAsset_descr());
+            newRow.getCell(4).setText(asset.getRegion());
+            newRow.getCell(3).setText(String.valueOf(asset.getFactPrice()));
+        }
+        objTable.setInsideVBorder( XWPFTable.XWPFBorderType.SINGLE, 2, 0, "000000");
+        objTable.setInsideHBorder( XWPFTable.XWPFBorderType.SINGLE, 2, 0, "000000");
+        objTable.removeRow(1);
+
+        String fileName = "C:\\projectFiles\\Lot_Assets_Docs\\Dogovir_Akt_" + lot.getId() + ".docx";
+        OutputStream fileOut = new FileOutputStream(fileName);
+
+        docx.write(fileOut);
+        fileOut.close();
+        return fileName;
+    }
+
+    private String creditContract_Dodatok1(Lot lot, String contract_year, String contract_address, String contract_protokol_num, String contract_protokol_date, String protocol_made_by, String subscriber) throws IOException {
+
+        List <Credit> creditList = lotService.getCRDTSByLot(lot);
+
+        InputStream fs = new FileInputStream("C:\\projectFiles\\Lot_Credits_Docs\\Dogovir_Dodatok1.docx");
+
+        XWPFDocument docx = new XWPFDocument(fs);
+
+        for (XWPFParagraph p : docx.getParagraphs()) {
+
+            List<XWPFRun> runs = p.getRuns();
+            if (runs != null) {
+                for (XWPFRun r : runs) {
+                    String text = r.getText(0);
+                    if (text != null) {
+                        String tempText = "";
+                        if (!creditList.isEmpty() && text.contains("knd")){
+                            for(Credit credit: creditList){
+                                tempText+="№"+credit.getContractNum()+" від "+ sdfpoints.format(credit.getContractStart())+"року,";
+                            }
+                        }
+                        r.setText(replaceRunText(text, String.valueOf(creditList.get(0).getContractNum()), contract_year, String.valueOf(lot.getCustomerName()),
+                                String.valueOf(contract_address),  String.valueOf(lot.getCustomerInn()),
+                                String.valueOf(contract_protokol_num), String.valueOf(contract_protokol_date),
+                                String.valueOf(protocol_made_by), String.valueOf(lot.getFactPrice()), tempText, subscriber), 0);
+                    }
+                }
+            }
+        }
+        List<XWPFTable> tableList = docx.getTables();
+
+        for (XWPFTable tbl : tableList) {
+
+            for (XWPFTableRow row : tbl.getRows()) {
+                for (XWPFTableCell cell : row.getTableCells()) {
+                    for (XWPFParagraph p : cell.getParagraphs()) {
+
+                        List<XWPFRun> runs = p.getRuns();
+                        if (runs != null) {
+                            for (XWPFRun r : runs) {
+                                String text = r.getText(0);
+                                if (text != null) {
+                                    String tempText = "";
+                                    if (!creditList.isEmpty() && text.contains("knd")){
+                                        for(Credit credit: creditList){
+                                            tempText+="№"+credit.getContractNum()+" від "+ sdfpoints.format(credit.getContractStart())+"року,";
+                                        }
+                                    }
+
+                                    r.setText(replaceRunText(text, String.valueOf(creditList.get(0).getContractNum()), contract_year, String.valueOf(lot.getCustomerName()),
+                                            String.valueOf(contract_address),  String.valueOf(lot.getCustomerInn()),
+                                            String.valueOf(contract_protokol_num), String.valueOf(contract_protokol_date),
+                                            String.valueOf(protocol_made_by), String.valueOf(lot.getFactPrice()), tempText, subscriber), 0);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        XWPFTable objTable = tableList.get(0);
+        int i =creditList.size();
+        for (Credit credit : creditList) {
+            XWPFTableRow newRow = objTable.insertNewTableRow(2);
+            newRow.createCell().setText(i + ".");
+            newRow.createCell().setText("Позичальник – "+credit.getFio()+", РНОКПП "+ credit.getInn());
+            String creditStartDate="";
+            try {
+                creditStartDate = sdfpoints.format(credit.getContractStart());
+            }
+            catch (NullPointerException e){
+            }
+            newRow.createCell().setText("Кредитний договір "+credit.getContractNum()+" від "+ creditStartDate);
+            i--;
+        }
+        objTable.removeRow(1);
+
+        String fileName = "C:\\projectFiles\\Lot_Credits_Docs\\Dogovir_Dodatok1_" + lot.getId() + ".docx";
+        OutputStream fileOut = new FileOutputStream(fileName);
+
+        docx.write(fileOut);
+        fileOut.close();
+        return fileName;
+    }
+
+    private String creditContract_Dodatok2(Lot lot, String contract_year, String contract_address, String contract_protokol_num, String contract_protokol_date, String protocol_made_by, String subscriber) throws IOException {
+
+        List <Credit> creditList = lotService.getCRDTSByLot(lot);
+
+        InputStream fs = new FileInputStream("C:\\projectFiles\\Lot_Credits_Docs\\Dogovir_Dodatok2.docx");
+
+        XWPFDocument docx = new XWPFDocument(fs);
+
+        for (XWPFParagraph p : docx.getParagraphs()) {
+
+            List<XWPFRun> runs = p.getRuns();
+            if (runs != null) {
+                for (XWPFRun r : runs) {
+                    String text = r.getText(0);
+                    if (text != null) {
+                        String tempText = "";
+                        if (!creditList.isEmpty() && text.contains("knd")){
+                            for(Credit credit: creditList){
+                                tempText+="№"+credit.getContractNum()+" від "+ sdfpoints.format(credit.getContractStart())+"року,";
+                            }
+                        }
+                        r.setText(replaceRunText(text, String.valueOf(creditList.get(0).getContractNum()), contract_year, String.valueOf(lot.getCustomerName()),
+                                String.valueOf(contract_address),  String.valueOf(lot.getCustomerInn()),
+                                String.valueOf(contract_protokol_num), String.valueOf(contract_protokol_date),
+                                String.valueOf(protocol_made_by), String.valueOf(lot.getFactPrice()), tempText, subscriber), 0);
+                    }
+                }
+            }
+        }
+        List<XWPFTable> tableList = docx.getTables();
+
+        for (XWPFTable tbl : tableList) {
+
+            for (XWPFTableRow row : tbl.getRows()) {
+                for (XWPFTableCell cell : row.getTableCells()) {
+                    for (XWPFParagraph p : cell.getParagraphs()) {
+
+                        List<XWPFRun> runs = p.getRuns();
+                        if (runs != null) {
+                            for (XWPFRun r : runs) {
+                                String text = r.getText(0);
+                                if (text != null) {
+                                    String tempText = "";
+                                    if (!creditList.isEmpty() && text.contains("knd")){
+                                        for(Credit credit: creditList){
+                                            tempText+="№"+credit.getContractNum()+" від "+ sdfpoints.format(credit.getContractStart())+"року,";
+                                        }
+                                    }
+
+                                    r.setText(replaceRunText(text, String.valueOf(creditList.get(0).getContractNum()), contract_year, String.valueOf(lot.getCustomerName()),
+                                            String.valueOf(contract_address),  String.valueOf(lot.getCustomerInn()),
+                                            String.valueOf(contract_protokol_num), String.valueOf(contract_protokol_date),
+                                            String.valueOf(protocol_made_by), String.valueOf(lot.getFactPrice()), tempText, subscriber), 0);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        String fileName = "C:\\projectFiles\\Lot_Credits_Docs\\Dogovir_Dodatok2_" + lot.getId() + ".docx";
+        OutputStream fileOut = new FileOutputStream(fileName);
+
+        docx.write(fileOut);
+        fileOut.close();
+        return fileName;
+    }
+
+    private String makeContract(Long lotId, String contract_year, String contract_address, String contract_protokol_num, String contract_protokol_date, String protocol_made_by, String subscriber) throws Exception {
+        Lot lot = lotService.getLot(lotId);
+        if(lot.getLotType()==0)
+            return creditContract(lot, contract_year, contract_address, contract_protokol_num, contract_protokol_date, protocol_made_by, subscriber);
+        else
+            return assetContract(lot, contract_year, contract_address, contract_protokol_num, contract_protokol_date, protocol_made_by, subscriber);// assetContract();
+    }
+
+    private String makeContract_Akt(Long lotId, String contract_year, String contract_address, String contract_protokol_num, String contract_protokol_date, String protocol_made_by, String subscriber) throws Exception {
+        Lot lot = lotService.getLot(lotId);
+        if(lot.getLotType()==0)
+            return creditContract_Akt(lot, contract_year, contract_address, contract_protokol_num, contract_protokol_date, protocol_made_by, subscriber);
+        else
+            return assetContract_Akt(lot, contract_year, contract_address, contract_protokol_num, contract_protokol_date, protocol_made_by, subscriber);// assetContract();
+    }
+
+    private String makeContract_Dodatok1(Long lotId, String contract_year, String contract_address, String contract_protokol_num, String contract_protokol_date, String protocol_made_by, String subscriber) throws Exception {
+        Lot lot = lotService.getLot(lotId);
+        return creditContract_Dodatok1(lot, contract_year, contract_address, contract_protokol_num, contract_protokol_date, protocol_made_by, subscriber);
+    }
+
+    private String makeContract_Dodatok2(Long lotId, String contract_year, String contract_address, String contract_protokol_num, String contract_protokol_date, String protocol_made_by, String subscriber) throws Exception {
+        Lot lot = lotService.getLot(lotId);
+        return creditContract_Dodatok2(lot, contract_year, contract_address, contract_protokol_num, contract_protokol_date, protocol_made_by, subscriber);
+    }
+
     @RequestMapping(value = "/lotList", method = RequestMethod.GET)
     private @ResponseBody
     List<Lot> getLots() {
@@ -1000,13 +1508,6 @@ public class AssetController {
     List<Exchange> jsonGetExchanges() {
         return exchangeService.getAllExchanges();
     }
-
- /*   @RequestMapping(value = "/setRlot", method = RequestMethod.GET)
-    private @ResponseBody
-    String toLotRedactor(@RequestParam("lotID") String lotId, Model model) {
-        model.addAttribute("lotRid", lotId);
-        return "1";
-    }*/
 
     @RequestMapping(value = "/lotDel", method = RequestMethod.POST)
     private @ResponseBody
@@ -1762,6 +2263,98 @@ public class AssetController {
         String docName = makeOgoloshennya(id);
         file = new File(docName);
 
+        InputStream is = new FileInputStream(file);
+
+        response.setContentType("application/octet-stream");
+        response.setHeader("Content-Disposition", "attachment; filename=\"" + file.getName() + "\"");
+
+        OutputStream os = response.getOutputStream();
+        byte[] buffer = new byte[1024];
+        int len;
+        while ((len = is.read(buffer)) != -1) {
+            os.write(buffer, 0, len);
+        }
+        os.flush();
+        is.close();
+        os.close();
+        file.delete();
+    }
+
+    @RequestMapping(value = "/downloadContract/{lotId}/{contract_year}/{contract_address}/{contract_protokol_num}/{contract_protokol_date}/{protocol_made_by}/{subscriber}",
+            method = RequestMethod.GET) public void downloadContract(HttpServletResponse response,
+                                 @PathVariable Long lotId,
+                                 @PathVariable String contract_year,
+                                 @PathVariable String contract_address,
+                                 @PathVariable String contract_protokol_num,
+                                 @PathVariable String contract_protokol_date,
+                                 @PathVariable String protocol_made_by,
+                                 @PathVariable String subscriber) throws Exception {
+
+        File file ;
+        file = new File(makeContract(lotId, contract_year, contract_address, contract_protokol_num, contract_protokol_date, protocol_made_by, subscriber));
+        InputStream is = new FileInputStream(file);
+
+        response.setContentType("application/octet-stream");
+        response.setHeader("Content-Disposition", "attachment; filename=\"" + file.getName() + "\"");
+
+        OutputStream os = response.getOutputStream();
+        byte[] buffer = new byte[1024];
+        int len;
+        while ((len = is.read(buffer)) != -1) {
+            os.write(buffer, 0, len);
+        }
+        os.flush();
+        is.close();
+        os.close();
+        file.delete();
+    }
+
+    @RequestMapping(value = "/downloadContract_Akt/{lotId}/{contract_year}/{contract_address}/{contract_protokol_num}/{contract_protokol_date}/{protocol_made_by}/{subscriber}",
+            method = RequestMethod.GET) public void downloadContract_Akt(HttpServletResponse response,
+                                                                     @PathVariable Long lotId,
+                                                                     @PathVariable String contract_year,
+                                                                     @PathVariable String contract_address,
+                                                                     @PathVariable String contract_protokol_num,
+                                                                     @PathVariable String contract_protokol_date,
+                                                                     @PathVariable String protocol_made_by,
+                                                                     @PathVariable String subscriber) throws Exception {
+
+        File file ;
+        file = new File(makeContract_Akt(lotId, contract_year, contract_address, contract_protokol_num, contract_protokol_date, protocol_made_by, subscriber));
+        InputStream is = new FileInputStream(file);
+
+        response.setContentType("application/octet-stream");
+        response.setHeader("Content-Disposition", "attachment; filename=\"" + file.getName() + "\"");
+
+        OutputStream os = response.getOutputStream();
+        byte[] buffer = new byte[1024];
+        int len;
+        while ((len = is.read(buffer)) != -1) {
+            os.write(buffer, 0, len);
+        }
+        os.flush();
+        is.close();
+        os.close();
+        file.delete();
+    }
+
+    @RequestMapping(value = "/downloadContract_Dodatok/{dodatok_num}/{lotId}/{contract_year}/{contract_address}/{contract_protokol_num}/{contract_protokol_date}/{protocol_made_by}/{subscriber}",
+            method = RequestMethod.GET) public void downloadContractDodatok(HttpServletResponse response,
+                                                                            @PathVariable Long dodatok_num,
+                                                                     @PathVariable Long lotId,
+                                                                     @PathVariable String contract_year,
+                                                                     @PathVariable String contract_address,
+                                                                     @PathVariable String contract_protokol_num,
+                                                                     @PathVariable String contract_protokol_date,
+                                                                     @PathVariable String protocol_made_by,
+                                                                     @PathVariable String subscriber) throws Exception {
+
+        File file ;
+        if(dodatok_num==1)
+            file = new File(makeContract_Dodatok1(lotId, contract_year, contract_address, contract_protokol_num, contract_protokol_date, protocol_made_by, subscriber));
+        else if(dodatok_num==2)
+            file = new File(makeContract_Dodatok2(lotId, contract_year, contract_address, contract_protokol_num, contract_protokol_date, protocol_made_by, subscriber));
+        else return;
         InputStream is = new FileInputStream(file);
 
         response.setContentType("application/octet-stream");
