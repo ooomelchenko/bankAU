@@ -1103,7 +1103,8 @@ public class AssetController {
                 }
             }
         }
-        for (XWPFTable tbl : docx.getTables()) {
+        List<XWPFTable> tableList = docx.getTables();
+        for (XWPFTable tbl : tableList) {
 
             for (XWPFTableRow row : tbl.getRows()) {
                 for (XWPFTableCell cell : row.getTableCells()) {
@@ -1131,6 +1132,23 @@ public class AssetController {
                 }
             }
         }
+
+        XWPFTable objTable = tableList.get(0);
+        int i =assetList.size();
+        for (Asset asset : assetList) {
+            XWPFTableRow newRow = objTable.insertNewTableRow(2);
+            newRow.createCell().setText(i + ".");
+            newRow.createCell().setText(asset.getInn());
+            newRow.createCell().setText(asset.getAsset_name());
+            newRow.createCell().setText(asset.getAsset_descr());
+            newRow.createCell().setText(asset.getRegion());
+            if(asset.getFactPrice()!=null)
+            newRow.createCell().setText(String.valueOf(asset.getFactPrice()));
+            i--;
+        }
+        objTable.setInsideVBorder( XWPFTable.XWPFBorderType.SINGLE, 2, 0, "000000");
+        objTable.setInsideHBorder( XWPFTable.XWPFBorderType.SINGLE, 2, 0, "000000");
+        objTable.removeRow(1);
 
         String fileName = "C:\\projectFiles\\Lot_Assets_Docs\\Dogovir_" + lot.getId() + ".docx";
         OutputStream fileOut = new FileOutputStream(fileName);
@@ -2540,9 +2558,9 @@ public class AssetController {
         lot.setCustomerName(customer);
 
         if (customerInn.equals(""))
-            lot.setCustomerInn(0);
+            lot.setCustomerInn(0L);
         else
-        lot.setCustomerInn(Integer.parseInt(customerInn));
+        lot.setCustomerInn(Long.parseLong(customerInn));
 
         lot.setCountOfParticipants(countOfParticipants);
         lot.setBidScenario(bidScenario);

@@ -36,7 +36,7 @@ public class Lot implements Serializable, Comparable<Lot> {
     @Column(name = "CUSTOMER")
     private String customerName;
     @Column(name = "CUSTOMER_INN")
-    private int customerInn;
+    private Long customerInn;
     @Column(name = "RESULT_Status")
     private String status;
     @Column(name = "ACT_SIGNED_DATE")
@@ -242,10 +242,10 @@ public class Lot implements Serializable, Comparable<Lot> {
         this.decisionNumber = decisionNumber;
     }
 
-    public int getCustomerInn() {
+    public long getCustomerInn() {
         return customerInn;
     }
-    public void setCustomerInn(int customerInn) {
+    public void setCustomerInn(long customerInn) {
         this.customerInn = customerInn;
     }
 
@@ -297,7 +297,7 @@ public class Lot implements Serializable, Comparable<Lot> {
         this.fondDecision = null;
         this.decisionNumber = null;
         this.bid = null;
-        this.customerInn = 0;
+        this.customerInn = 0L;
         this.nbuDecision = null;
         this.nbuDecisionDate = null;
         this.nbuDecisionNumber = null;
