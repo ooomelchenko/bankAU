@@ -85,4 +85,10 @@ public class BidDaoImpl implements BidDao {
         query.setParameter("maxDate", maxDate);
         return query.list();
     }
+    @Override
+    public List getBidsByMinimumDate(Date minDate){
+        Query query = factory.getCurrentSession().createQuery("FROM nb.domain.Bid bid WHERE bid.bidDate>=:minDate order by bid.bidDate DESC");
+        query.setParameter("minDate", minDate);
+        return query.list();
+    }
 }

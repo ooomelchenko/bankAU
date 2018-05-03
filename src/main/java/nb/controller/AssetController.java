@@ -90,6 +90,40 @@ public class AssetController {
             text = text.replace("sub", subscr);
         return text;
     }
+    private String replaceRunTextAssets(String text, int count , String kd, String year, String fio, String address, String inn,
+                                        String prn, String prd, String pmb, String fpr, String subscr,
+                                        String pass_seria,
+                                        String pass_num,
+                                        String pass_vidano,
+                                        String pass_vidano_date,
+                                        String operates_basis,
+                                        String account_num,
+                                        String account_bank,
+                                        String sign_deadline){
+        text = text.replace("count", String.valueOf(count));
+        text = text.replace("kd", kd);
+        text = text.replace("year", year);
+        text = text.replace("fio", fio);
+        text = text.replace("address", address);
+        text = text.replace("inn", inn);
+        text = text.replace("prn", prn);
+        text = text.replace("prd", prd);
+        text = text.replace("pmb", pmb);
+        text = text.replace("fpr", fpr);
+        text = text.replace("ps", pass_seria);
+        text = text.replace("pn", pass_num);
+        text = text.replace("pv", pass_vidano);
+        text = text.replace("pdat", pass_vidano_date);
+        text = text.replace("ob", operates_basis);
+        text = text.replace("an", account_num);
+        text = text.replace("bank", account_bank);
+        text = text.replace("sdl", sign_deadline);
+        if(subscr.equals("null"))
+            text = text.replace("sub", fio);
+        else
+            text = text.replace("sub", subscr);
+        return text;
+    }
 
     private String makeDodatok(List<Asset> assetList, List<Credit> creditList, String startDate, String endDate) throws IOException {
         POIFSFileSystem fs = new POIFSFileSystem(new FileInputStream("C:\\projectFiles\\Table prodaj.xls"));
@@ -1074,7 +1108,15 @@ public class AssetController {
         return fileName;
     }
 
-    private String assetContract(Lot lot, String contract_year, String contract_address, String contract_protokol_num, String contract_protokol_date, String protocol_made_by, String subscriber) throws IOException{
+    private String assetContract(Lot lot, String contract_year, String contract_address, String contract_protokol_num, String contract_protokol_date, String protocol_made_by, String subscriber,
+                                 String pass_seria,
+                                 String pass_num,
+                                 String pass_vidano,
+                                 String pass_vidano_date,
+                                 String operates_basis,
+                                 String account_num,
+                                 String account_bank,
+                                 String sign_deadline) throws IOException{
 
         List<Asset> assetList = lotService.getAssetsByLot(lot);
 
@@ -1089,16 +1131,19 @@ public class AssetController {
                 for (XWPFRun r : runs) {
                     String text = r.getText(0);
                     if (text != null) {
-                        String tempText = "";
-                        if (!assetList.isEmpty() && text.contains("knd")){
-                            for(Asset asset: assetList){
 
-                            }
-                        }
-                        r.setText(replaceRunText(text, lot.getLotNum(), contract_year, String.valueOf(lot.getCustomerName()),
+                        r.setText(replaceRunTextAssets(text, assetList.size(), lot.getLotNum(), contract_year, String.valueOf(lot.getCustomerName()),
                                 String.valueOf(contract_address),  String.valueOf(lot.getCustomerInn()),
                                 String.valueOf(contract_protokol_num), String.valueOf(contract_protokol_date),
-                                String.valueOf(protocol_made_by), String.valueOf(lot.getFactPrice()), tempText, subscriber), 0);
+                                String.valueOf(protocol_made_by), String.valueOf(lot.getFactPrice()), subscriber,
+                                pass_seria,
+                                 pass_num,
+                                 pass_vidano,
+                                 pass_vidano_date,
+                                 operates_basis,
+                                 account_num,
+                                 account_bank,
+                                 sign_deadline), 0);
                     }
                 }
             }
@@ -1115,16 +1160,19 @@ public class AssetController {
                             for (XWPFRun r : runs) {
                                 String text = r.getText(0);
                                 if (text != null) {
-                                    String tempText = "";
-                                    if (!assetList.isEmpty() && text.contains("knd")){
-                                        for(Asset asset: assetList){
 
-                                        }
-                                    }
-                                    r.setText(replaceRunText(text, lot.getLotNum(), contract_year, String.valueOf(lot.getCustomerName()),
+                                    r.setText(replaceRunTextAssets(text, assetList.size(), lot.getLotNum(), contract_year, String.valueOf(lot.getCustomerName()),
                                             String.valueOf(contract_address),  String.valueOf(lot.getCustomerInn()),
                                             String.valueOf(contract_protokol_num), String.valueOf(contract_protokol_date),
-                                            String.valueOf(protocol_made_by), String.valueOf(lot.getFactPrice()), tempText, subscriber), 0);
+                                            String.valueOf(protocol_made_by), String.valueOf(lot.getFactPrice()), subscriber,
+                                            pass_seria,
+                                            pass_num,
+                                            pass_vidano,
+                                            pass_vidano_date,
+                                            operates_basis,
+                                            account_num,
+                                            account_bank,
+                                            sign_deadline), 0);
                                 }
                             }
                         }
@@ -1249,7 +1297,7 @@ public class AssetController {
         return fileName;
     }
 
-    private String assetContract_Akt(Lot lot, String contract_year, String contract_address, String contract_protokol_num, String contract_protokol_date, String protocol_made_by, String subscriber) throws IOException{
+    private String assetContract_Akt(Lot lot, String contract_year, String contract_address, String contract_protokol_num, String contract_protokol_date, String protocol_made_by, String subscriber, String pass_seria, String pass_num, String pass_vidano, String pass_vidano_date, String operates_basis, String account_num, String account_bank, String sign_deadline) throws IOException{
 
         List<Asset> assetList = lotService.getAssetsByLot(lot);
 
@@ -1264,17 +1312,18 @@ public class AssetController {
                 for (XWPFRun r : runs) {
                     String text = r.getText(0);
                     if (text != null) {
-                        String tempText = "";
-                        if (!assetList.isEmpty() && text.contains("knd")){
-                            for(Asset asset: assetList){
-
-                            }
-                        }
-                        r.setText(replaceRunText(text, lot.getLotNum(), contract_year, String.valueOf(lot.getCustomerName()),
+                        r.setText(replaceRunTextAssets(text, assetList.size(), lot.getLotNum(), contract_year, String.valueOf(lot.getCustomerName()),
                                 String.valueOf(contract_address),  String.valueOf(lot.getCustomerInn()),
                                 String.valueOf(contract_protokol_num), String.valueOf(contract_protokol_date),
-                                String.valueOf(protocol_made_by), String.valueOf(lot.getFactPrice()), tempText, subscriber), 0);
-                    }
+                                String.valueOf(protocol_made_by), String.valueOf(lot.getFactPrice()), subscriber,
+                                pass_seria,
+                                pass_num,
+                                pass_vidano,
+                                pass_vidano_date,
+                                operates_basis,
+                                account_num,
+                                account_bank,
+                                sign_deadline), 0);}
                 }
             }
         }
@@ -1291,17 +1340,18 @@ public class AssetController {
                             for (XWPFRun r : runs) {
                                 String text = r.getText(0);
                                 if (text != null) {
-                                    String tempText = "";
-                                    if (!assetList.isEmpty() && text.contains("knd")){
-                                        for(Asset asset: assetList){
-
-                                        }
-                                    }
-                                    r.setText(replaceRunText(text, lot.getLotNum(), contract_year, String.valueOf(lot.getCustomerName()),
+                                    r.setText(replaceRunTextAssets(text, assetList.size(), lot.getLotNum(), contract_year, String.valueOf(lot.getCustomerName()),
                                             String.valueOf(contract_address),  String.valueOf(lot.getCustomerInn()),
                                             String.valueOf(contract_protokol_num), String.valueOf(contract_protokol_date),
-                                            String.valueOf(protocol_made_by), String.valueOf(lot.getFactPrice()), tempText, subscriber), 0);
-                                }
+                                            String.valueOf(protocol_made_by), String.valueOf(lot.getFactPrice()), subscriber,
+                                            pass_seria,
+                                            pass_num,
+                                            pass_vidano,
+                                            pass_vidano_date,
+                                            operates_basis,
+                                            account_num,
+                                            account_bank,
+                                            sign_deadline), 0);}
                             }
                         }
                     }
@@ -1320,7 +1370,7 @@ public class AssetController {
             newRow.getCell(2).setText(asset.getAsset_name());
             newRow.getCell(3).setText(asset.getAsset_descr());
             newRow.getCell(4).setText(asset.getRegion());
-            newRow.getCell(3).setText(String.valueOf(asset.getFactPrice()));
+            newRow.getCell(5).setText(String.valueOf(asset.getFactPrice()));
         }
         objTable.setInsideVBorder( XWPFTable.XWPFBorderType.SINGLE, 2, 0, "000000");
         objTable.setInsideHBorder( XWPFTable.XWPFBorderType.SINGLE, 2, 0, "000000");
@@ -1491,18 +1541,37 @@ public class AssetController {
 
     private String makeContract(Long lotId, String contract_year, String contract_address, String contract_protokol_num, String contract_protokol_date, String protocol_made_by, String subscriber) throws Exception {
         Lot lot = lotService.getLot(lotId);
-        if(lot.getLotType()==0)
-            return creditContract(lot, contract_year, contract_address, contract_protokol_num, contract_protokol_date, protocol_made_by, subscriber);
-        else
-            return assetContract(lot, contract_year, contract_address, contract_protokol_num, contract_protokol_date, protocol_made_by, subscriber);// assetContract();
+        return creditContract(lot, contract_year, contract_address, contract_protokol_num, contract_protokol_date, protocol_made_by, subscriber);
+    }
+    private String makeAssetContract(Long lotId, String contract_year, String contract_address, String contract_protokol_num, String contract_protokol_date, String protocol_made_by, String subscriber,
+                                     String pass_seria,
+                                     String pass_num,
+                                     String pass_vidano,
+                                     String pass_vidano_date,
+                                     String operates_basis,
+                                     String account_num,
+                                     String account_bank,
+                                     String sign_deadline) throws Exception {
+        Lot lot = lotService.getLot(lotId);
+        return assetContract(lot, contract_year, contract_address, contract_protokol_num, contract_protokol_date, protocol_made_by, subscriber,
+                     pass_seria,
+                     pass_num,
+                     pass_vidano,
+                     pass_vidano_date,
+                     operates_basis,
+                     account_num,
+                     account_bank,
+                     sign_deadline);// assetContract();
     }
 
     private String makeContract_Akt(Long lotId, String contract_year, String contract_address, String contract_protokol_num, String contract_protokol_date, String protocol_made_by, String subscriber) throws Exception {
         Lot lot = lotService.getLot(lotId);
-        if(lot.getLotType()==0)
-            return creditContract_Akt(lot, contract_year, contract_address, contract_protokol_num, contract_protokol_date, protocol_made_by, subscriber);
-        else
-            return assetContract_Akt(lot, contract_year, contract_address, contract_protokol_num, contract_protokol_date, protocol_made_by, subscriber);// assetContract();
+        return creditContract_Akt(lot, contract_year, contract_address, contract_protokol_num, contract_protokol_date, protocol_made_by, subscriber);
+    }
+    private String makeAssetContract_Akt(Long lotId, String contract_year, String contract_address, String contract_protokol_num, String contract_protokol_date, String protocol_made_by, String subscriber,
+                                         String pass_seria, String pass_num, String pass_vidano, String pass_vidano_date, String operates_basis, String account_num, String account_bank, String sign_deadline) throws Exception {
+        Lot lot = lotService.getLot(lotId);
+        return assetContract_Akt(lot, contract_year, contract_address, contract_protokol_num, contract_protokol_date, protocol_made_by, subscriber, pass_seria, pass_num, pass_vidano, pass_vidano_date, operates_basis, account_num, account_bank, sign_deadline);
     }
 
     private String makeContract_Dodatok1(Long lotId, String contract_year, String contract_address, String contract_protokol_num, String contract_protokol_date, String protocol_made_by, String subscriber) throws Exception {
@@ -2298,8 +2367,8 @@ public class AssetController {
         file.delete();
     }
 
-    @RequestMapping(value = "/downloadContract/{lotId}/{contract_year}/{contract_address}/{contract_protokol_num}/{contract_protokol_date}/{protocol_made_by}/{subscriber}",
-            method = RequestMethod.GET) public void downloadContract(HttpServletResponse response,
+    @RequestMapping(value = "/downloadCreditContract/{lotId}/{contract_year}/{contract_address}/{contract_protokol_num}/{contract_protokol_date}/{protocol_made_by}/{subscriber}",
+            method = RequestMethod.GET) public void downloadCreditContract(HttpServletResponse response,
                                  @PathVariable Long lotId,
                                  @PathVariable String contract_year,
                                  @PathVariable String contract_address,
@@ -2310,6 +2379,51 @@ public class AssetController {
 
         File file ;
         file = new File(makeContract(lotId, contract_year, contract_address, contract_protokol_num, contract_protokol_date, protocol_made_by, subscriber));
+        InputStream is = new FileInputStream(file);
+
+        response.setContentType("application/octet-stream");
+        response.setHeader("Content-Disposition", "attachment; filename=\"" + file.getName() + "\"");
+
+        OutputStream os = response.getOutputStream();
+        byte[] buffer = new byte[1024];
+        int len;
+        while ((len = is.read(buffer)) != -1) {
+            os.write(buffer, 0, len);
+        }
+        os.flush();
+        is.close();
+        os.close();
+        file.delete();
+    }
+
+    @RequestMapping(value = "/downloadAssetContract/{lotId}/{contract_year}/{contract_address}/{contract_protokol_num}/{contract_protokol_date}/{protocol_made_by}/{subscriber}/{pass_seria}/{pass_num}/{pass_vidano}/{pass_vidano_date}/{operates_basis}/{account_num}/{account_bank}/{sign_deadline}",
+            method = RequestMethod.GET) public void downloadAssetContract(HttpServletResponse response,
+                                                                     @PathVariable Long lotId,
+                                                                     @PathVariable String contract_year,
+                                                                     @PathVariable String contract_address,
+                                                                     @PathVariable String contract_protokol_num,
+                                                                     @PathVariable String contract_protokol_date,
+                                                                     @PathVariable String protocol_made_by,
+                                                                     @PathVariable String subscriber,
+                                                                          @PathVariable String pass_seria,
+                                                                          @PathVariable String pass_num,
+                                                                          @PathVariable String pass_vidano,
+                                                                          @PathVariable String pass_vidano_date,
+                                                                          @PathVariable String operates_basis,
+                                                                          @PathVariable String account_num,
+                                                                          @PathVariable String account_bank,
+                                                                          @PathVariable String sign_deadline) throws Exception {
+
+        File file ;
+        file = new File(makeAssetContract(lotId, contract_year, contract_address, contract_protokol_num, contract_protokol_date, protocol_made_by, subscriber,
+                pass_seria,
+                pass_num,
+                pass_vidano,
+                pass_vidano_date,
+                operates_basis,
+                account_num,
+                account_bank,
+                sign_deadline));
         InputStream is = new FileInputStream(file);
 
         response.setContentType("application/octet-stream");
@@ -2339,6 +2453,51 @@ public class AssetController {
 
         File file ;
         file = new File(makeContract_Akt(lotId, contract_year, contract_address, contract_protokol_num, contract_protokol_date, protocol_made_by, subscriber));
+        InputStream is = new FileInputStream(file);
+
+        response.setContentType("application/octet-stream");
+        response.setHeader("Content-Disposition", "attachment; filename=\"" + file.getName() + "\"");
+
+        OutputStream os = response.getOutputStream();
+        byte[] buffer = new byte[1024];
+        int len;
+        while ((len = is.read(buffer)) != -1) {
+            os.write(buffer, 0, len);
+        }
+        os.flush();
+        is.close();
+        os.close();
+        file.delete();
+    }
+
+    @RequestMapping(value = "/downloadAssetContract_Akt/{lotId}/{contract_year}/{contract_address}/{contract_protokol_num}/{contract_protokol_date}/{protocol_made_by}/{subscriber}/{pass_seria}/{pass_num}/{pass_vidano}/{pass_vidano_date}/{operates_basis}/{account_num}/{account_bank}/{sign_deadline}",
+            method = RequestMethod.GET) public void downloadAssetContract_Akt(HttpServletResponse response,
+                                                                         @PathVariable Long lotId,
+                                                                         @PathVariable String contract_year,
+                                                                         @PathVariable String contract_address,
+                                                                         @PathVariable String contract_protokol_num,
+                                                                         @PathVariable String contract_protokol_date,
+                                                                         @PathVariable String protocol_made_by,
+                                                                         @PathVariable String subscriber,
+                                                                         @PathVariable String pass_seria,
+                                                                         @PathVariable String pass_num,
+                                                                         @PathVariable String pass_vidano,
+                                                                         @PathVariable String pass_vidano_date,
+                                                                         @PathVariable String operates_basis,
+                                                                         @PathVariable String account_num,
+                                                                         @PathVariable String account_bank,
+                                                                         @PathVariable String sign_deadline) throws Exception {
+
+        File file ;
+        file = new File(makeAssetContract_Akt(lotId, contract_year, contract_address, contract_protokol_num, contract_protokol_date, protocol_made_by, subscriber,
+                pass_seria,
+                pass_num,
+                pass_vidano,
+                pass_vidano_date,
+                operates_basis,
+                account_num,
+                account_bank,
+                sign_deadline));
         InputStream is = new FileInputStream(file);
 
         response.setContentType("application/octet-stream");

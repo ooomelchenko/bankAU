@@ -30,4 +30,7 @@ public interface BidService {
 
     @Transactional(readOnly = true)
     List getBidsByDates(Date minDate, Date maxDate);
+
+    @Transactional(readOnly = true)
+    List getBidsByMinimumDate(Date minDate);
 }

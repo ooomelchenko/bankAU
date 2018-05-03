@@ -8,6 +8,7 @@
 <head>
     <%
         String saleStatus = (String) request.getAttribute("saleStatus");
+        String lotsType = (String) request.getAttribute("lotsType");
 
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
         List<Lot> lotList = (List<Lot>) request.getAttribute("lotList");
@@ -245,11 +246,11 @@
 
 <div id="div_lots_filter">
     Всі лоти <input type="radio" name="lot_type"
-                    onclick="location.href ='lotMenu/all'" <%if (saleStatus.equals("all")) out.print("checked=\"checked\"");%> >
+                    onclick="location.href ='lotMenu/<%out.print(lotsType+"/");%>all'" <%if (saleStatus.equals("all")) out.print("checked=\"checked\"");%> >
     Непродані лоти <input type="radio" name="lot_type"
-                          onclick="location.href ='lotMenu/notSolded'" <%if (saleStatus.equals("notSolded")) out.print("checked=\"checked\"");%> >
+                          onclick="location.href ='lotMenu/<%out.print(lotsType+"/");%>notSolded'" <%if (saleStatus.equals("notSolded")) out.print("checked=\"checked\"");%> >
     Продані лоти <input type="radio" name="lot_type"
-                        onclick="location.href ='lotMenu/solded'" <%if (saleStatus.equals("solded")) out.print("checked=\"checked\"");%> >
+                        onclick="location.href ='lotMenu/<%out.print(lotsType+"/");%>solded'" <%if (saleStatus.equals("solded")) out.print("checked=\"checked\"");%> >
 </div>
 
 <div id="div_lots" class="view">

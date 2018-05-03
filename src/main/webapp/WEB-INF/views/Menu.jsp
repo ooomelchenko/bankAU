@@ -5,6 +5,23 @@
     <script src="resources/js/jquery-3.2.1.js"></script>
     <script>
         $(document).ready(function () {
+            $('#button_lots_direction').click(function(){
+                if($('#radio_asset_lot_type').prop('checked')){
+                    location.replace("lotMenu/assets/notSolded");
+                }
+                else if($('#radio_credit_lot_type').prop('checked')){
+                    location.replace("lotMenu/credits/notSolded");
+                }
+            });
+            $('#button_bids_direction').click(function(){
+                if($('#radio_bids_this_year').prop('checked')){
+                    location.replace("bidMenu/2018");
+                }
+                else if($('#radio_bids_all').prop('checked')){
+                    location.replace("bidMenu");
+                }
+            });
+
             $('#search_img').click(function () {
                 window.open("assetsSearch")
             });
@@ -21,14 +38,6 @@
     </script>
     <link href="resources/css/general_style.css" rel="stylesheet" type="text/css">
     <style type="text/css">
-        header img{
-            width: 40px;
-            height: 40px;
-            opacity: 0.5;
-        }
-        header img:hover{
-            opacity: 1;
-        }
         #div_mainMenu button{
             width: 200px;
             height: 60px;
@@ -95,6 +104,12 @@
             background-color: #252F48;
             color: whitesmoke;
         }
+        #div_direct_menu{
+            display: inline-table;
+        }
+        #div_direct_menu div{
+            display: table-cell;
+        }
     </style>
 </head>
 
@@ -115,12 +130,22 @@
 
 <div id="div_mainMenu" align="center" style="width: 100%; position: fixed">
     <div id="div_direct_menu">
-        <%--<img class="menuImg" src="images/menu/lot.jpg" onclick="location.href = 'lotMenu'" title="ЛОТИ">
-        <img class="menuImg" src="images/menu/bid.jpg" onclick="location.href = 'bidMenu'" title="ТОРГИ">
-        <img class="menuImg" src="images/menu/ex.jpg" onclick="location.href = 'exMenu'" title="БІРЖІ">--%>
-        <button id="button_lots_direction" onclick="location.href = 'lotMenu/notSolded'">Лоти</button>
-        <button id="button_bids_direction" onclick="location.href = 'bidMenu'">Аукціони</button>
-        <button id="button_exchanges_direction" onclick="location.href = 'exMenu'">Біржі</button>
+        <div>
+            <button id="button_lots_direction">Лоти</button>
+            <br/>
+            активи <input type="radio" name="radio_lot_type" id="radio_asset_lot_type" checked="checked">
+                   <input type="radio" name="radio_lot_type" id="radio_credit_lot_type"> кредити
+        </div>
+        <div>
+            <button id="button_bids_direction" onclick="location.href = 'bidMenu'">Аукціони</button>
+            <br/>
+            з 2018 року <input type="radio" name="radio_bid_period" id="radio_bids_this_year" checked="checked">
+                        <input type="radio" name="radio_bid_period" id="radio_bids_all"> всі
+        </div>
+        <div>
+            <button id="button_exchanges_direction" onclick="location.href = 'exMenu'">Біржі</button>
+        </div>
+
     </div>
     <div id="div_unit_lists">
         <%--<img id="assButt" class="menuImg" src="images/menu/assets.jpg" title="Відкрити список матеріальних активів">

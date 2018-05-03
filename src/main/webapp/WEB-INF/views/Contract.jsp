@@ -18,6 +18,15 @@
             var input_protocol_made_by = $('#input_protocol_made_by');
             var input_subscriber = $('#input_subscriber');
 
+            var input_pass_seria = $('#input_pass_seria');
+            var input_pass_num = $('#input_pass_num');
+            var input_pass_vidano = $('#input_pass_vidano');
+            var input_pass_vidano_date = $('#input_pass_vidano_date');
+            var input_operates_basis = $('#input_operates_basis');
+            var input_account_num = $('#input_account_num');
+            var input_account_bank = $('#input_account_bank');
+            var input_sign_deadline = $('#input_sign_deadline');
+
             function checkFields(){
                 if(input_subscriber.val() === "")
                     input_subscriber.val("null");
@@ -25,20 +34,37 @@
 
             $('#icon_contract_download').click(function(){
                 checkFields();
-                window.open("downloadContract/"+lotId+"/"+input_contract_year.val()+"/"+input_contract_address.val()+"/"+input_contract_protokol_num.val()+"/"+input_contract_protokol_date.val()+"/"+input_protocol_made_by.val()+"/"+input_subscriber.val())
+                <%if(lot.getLotType()==0){%>
+                window.open("downloadCreditContract/"+lotId+"/"+input_contract_year.val()+"/"+input_contract_address.val()+"/"+input_contract_protokol_num.val()+"/"+input_contract_protokol_date.val()+"/"+input_protocol_made_by.val()+"/"+input_subscriber.val());
+                <%}%>
+                <%if(lot.getLotType()==1){%>
+                window.open("downloadAssetContract/"+lotId+"/"+input_contract_year.val()+"/"+input_contract_address.val()
+                    +"/"+input_contract_protokol_num.val()+"/"+input_contract_protokol_date.val()+"/"+input_protocol_made_by.val()
+                    +"/"+input_subscriber.val()+"/"+input_pass_seria.val()+"/"+input_pass_num.val()+"/"+input_pass_vidano.val()+"/"+input_pass_vidano_date.val()
+                    +"/" +input_operates_basis.val()+"/" +input_account_num.val()+"/" +input_account_bank.val()+"/" +input_sign_deadline.val());
+                <%}%>
+
             });
             $('#icon_contract_akt_download').click(function(){
                 checkFields();
-                window.open("downloadContract_Akt/"+lotId+"/"+input_contract_year.val()+"/"+input_contract_address.val()+"/"+input_contract_protokol_num.val()+"/"+input_contract_protokol_date.val()+"/"+input_protocol_made_by.val()+"/"+input_subscriber.val())
+                <%if(lot.getLotType()==0){%>
+                window.open("downloadContract_Akt/"+lotId+"/"+input_contract_year.val()+"/"+input_contract_address.val()+"/"+input_contract_protokol_num.val()+"/"+input_contract_protokol_date.val()+"/"+input_protocol_made_by.val()+"/"+input_subscriber.val());
+                <%}%>
+                <%if(lot.getLotType()==1){%>
+                window.open("downloadAssetContract_Akt/"+lotId+"/"+input_contract_year.val()+"/"+input_contract_address.val()
+                    +"/"+input_contract_protokol_num.val()+"/"+input_contract_protokol_date.val()+"/"+input_protocol_made_by.val()
+                    +"/"+input_subscriber.val()+"/"+input_pass_seria.val()+"/"+input_pass_num.val()+"/"+input_pass_vidano.val()+"/"+input_pass_vidano_date.val()
+                    +"/" +input_operates_basis.val()+"/" +input_account_num.val()+"/" +input_account_bank.val()+"/" +input_sign_deadline.val());
+                <%}%>
             });
             $('#icon_contract_d1').click(function(){
                 checkFields();
-                window.open("downloadContract_Dodatok/1/"+lotId+"/"+input_contract_year.val()+"/"+input_contract_address.val()+"/"+input_contract_protokol_num.val()+"/"+input_contract_protokol_date.val()+"/"+input_protocol_made_by.val()+"/"+input_subscriber.val())
+                window.open("downloadContract_Dodatok/1/"+lotId+"/"+input_contract_year.val()+"/"+input_contract_address.val()+"/"+input_contract_protokol_num.val()+"/"+input_contract_protokol_date.val()+"/"+input_protocol_made_by.val()+"/"+input_subscriber.val());
 
             });
             $('#icon_contract_d2').click(function(){
                 checkFields();
-                window.open("downloadContract_Dodatok/2/"+lotId+"/"+input_contract_year.val()+"/"+input_contract_address.val()+"/"+input_contract_protokol_num.val()+"/"+input_contract_protokol_date.val()+"/"+input_protocol_made_by.val()+"/"+input_subscriber.val())
+                window.open("downloadContract_Dodatok/2/"+lotId+"/"+input_contract_year.val()+"/"+input_contract_address.val()+"/"+input_contract_protokol_num.val()+"/"+input_contract_protokol_date.val()+"/"+input_protocol_made_by.val()+"/"+input_subscriber.val());
 
             })
         })
@@ -86,6 +112,24 @@
     <input id="input_protocol_made_by" type="text" placeholder="Ким складено протокол">
     <br>
     <input id="input_subscriber" type="text" placeholder="ФІО підписанта">
+    <%if(lot.getLotType() == 1){%>
+    <br>
+    <input id="input_pass_seria" type="text" placeholder="Серія паспорту">
+    <br>
+    <input id="input_pass_num" type="text" placeholder="Номер паспорту">
+    <br>
+    <input id="input_pass_vidano" type="text" placeholder="Ким видано паспорт">
+    <br>
+    <input id="input_pass_vidano_date" type="text" placeholder="Дата видачі паспорту">
+    <br>
+    <input id="input_operates_basis" type="text" placeholder="Який діє на підставі">
+    <br>
+    <input id="input_account_num" type="number" placeholder="Номер рахунку клієнта">
+    <br>
+    <input id="input_account_bank" type="text" placeholder="Банк кієнта">
+    <br>
+    <input id="input_sign_deadline" type="text" placeholder="Кінцевий термін підписання">
+    <%}%>
 </div>
 
 <footer>

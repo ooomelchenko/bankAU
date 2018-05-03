@@ -55,16 +55,7 @@
 
                 $('.lotId').dblclick(function () {
                     var idL = $(this).text();
-                    if (idL != "") {
-                        $.ajax({
-                            url: "setRlot",
-                            type: "GET",
-                            data: {lotID: idL},
-                            success: function () {
-                                window.open("lotRedactor")
-                            }
-                        })
-                    }
+                    window.open("lotRedactor/"+idL)
                 });
             }
 

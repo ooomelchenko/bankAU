@@ -8,6 +8,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 @Controller
@@ -79,16 +81,14 @@ public class DirectController {
         return "LogIN";
     }
 
-    @RequestMapping(value = "/lotMenu/{saleStatus}", method = RequestMethod.GET)
+    @RequestMapping(value = "/lotMenu/all/{saleStatus}", method = RequestMethod.GET)
     private String lotMenu(HttpSession session, Model model, @PathVariable String saleStatus) {
         if (!isAuth(session)) {
             return "LogIN";
         } else {
-
             switch (saleStatus) {
                 case "notSolded":
                     model.addAttribute("lotList", lotService.getNotSoldedLots());
-
                     break;
                 case "solded":
                     model.addAttribute("lotList", lotService.getSoldedLots());
@@ -98,6 +98,49 @@ public class DirectController {
                     break;
             }
             model.addAttribute(saleStatus);
+            model.addAttribute("lotsType", "all");
+            return "LotMenu";
+        }
+    }
+    @RequestMapping(value = "/lotMenu/credits/{saleStatus}", method = RequestMethod.GET)
+    private String lotCreditsMenu(HttpSession session, Model model, @PathVariable String saleStatus) {
+        if (!isAuth(session)) {
+            return "LogIN";
+        } else {
+            switch (saleStatus) {
+                case "notSolded":
+                    model.addAttribute("lotList", lotService.getNotSoldedLots(0));
+                    break;
+                case "solded":
+                    model.addAttribute("lotList", lotService.getSoldedLots(0));
+                    break;
+                default:
+                    model.addAttribute("lotList", lotService.getLots(0));
+                    break;
+            }
+            model.addAttribute(saleStatus);
+            model.addAttribute("lotsType", "credits");
+            return "LotMenu";
+        }
+    }
+    @RequestMapping(value = "/lotMenu/assets/{saleStatus}", method = RequestMethod.GET)
+    private String lotAssetsMenu(HttpSession session, Model model, @PathVariable String saleStatus) {
+        if (!isAuth(session)) {
+            return "LogIN";
+        } else {
+            switch (saleStatus) {
+                case "notSolded":
+                    model.addAttribute("lotList", lotService.getNotSoldedLots(1));
+                    break;
+                case "solded":
+                    model.addAttribute("lotList", lotService.getSoldedLots(1));
+                    break;
+                default:
+                    model.addAttribute("lotList", lotService.getLots(1));
+                    break;
+            }
+            model.addAttribute(saleStatus);
+            model.addAttribute("lotsType", "assets");
             return "LotMenu";
         }
     }
@@ -120,6 +163,24 @@ public class DirectController {
             model.addAttribute("bidList", bidService.getAllBids());
             model.addAttribute("exchangeList", exchangeService.getAllExchanges());
            /* model.addAttribute("bidStatusList", bidStatusList);*/
+            return "BidMenu";
+        }
+    }
+    @RequestMapping(value = "/bidMenu/2018", method = RequestMethod.GET)
+    private String bidMenuByPeriod(HttpSession session, Model model) {
+        if (!isAuth(session)) {
+            return "LogIN";
+        } else {
+            Date date;
+            try {
+                date = new SimpleDateFormat( "dd.MM.yyyy" ).parse( "01.01.2018" );
+                model.addAttribute("bidList", bidService.getBidsByMinimumDate(date));
+            }
+            catch (ParseException e) {
+                model.addAttribute("bidList", bidService.getAllBids());
+            }
+            model.addAttribute("exchangeList", exchangeService.getAllExchanges());
+            /* model.addAttribute("bidStatusList", bidStatusList);*/
             return "BidMenu";
         }
     }

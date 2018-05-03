@@ -22,4 +22,6 @@ public interface BidDao {
     List getBidsByExchange(Exchange exchange);
 
     List getBidsByDates(Date minDate, Date maxDate);
+
+    List getBidsByMinimumDate(Date minDate);
 }

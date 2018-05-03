@@ -15,9 +15,15 @@ public interface LotDao {
     boolean delete(Lot lot);
     List findAll();
 
+    List<Lot> findAll(int lotType);
+
     List<Lot> findSolded();
 
+    List<Lot> findSolded(int type);
+
     List<Lot> findNotSolded();
+
+    List<Lot> findNotSolded(int lotType);
 
     List<Lot> findByLotType(int type);
 

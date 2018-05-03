@@ -96,4 +96,9 @@ public class BidServiceImpl implements BidService {
     public List getBidsByDates(Date minDate, Date maxDate){
         return bidDao.getBidsByDates(minDate, maxDate);
     }
+    @Transactional(readOnly = true)
+    @Override
+    public List getBidsByMinimumDate(Date minDate){
+        return bidDao.getBidsByMinimumDate(minDate);
+    }
 }
