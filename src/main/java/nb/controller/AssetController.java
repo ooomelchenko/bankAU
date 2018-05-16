@@ -1,5 +1,6 @@
 package nb.controller;
 
+import nb.additional.SignerBank;
 import nb.domain.*;
 import nb.queryDomain.AcceptPriceHistory;
 import nb.queryDomain.BidDetails;
@@ -35,6 +36,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.*;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -90,16 +92,23 @@ public class AssetController {
             text = text.replace("sub", subscr);
         return text;
     }
-    private String replaceRunTextAssets(String text, int count , String kd, String year, String fio, String address, String inn,
-                                        String prn, String prd, String pmb, String fpr, String subscr,
-                                        String pass_seria,
-                                        String pass_num,
-                                        String pass_vidano,
-                                        String pass_vidano_date,
-                                        String operates_basis,
-                                        String account_num,
-                                        String account_bank,
-                                        String sign_deadline){
+    private String replaceRunTextAssets(String text, String bidDAte, int count , String kd, String year, String fio, String address, String inn,
+                                        String prn, String prd, String pmb, String fpr, String subscr, String pass_seria, String pass_num, String pass_vidano, String pass_vidano_date, String operates_basis, String account_bank,
+                                        String bid_enter,
+                                        String bid_client,
+                                        String signer_bank,
+                                        String signer_bank_text) {
+
+        String factPrice_pdv;
+        try {
+            factPrice_pdv = String.valueOf(BigDecimal.valueOf(Double.parseDouble(fpr)/6).setScale(2, RoundingMode.UP));
+        }
+        catch (Exception e){
+            factPrice_pdv = "";
+        }
+
+        text = text.replace("audat", bidDAte);
+
         text = text.replace("count", String.valueOf(count));
         text = text.replace("kd", kd);
         text = text.replace("year", year);
@@ -110,14 +119,19 @@ public class AssetController {
         text = text.replace("prd", prd);
         text = text.replace("pmb", pmb);
         text = text.replace("fpr", fpr);
+        text = text.replace("pdv", factPrice_pdv);
         text = text.replace("ps", pass_seria);
         text = text.replace("pn", pass_num);
         text = text.replace("pv", pass_vidano);
         text = text.replace("pdat", pass_vidano_date);
         text = text.replace("ob", operates_basis);
-        text = text.replace("an", account_num);
         text = text.replace("bank", account_bank);
-        text = text.replace("sdl", sign_deadline);
+
+        text = text.replace("bide", bid_enter);
+        text = text.replace("bidc", bid_client);
+        text = text.replace("sbf", signer_bank);
+        text = text.replace("sbt", signer_bank_text);
+
         if(subscr.equals("null"))
             text = text.replace("sub", fio);
         else
@@ -1109,16 +1123,18 @@ public class AssetController {
     }
 
     private String assetContract(Lot lot, String contract_year, String contract_address, String contract_protokol_num, String contract_protokol_date, String protocol_made_by, String subscriber,
-                                 String pass_seria,
-                                 String pass_num,
-                                 String pass_vidano,
-                                 String pass_vidano_date,
-                                 String operates_basis,
-                                 String account_num,
-                                 String account_bank,
-                                 String sign_deadline) throws IOException{
+                                 String pass_seria, String pass_num, String pass_vidano, String pass_vidano_date, String operates_basis, String account_bank,
+                                 String bid_enter, String bid_client, String signer_bank_fio, String signer_bank_text) throws IOException{
 
         List<Asset> assetList = lotService.getAssetsByLot(lot);
+
+        String bidDate;
+        try{
+            bidDate = sdfpoints.format(lot.getBid().getBidDate());
+        }
+        catch(NullPointerException e){
+            bidDate= "дата торгів";
+        }
 
         InputStream fs = new FileInputStream("C:\\projectFiles\\Lot_Assets_Docs\\Dogovir.docx");
 
@@ -1132,7 +1148,7 @@ public class AssetController {
                     String text = r.getText(0);
                     if (text != null) {
 
-                        r.setText(replaceRunTextAssets(text, assetList.size(), lot.getLotNum(), contract_year, String.valueOf(lot.getCustomerName()),
+                        r.setText(replaceRunTextAssets(text, bidDate, assetList.size(), lot.getLotNum(), contract_year, String.valueOf(lot.getCustomerName()),
                                 String.valueOf(contract_address),  String.valueOf(lot.getCustomerInn()),
                                 String.valueOf(contract_protokol_num), String.valueOf(contract_protokol_date),
                                 String.valueOf(protocol_made_by), String.valueOf(lot.getFactPrice()), subscriber,
@@ -1141,9 +1157,11 @@ public class AssetController {
                                  pass_vidano,
                                  pass_vidano_date,
                                  operates_basis,
-                                 account_num,
                                  account_bank,
-                                 sign_deadline), 0);
+                                bid_enter,
+                                bid_client,
+                                signer_bank_fio,
+                                signer_bank_text), 0);
                     }
                 }
             }
@@ -1161,7 +1179,7 @@ public class AssetController {
                                 String text = r.getText(0);
                                 if (text != null) {
 
-                                    r.setText(replaceRunTextAssets(text, assetList.size(), lot.getLotNum(), contract_year, String.valueOf(lot.getCustomerName()),
+                                    r.setText(replaceRunTextAssets(text, bidDate, assetList.size(), lot.getLotNum(), contract_year, String.valueOf(lot.getCustomerName()),
                                             String.valueOf(contract_address),  String.valueOf(lot.getCustomerInn()),
                                             String.valueOf(contract_protokol_num), String.valueOf(contract_protokol_date),
                                             String.valueOf(protocol_made_by), String.valueOf(lot.getFactPrice()), subscriber,
@@ -1170,9 +1188,12 @@ public class AssetController {
                                             pass_vidano,
                                             pass_vidano_date,
                                             operates_basis,
-                                            account_num,
                                             account_bank,
-                                            sign_deadline), 0);
+                                            bid_enter,
+                                            bid_client,
+                                            signer_bank_fio,
+                                            signer_bank_text),
+                                            0);
                                 }
                             }
                         }
@@ -1189,7 +1210,7 @@ public class AssetController {
             newRow.createCell().setText(asset.getInn());
             newRow.createCell().setText(asset.getAsset_name());
             newRow.createCell().setText(asset.getAsset_descr());
-            newRow.createCell().setText(asset.getRegion());
+            newRow.createCell().setText(asset.getAddress());
             if(asset.getFactPrice()!=null)
             newRow.createCell().setText(String.valueOf(asset.getFactPrice()));
             i--;
@@ -1198,7 +1219,7 @@ public class AssetController {
         objTable.setInsideHBorder( XWPFTable.XWPFBorderType.SINGLE, 2, 0, "000000");
         objTable.removeRow(1);
 
-        String fileName = "C:\\projectFiles\\Lot_Assets_Docs\\Dogovir_" + lot.getId() + ".docx";
+        String fileName = "C:\\projectFiles\\Lot_Assets_Docs\\Dogovir_"+lot.getLotNum()+" ("+ lot.getId() + ").docx";
         OutputStream fileOut = new FileOutputStream(fileName);
 
         docx.write(fileOut);
@@ -1297,9 +1318,19 @@ public class AssetController {
         return fileName;
     }
 
-    private String assetContract_Akt(Lot lot, String contract_year, String contract_address, String contract_protokol_num, String contract_protokol_date, String protocol_made_by, String subscriber, String pass_seria, String pass_num, String pass_vidano, String pass_vidano_date, String operates_basis, String account_num, String account_bank, String sign_deadline) throws IOException{
+    private String assetContract_Akt(Lot lot, String contract_year, String contract_address, String contract_protokol_num,
+                                     String contract_protokol_date, String protocol_made_by, String subscriber, String pass_seria, String pass_num, String pass_vidano, String pass_vidano_date, String operates_basis, String account_bank,
+                                     String bid_enter, String bid_client, String signer_bank_fio, String signer_bank_text) throws IOException{
 
         List<Asset> assetList = lotService.getAssetsByLot(lot);
+
+        String bidDate;
+        try{
+            bidDate = sdfpoints.format(lot.getBid().getBidDate());
+        }
+        catch(NullPointerException e){
+            bidDate= "дата торгів";
+        }
 
         InputStream fs = new FileInputStream("C:\\projectFiles\\Lot_Assets_Docs\\Dogovir_Akt.docx");
 
@@ -1312,18 +1343,17 @@ public class AssetController {
                 for (XWPFRun r : runs) {
                     String text = r.getText(0);
                     if (text != null) {
-                        r.setText(replaceRunTextAssets(text, assetList.size(), lot.getLotNum(), contract_year, String.valueOf(lot.getCustomerName()),
+                        r.setText(replaceRunTextAssets(text, bidDate, assetList.size(), lot.getLotNum(), contract_year, String.valueOf(lot.getCustomerName()),
                                 String.valueOf(contract_address),  String.valueOf(lot.getCustomerInn()),
                                 String.valueOf(contract_protokol_num), String.valueOf(contract_protokol_date),
                                 String.valueOf(protocol_made_by), String.valueOf(lot.getFactPrice()), subscriber,
-                                pass_seria,
-                                pass_num,
-                                pass_vidano,
-                                pass_vidano_date,
-                                operates_basis,
-                                account_num,
-                                account_bank,
-                                sign_deadline), 0);}
+                                pass_seria, pass_num, pass_vidano, pass_vidano_date, operates_basis, account_bank,
+                                bid_enter,
+                                bid_client,
+                                signer_bank_fio,
+                                signer_bank_text),
+                                0);
+                    }
                 }
             }
         }
@@ -1340,7 +1370,7 @@ public class AssetController {
                             for (XWPFRun r : runs) {
                                 String text = r.getText(0);
                                 if (text != null) {
-                                    r.setText(replaceRunTextAssets(text, assetList.size(), lot.getLotNum(), contract_year, String.valueOf(lot.getCustomerName()),
+                                    r.setText(replaceRunTextAssets(text, bidDate, assetList.size(), lot.getLotNum(), contract_year, String.valueOf(lot.getCustomerName()),
                                             String.valueOf(contract_address),  String.valueOf(lot.getCustomerInn()),
                                             String.valueOf(contract_protokol_num), String.valueOf(contract_protokol_date),
                                             String.valueOf(protocol_made_by), String.valueOf(lot.getFactPrice()), subscriber,
@@ -1349,9 +1379,13 @@ public class AssetController {
                                             pass_vidano,
                                             pass_vidano_date,
                                             operates_basis,
-                                            account_num,
                                             account_bank,
-                                            sign_deadline), 0);}
+                                            bid_enter,
+                                            bid_client,
+                                            signer_bank_fio,
+                                            signer_bank_text),
+                                            0);
+                                }
                             }
                         }
                     }
@@ -1369,14 +1403,14 @@ public class AssetController {
             newRow.getCell(1).setText(asset.getInn());
             newRow.getCell(2).setText(asset.getAsset_name());
             newRow.getCell(3).setText(asset.getAsset_descr());
-            newRow.getCell(4).setText(asset.getRegion());
+            newRow.getCell(4).setText(asset.getAddress());
             newRow.getCell(5).setText(String.valueOf(asset.getFactPrice()));
         }
         objTable.setInsideVBorder( XWPFTable.XWPFBorderType.SINGLE, 2, 0, "000000");
         objTable.setInsideHBorder( XWPFTable.XWPFBorderType.SINGLE, 2, 0, "000000");
         objTable.removeRow(1);
 
-        String fileName = "C:\\projectFiles\\Lot_Assets_Docs\\Dogovir_Akt_" + lot.getId() + ".docx";
+        String fileName = "C:\\projectFiles\\Lot_Assets_Docs\\Dogovir_Akt_"+lot.getLotNum()+" ("+ lot.getId() + ").docx";
         OutputStream fileOut = new FileOutputStream(fileName);
 
         docx.write(fileOut);
@@ -1544,24 +1578,27 @@ public class AssetController {
         return creditContract(lot, contract_year, contract_address, contract_protokol_num, contract_protokol_date, protocol_made_by, subscriber);
     }
     private String makeAssetContract(Long lotId, String contract_year, String contract_address, String contract_protokol_num, String contract_protokol_date, String protocol_made_by, String subscriber,
-                                     String pass_seria,
-                                     String pass_num,
-                                     String pass_vidano,
-                                     String pass_vidano_date,
-                                     String operates_basis,
-                                     String account_num,
-                                     String account_bank,
-                                     String sign_deadline) throws Exception {
+                                     String pass_seria, String pass_num, String pass_vidano, String pass_vidano_date, String operates_basis, String account_bank,
+                                     String bid_enter, String bid_client, String signer_bank) throws Exception {
         Lot lot = lotService.getLot(lotId);
+        SignerBank signerBank;
+        switch (signer_bank) {
+            case "1":
+                signerBank = SignerBank.Kulibaba;
+                break;
+            case "2":
+                signerBank = SignerBank.Glushchenko;
+                break;
+            case "3":
+                signerBank = SignerBank.Strukova;
+                break;
+            default:
+                signerBank = SignerBank.Glushchenko;
+                break;
+        }
         return assetContract(lot, contract_year, contract_address, contract_protokol_num, contract_protokol_date, protocol_made_by, subscriber,
-                     pass_seria,
-                     pass_num,
-                     pass_vidano,
-                     pass_vidano_date,
-                     operates_basis,
-                     account_num,
-                     account_bank,
-                     sign_deadline);// assetContract();
+                     pass_seria, pass_num, pass_vidano, pass_vidano_date, operates_basis, account_bank,
+                bid_enter, bid_client, signerBank.getFio(), signerBank.getText());// assetContract();
     }
 
     private String makeContract_Akt(Long lotId, String contract_year, String contract_address, String contract_protokol_num, String contract_protokol_date, String protocol_made_by, String subscriber) throws Exception {
@@ -1569,9 +1606,27 @@ public class AssetController {
         return creditContract_Akt(lot, contract_year, contract_address, contract_protokol_num, contract_protokol_date, protocol_made_by, subscriber);
     }
     private String makeAssetContract_Akt(Long lotId, String contract_year, String contract_address, String contract_protokol_num, String contract_protokol_date, String protocol_made_by, String subscriber,
-                                         String pass_seria, String pass_num, String pass_vidano, String pass_vidano_date, String operates_basis, String account_num, String account_bank, String sign_deadline) throws Exception {
+                                         String pass_seria, String pass_num, String pass_vidano, String pass_vidano_date, String operates_basis, String account_bank,
+                                         String bid_enter, String bid_client, String signer_bank) throws Exception {
         Lot lot = lotService.getLot(lotId);
-        return assetContract_Akt(lot, contract_year, contract_address, contract_protokol_num, contract_protokol_date, protocol_made_by, subscriber, pass_seria, pass_num, pass_vidano, pass_vidano_date, operates_basis, account_num, account_bank, sign_deadline);
+        SignerBank signerBank;
+        switch (signer_bank) {
+            case "1":
+                signerBank = SignerBank.Kulibaba;
+                break;
+            case "2":
+                signerBank = SignerBank.Glushchenko;
+                break;
+            case "3":
+                signerBank = SignerBank.Strukova;
+                break;
+            default:
+                signerBank = SignerBank.Glushchenko;
+                break;
+        }
+        return assetContract_Akt(lot, contract_year, contract_address, contract_protokol_num, contract_protokol_date,
+                protocol_made_by, subscriber, pass_seria, pass_num, pass_vidano, pass_vidano_date, operates_basis, account_bank,
+                 bid_enter, bid_client, signerBank.getFio(), signerBank.getText());
     }
 
     private String makeContract_Dodatok1(Long lotId, String contract_year, String contract_address, String contract_protokol_num, String contract_protokol_date, String protocol_made_by, String subscriber) throws Exception {
@@ -2396,7 +2451,7 @@ public class AssetController {
         file.delete();
     }
 
-    @RequestMapping(value = "/downloadAssetContract/{lotId}/{contract_year}/{contract_address}/{contract_protokol_num}/{contract_protokol_date}/{protocol_made_by}/{subscriber}/{pass_seria}/{pass_num}/{pass_vidano}/{pass_vidano_date}/{operates_basis}/{account_num}/{account_bank}/{sign_deadline}",
+    @RequestMapping(value = "/downloadAssetContract/{lotId}/{contract_year}/{contract_address}/{contract_protokol_num}/{contract_protokol_date}/{protocol_made_by}/{subscriber}/{pass_seria}/{pass_num}/{pass_vidano}/{pass_vidano_date}/{operates_basis}/{account_bank}/{bid_enter}/{bid_client}/{signer_bank}",
             method = RequestMethod.GET) public void downloadAssetContract(HttpServletResponse response,
                                                                      @PathVariable Long lotId,
                                                                      @PathVariable String contract_year,
@@ -2410,10 +2465,10 @@ public class AssetController {
                                                                           @PathVariable String pass_vidano,
                                                                           @PathVariable String pass_vidano_date,
                                                                           @PathVariable String operates_basis,
-                                                                          @PathVariable String account_num,
                                                                           @PathVariable String account_bank,
-                                                                          @PathVariable String sign_deadline) throws Exception {
-
+                                                                          @PathVariable String bid_enter,
+                                                                          @PathVariable String bid_client,
+                                                                          @PathVariable String signer_bank) throws Exception {
         File file ;
         file = new File(makeAssetContract(lotId, contract_year, contract_address, contract_protokol_num, contract_protokol_date, protocol_made_by, subscriber,
                 pass_seria,
@@ -2421,9 +2476,11 @@ public class AssetController {
                 pass_vidano,
                 pass_vidano_date,
                 operates_basis,
-                account_num,
                 account_bank,
-                sign_deadline));
+                bid_enter,
+                bid_client,
+                signer_bank
+                ));
         InputStream is = new FileInputStream(file);
 
         response.setContentType("application/octet-stream");
@@ -2470,7 +2527,7 @@ public class AssetController {
         file.delete();
     }
 
-    @RequestMapping(value = "/downloadAssetContract_Akt/{lotId}/{contract_year}/{contract_address}/{contract_protokol_num}/{contract_protokol_date}/{protocol_made_by}/{subscriber}/{pass_seria}/{pass_num}/{pass_vidano}/{pass_vidano_date}/{operates_basis}/{account_num}/{account_bank}/{sign_deadline}",
+    @RequestMapping(value = "/downloadAssetContract_Akt/{lotId}/{contract_year}/{contract_address}/{contract_protokol_num}/{contract_protokol_date}/{protocol_made_by}/{subscriber}/{pass_seria}/{pass_num}/{pass_vidano}/{pass_vidano_date}/{operates_basis}/{account_bank}/{bid_enter}/{bid_client}/{signer_bank}",
             method = RequestMethod.GET) public void downloadAssetContract_Akt(HttpServletResponse response,
                                                                          @PathVariable Long lotId,
                                                                          @PathVariable String contract_year,
@@ -2484,20 +2541,16 @@ public class AssetController {
                                                                          @PathVariable String pass_vidano,
                                                                          @PathVariable String pass_vidano_date,
                                                                          @PathVariable String operates_basis,
-                                                                         @PathVariable String account_num,
                                                                          @PathVariable String account_bank,
-                                                                         @PathVariable String sign_deadline) throws Exception {
+                                                                              @PathVariable String bid_enter,
+                                                                              @PathVariable String bid_client,
+                                                                              @PathVariable String signer_bank
+                                                                              ) throws Exception {
 
         File file ;
         file = new File(makeAssetContract_Akt(lotId, contract_year, contract_address, contract_protokol_num, contract_protokol_date, protocol_made_by, subscriber,
-                pass_seria,
-                pass_num,
-                pass_vidano,
-                pass_vidano_date,
-                operates_basis,
-                account_num,
-                account_bank,
-                sign_deadline));
+                pass_seria, pass_num, pass_vidano, pass_vidano_date, operates_basis, account_bank,
+                bid_enter, bid_client, signer_bank));
         InputStream is = new FileInputStream(file);
 
         response.setContentType("application/octet-stream");

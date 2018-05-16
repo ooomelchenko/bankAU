@@ -62,6 +62,8 @@ public class Asset extends Unit implements Serializable  {
     private Date bidPayDate;
     @Column(name = "LAST_CUSTOMER_PAY_DATE")
     private Date customerPayDate;
+    @Column(name = "ADDRESS")
+    private String address;
 
     @ManyToOne
     private Lot lot;//класс
@@ -269,6 +271,13 @@ public class Asset extends Unit implements Serializable  {
         this.proposition = proposition;
     }
 
+    public String getAddress() {
+        return address;
+    }
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
     public Asset() {
     }
 
@@ -299,6 +308,7 @@ public class Asset extends Unit implements Serializable  {
                 ", paysCustomer=" + paysCustomer +
                 ", bidPayDate=" + bidPayDate +
                 ", customerPayDate=" + customerPayDate +
+                ", address=" + address +
                 ", lot=" + lot +
                 '}';
     }

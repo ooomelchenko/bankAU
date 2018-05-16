@@ -23,13 +23,17 @@
             var input_pass_vidano = $('#input_pass_vidano');
             var input_pass_vidano_date = $('#input_pass_vidano_date');
             var input_operates_basis = $('#input_operates_basis');
-            var input_account_num = $('#input_account_num');
             var input_account_bank = $('#input_account_bank');
-            var input_sign_deadline = $('#input_sign_deadline');
 
-            function checkFields(){
-                if(input_subscriber.val() === "")
-                    input_subscriber.val("null");
+            var input_bid_enter = $('#input_bid_enter');
+            var input_bid_client =  $('#input_bid_client');
+            var selected_bank_signer = $('#selected_bank_signer');
+
+            function checkFields() {
+                $('.input_contract_field').each(function () {
+                    if ($(this).val() === "")
+                        $(this).val("null");
+                });
             }
 
             $('#icon_contract_download').click(function(){
@@ -41,10 +45,12 @@
                 window.open("downloadAssetContract/"+lotId+"/"+input_contract_year.val()+"/"+input_contract_address.val()
                     +"/"+input_contract_protokol_num.val()+"/"+input_contract_protokol_date.val()+"/"+input_protocol_made_by.val()
                     +"/"+input_subscriber.val()+"/"+input_pass_seria.val()+"/"+input_pass_num.val()+"/"+input_pass_vidano.val()+"/"+input_pass_vidano_date.val()
-                    +"/" +input_operates_basis.val()+"/" +input_account_num.val()+"/" +input_account_bank.val()+"/" +input_sign_deadline.val());
+                    +"/" +input_operates_basis.val()+"/" +input_account_bank.val()
+                    +"/" +input_bid_enter.val()+"/" +input_bid_client.val()+"/" +selected_bank_signer.val()
+                );
                 <%}%>
 
-            });
+             });
             $('#icon_contract_akt_download').click(function(){
                 checkFields();
                 <%if(lot.getLotType()==0){%>
@@ -54,7 +60,9 @@
                 window.open("downloadAssetContract_Akt/"+lotId+"/"+input_contract_year.val()+"/"+input_contract_address.val()
                     +"/"+input_contract_protokol_num.val()+"/"+input_contract_protokol_date.val()+"/"+input_protocol_made_by.val()
                     +"/"+input_subscriber.val()+"/"+input_pass_seria.val()+"/"+input_pass_num.val()+"/"+input_pass_vidano.val()+"/"+input_pass_vidano_date.val()
-                    +"/" +input_operates_basis.val()+"/" +input_account_num.val()+"/" +input_account_bank.val()+"/" +input_sign_deadline.val());
+                    +"/" +input_operates_basis.val()+"/" +input_account_bank.val()
+                    +"/" +input_bid_enter.val()+"/" +input_bid_client.val()+"/" +selected_bank_signer.val()
+                );
                 <%}%>
             });
             $('#icon_contract_d1').click(function(){
@@ -75,7 +83,7 @@
     <link rel="stylesheet" media="screen" type="text/css" href="resources/css/jquery-ui.structure.css"/>
     <link rel="stylesheet" media="screen" type="text/css" href="resources/css/jquery-ui.theme.css"/>
     <style type="text/css">
-        input{
+        input, select{
             width: 330px;
             font-size: x-large;
         }
@@ -101,34 +109,40 @@
 </header>
 
 <div id="div_contract_params">
-    <input id="input_contract_year" type="text" placeholder="рік (можна цифрами)">
+    <input class="input_contract_field" id="input_contract_year" type="text" placeholder="рік (можна цифрами)">
     <br>
-    <input id="input_contract_address" type="text" placeholder="адреса переможця">
+    <input class="input_contract_field" id="input_contract_address" type="text" placeholder="адреса переможця">
     <br>
-    <input id="input_contract_protokol_num" type="text" placeholder="№ протоколу">
+    <input class="input_contract_field" id="input_contract_protokol_num" type="text" placeholder="№ протоколу">
     <br>
-    <input id="input_contract_protokol_date" type="text" placeholder="Дата протоколу">
+    <input class="input_contract_field" id="input_contract_protokol_date" type="text" placeholder="Дата протоколу">
     <br>
-    <input id="input_protocol_made_by" type="text" placeholder="Ким складено протокол">
+    <input class="input_contract_field" id="input_protocol_made_by" type="text" placeholder="Ким складено протокол">
     <br>
-    <input id="input_subscriber" type="text" placeholder="ФІО підписанта">
+    <input class="input_contract_field" id="input_subscriber" type="text" placeholder="ФІО підписанта">
     <%if(lot.getLotType() == 1){%>
     <br>
-    <input id="input_pass_seria" type="text" placeholder="Серія паспорту">
+    <input class="input_contract_field" id="input_bid_enter" type="text" placeholder="Майданчик заведення лоту">
     <br>
-    <input id="input_pass_num" type="text" placeholder="Номер паспорту">
+    <input class="input_contract_field" id="input_bid_client" type="text" placeholder="Майданчик клієнта">
     <br>
-    <input id="input_pass_vidano" type="text" placeholder="Ким видано паспорт">
+    <select id="selected_bank_signer" title="уповноважена особа банку">
+        <option value=1>Кулібаба І.В.</option>
+        <option value=2>Глущенко С.В.</option>
+        <option value=3>Стрюкова І.О.</option>
+    </select>
     <br>
-    <input id="input_pass_vidano_date" type="text" placeholder="Дата видачі паспорту">
+    <input class="input_contract_field" id="input_pass_seria" type="text" placeholder="Серія паспорту">
     <br>
-    <input id="input_operates_basis" type="text" placeholder="Який діє на підставі">
+    <input class="input_contract_field" id="input_pass_num" type="text" placeholder="Номер паспорту">
     <br>
-    <input id="input_account_num" type="number" placeholder="Номер рахунку клієнта">
+    <input class="input_contract_field" id="input_pass_vidano" type="text" placeholder="Ким видано паспорт">
     <br>
-    <input id="input_account_bank" type="text" placeholder="Банк кієнта">
+    <input class="input_contract_field" id="input_pass_vidano_date" type="text" placeholder="Дата видачі паспорту">
     <br>
-    <input id="input_sign_deadline" type="text" placeholder="Кінцевий термін підписання">
+    <input class="input_contract_field" id="input_operates_basis" type="text" placeholder="Який діє на підставі">
+    <br>
+    <input class="input_contract_field" id="input_account_bank" type="text" placeholder="Банк кієнта">
     <%}%>
 </div>
 
