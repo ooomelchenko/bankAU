@@ -3,6 +3,7 @@ package nb.service;
 import nb.domain.Bid;
 import nb.domain.Exchange;
 import nb.domain.Lot;
+import nb.queryDomain.FondDecisionsByLotHistory;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
@@ -95,4 +96,7 @@ public interface LotService {
     List getLotsHistoryAggregatedByBid(Date bidStartDate, Date bidEndDate);
 
     List getLotHistoryAggregatedByBid(Long lotId);
+
+    @Transactional(readOnly = true)
+    List<FondDecisionsByLotHistory> getFondDecisionsByLotHistory(Long lotId);
 }

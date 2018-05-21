@@ -2,6 +2,7 @@ package nb.dao;
 
 import nb.domain.Bid;
 import nb.domain.LotHistory;
+import nb.queryDomain.FondDecisionsByLotHistory;
 
 import java.util.Date;
 import java.util.List;
@@ -24,4 +25,6 @@ public interface LotHistoryDao {
     List getLotsHistoryAggregatedByBid(Date startDate, Date endDate);
 
     List<Bid> getLotHistoryAggregatedByBid(Long lotId);
+
+    List<FondDecisionsByLotHistory> getFondDecisionsByLotHistory(Long lotId);
 }

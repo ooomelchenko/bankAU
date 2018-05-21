@@ -3,8 +3,9 @@ package nb.dao;
 import nb.domain.Bid;
 import nb.domain.LotHistory;
 import nb.queryDomain.BidDetails;
-import org.hibernate.query.Query;
+import nb.queryDomain.FondDecisionsByLotHistory;
 import org.hibernate.SessionFactory;
+import org.hibernate.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -87,6 +88,13 @@ public class LotHistoryDaoImpl implements LotHistoryDao {
     @Override
     public List<Bid> getLotHistoryAggregatedByBid(Long lotId) {
         Query query = factory.getCurrentSession().createQuery("FROM nb.domain.Bid bid WHERE bid.id in (SELECT lh.bidId FROM LotHistory lh WHERE lh.id=:lotId Group by lh.bidId)");
+        query.setParameter("lotId", lotId);
+        return query.list();
+    }
+
+    @Override
+    public List<FondDecisionsByLotHistory> getFondDecisionsByLotHistory(Long lotId){
+        Query query = factory.getCurrentSession().createQuery("SELECT DISTINCT new nb.queryDomain.FondDecisionsByLotHistory(lh.fondDecisionDate, lh.fondDecision, lh.decisionNumber) FROM LotHistory lh where lh.id=:lotId");
         query.setParameter("lotId", lotId);
         return query.list();
     }

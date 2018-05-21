@@ -5,6 +5,7 @@ import nb.domain.*;
 import nb.queryDomain.AcceptPriceHistory;
 import nb.queryDomain.BidDetails;
 import nb.queryDomain.CreditAccPriceHistory;
+import nb.queryDomain.FondDecisionsByLotHistory;
 import nb.service.*;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.disk.DiskFileItem;
@@ -1000,6 +1001,7 @@ public class AssetController {
         XSSFWorkbook wb = new XSSFWorkbook(ExcelFileToRead);
         XSSFSheet sheet1 = wb.getSheetAt(0);
         XSSFSheet sheet2 = wb.getSheetAt(1);
+        XSSFSheet sheet3 = wb.getSheetAt(2);
 
         //задаем формат даты
         String excelFormatter = DateFormatConverter.convert(Locale.ENGLISH, "yyyy-MM-dd");
@@ -1014,11 +1016,29 @@ public class AssetController {
 
         int numRow1 = 0;
         int numRow2 = 0;
+        int numRow3 = 0;
         // int i = 0;
         for(Asset asset : assetList){
 
             List<Long> lotIdList = assetService.getLotIdHistoryByAsset(asset.getId());
             for(Long lotId: lotIdList){
+
+
+                List<FondDecisionsByLotHistory> fondDecisionsByLotHistory = lotService.getFondDecisionsByLotHistory(lotId);
+                System.out.println("fondDecisionsByLotHistory ="+fondDecisionsByLotHistory);
+                for(FondDecisionsByLotHistory fondDecision: fondDecisionsByLotHistory){
+                    numRow3++;
+                    XSSFRow row = sheet3.createRow(numRow3);
+                    row.createCell(0).setCellValue(lotId);
+                    try {
+                        row.createCell(1).setCellValue(sdfshort.format(fondDecision.getFondDecisionDate()));
+                    }
+                    catch(Exception e){
+
+                    }
+                    row.createCell(2).setCellValue(fondDecision.getDecisionNumber());
+                    row.createCell(3).setCellValue(fondDecision.getFondDecision());
+                }
 
                 List<Bid> bidList = lotService.getLotHistoryAggregatedByBid(lotId);
                 Collections.sort(bidList);

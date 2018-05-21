@@ -2,6 +2,7 @@ package nb.service;
 
 import nb.dao.*;
 import nb.domain.*;
+import nb.queryDomain.FondDecisionsByLotHistory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -228,5 +229,11 @@ public class LotServiceImpl implements LotService {
     @Transactional(readOnly = true)
     public List getLotHistoryAggregatedByBid(Long lotId) {
         return lotHistoryDao.getLotHistoryAggregatedByBid(lotId);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<FondDecisionsByLotHistory> getFondDecisionsByLotHistory(Long lotId){
+        return lotHistoryDao.getFondDecisionsByLotHistory(lotId);
     }
 }
