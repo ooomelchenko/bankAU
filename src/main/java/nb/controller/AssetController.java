@@ -94,11 +94,10 @@ public class AssetController {
         return text;
     }
     private String replaceRunTextAssets(String text, String bidDAte, int count , String kd, String year, String fio, String address, String inn,
-                                        String prn, String prd, String pmb, String fpr, String subscr, String pass_seria, String pass_num, String pass_vidano, String pass_vidano_date, String operates_basis, String account_bank,
-                                        String bid_enter,
-                                        String bid_client,
-                                        String signer_bank,
-                                        String signer_bank_text) {
+                                        String prn, String prd, String pmb, String fpr, String subscr, String pass_seria,
+                                        String pass_num, String pass_vidano, String pass_vidano_date, String operates_basis, String account_bank,
+                                        String bid_enter, String bid_client, String signer_bank, String signer_bank_text,
+                                        String property_fp, String property_fp_pdv, String elseAssets_fp, String elseAssets_pdv) {
 
         String factPrice_pdv;
         try {
@@ -132,6 +131,10 @@ public class AssetController {
         text = text.replace("bidc", bid_client);
         text = text.replace("sbf", signer_bank);
         text = text.replace("sbt", signer_bank_text);
+        text = text.replace("nfp", property_fp);
+        text = text.replace("npd", property_fp_pdv);
+        text = text.replace("nefp", elseAssets_fp);
+        text = text.replace("nepd", elseAssets_pdv);
 
         if(subscr.equals("null"))
             text = text.replace("sub", fio);
@@ -1160,6 +1163,40 @@ public class AssetController {
 
         XWPFDocument docx = new XWPFDocument(fs);
 
+        List<XWPFTable> tableList = docx.getTables();
+
+        XWPFTable objTable = tableList.get(0);
+        int i =assetList.size();
+        BigDecimal propertyPrice=new BigDecimal(0);
+        for (Asset asset : assetList) {
+            if(asset.getFactPrice()!=null && (asset.getAssetGroupCode().equals("101")||asset.getAssetGroupCode().equals("102") ) )
+                propertyPrice=propertyPrice.add(asset.getFactPrice());
+            XWPFTableRow newRow = objTable.insertNewTableRow(2);
+            newRow.createCell().setText(i + ".");
+            newRow.createCell().setText(asset.getInn());
+            newRow.createCell().setText(asset.getAsset_name());
+            newRow.createCell().setText(asset.getAsset_descr());
+            newRow.createCell().setText(asset.getAddress());
+            if(asset.getFactPrice()!=null)
+                newRow.createCell().setText(String.valueOf(asset.getFactPrice()));
+            i--;
+        }
+        BigDecimal propertyPDV = propertyPrice.divide(new BigDecimal(6), 2, BigDecimal.ROUND_HALF_UP);
+        BigDecimal notPropertyPrice;
+        BigDecimal notPropertyPDV;
+        try{
+            notPropertyPrice=lot.getFactPrice().subtract(propertyPrice);
+            notPropertyPDV=(lot.getFactPrice().divide(new BigDecimal(6), 2, BigDecimal.ROUND_HALF_UP)).subtract(propertyPDV);
+        }
+        catch(Exception npe){
+            notPropertyPrice=new BigDecimal(0);
+            notPropertyPDV=new BigDecimal(0);
+        }
+
+        objTable.setInsideVBorder( XWPFTable.XWPFBorderType.SINGLE, 2, 0, "000000");
+        objTable.setInsideHBorder( XWPFTable.XWPFBorderType.SINGLE, 2, 0, "000000");
+        objTable.removeRow(1);
+
         for (XWPFParagraph p : docx.getParagraphs()) {
 
             List<XWPFRun> runs = p.getRuns();
@@ -1172,21 +1209,15 @@ public class AssetController {
                                 String.valueOf(contract_address),  String.valueOf(lot.getCustomerInn()),
                                 String.valueOf(contract_protokol_num), String.valueOf(contract_protokol_date),
                                 String.valueOf(protocol_made_by), String.valueOf(lot.getFactPrice()), subscriber,
-                                pass_seria,
-                                 pass_num,
-                                 pass_vidano,
-                                 pass_vidano_date,
-                                 operates_basis,
-                                 account_bank,
-                                bid_enter,
-                                bid_client,
-                                signer_bank_fio,
-                                signer_bank_text), 0);
+                                pass_seria, pass_num, pass_vidano, pass_vidano_date, operates_basis, account_bank,
+                                bid_enter, bid_client, signer_bank_fio, signer_bank_text,
+                                String.valueOf(propertyPrice), String.valueOf(propertyPDV),
+                                String.valueOf(notPropertyPrice), String.valueOf(notPropertyPDV)), 0);
                     }
                 }
             }
         }
-        List<XWPFTable> tableList = docx.getTables();
+
         for (XWPFTable tbl : tableList) {
 
             for (XWPFTableRow row : tbl.getRows()) {
@@ -1203,17 +1234,10 @@ public class AssetController {
                                             String.valueOf(contract_address),  String.valueOf(lot.getCustomerInn()),
                                             String.valueOf(contract_protokol_num), String.valueOf(contract_protokol_date),
                                             String.valueOf(protocol_made_by), String.valueOf(lot.getFactPrice()), subscriber,
-                                            pass_seria,
-                                            pass_num,
-                                            pass_vidano,
-                                            pass_vidano_date,
-                                            operates_basis,
-                                            account_bank,
-                                            bid_enter,
-                                            bid_client,
-                                            signer_bank_fio,
-                                            signer_bank_text),
-                                            0);
+                                            pass_seria, pass_num, pass_vidano, pass_vidano_date, operates_basis,
+                                            account_bank, bid_enter, bid_client, signer_bank_fio, signer_bank_text,
+                                            String.valueOf(propertyPrice), String.valueOf(propertyPDV),
+                                            String.valueOf(notPropertyPrice), String.valueOf(notPropertyPDV)), 0);
                                 }
                             }
                         }
@@ -1221,23 +1245,6 @@ public class AssetController {
                 }
             }
         }
-
-        XWPFTable objTable = tableList.get(0);
-        int i =assetList.size();
-        for (Asset asset : assetList) {
-            XWPFTableRow newRow = objTable.insertNewTableRow(2);
-            newRow.createCell().setText(i + ".");
-            newRow.createCell().setText(asset.getInn());
-            newRow.createCell().setText(asset.getAsset_name());
-            newRow.createCell().setText(asset.getAsset_descr());
-            newRow.createCell().setText(asset.getAddress());
-            if(asset.getFactPrice()!=null)
-            newRow.createCell().setText(String.valueOf(asset.getFactPrice()));
-            i--;
-        }
-        objTable.setInsideVBorder( XWPFTable.XWPFBorderType.SINGLE, 2, 0, "000000");
-        objTable.setInsideHBorder( XWPFTable.XWPFBorderType.SINGLE, 2, 0, "000000");
-        objTable.removeRow(1);
 
         String fileName = "C:\\projectFiles\\Lot_Assets_Docs\\Dogovir_"+lot.getLotNum()+" ("+ lot.getId() + ").docx";
         OutputStream fileOut = new FileOutputStream(fileName);
@@ -1356,6 +1363,26 @@ public class AssetController {
 
         XWPFDocument docx = new XWPFDocument(fs);
 
+        List<XWPFTable> tableList = docx.getTables();
+
+        XWPFTable objTable = tableList.get(0);
+        int i =0;
+
+        for (Asset asset : assetList) {
+            i++;
+
+            XWPFTableRow newRow = objTable.createRow();
+            newRow.getCell(0).setText(i + ".");
+            newRow.getCell(1).setText(asset.getInn());
+            newRow.getCell(2).setText(asset.getAsset_name());
+            newRow.getCell(3).setText(asset.getAsset_descr());
+            newRow.getCell(4).setText(asset.getAddress());
+            newRow.getCell(5).setText(String.valueOf(asset.getFactPrice()));
+        }
+        objTable.setInsideVBorder( XWPFTable.XWPFBorderType.SINGLE, 2, 0, "000000");
+        objTable.setInsideHBorder( XWPFTable.XWPFBorderType.SINGLE, 2, 0, "000000");
+        objTable.removeRow(1);
+
         for (XWPFParagraph p : docx.getParagraphs()) {
 
             List<XWPFRun> runs = p.getRuns();
@@ -1371,13 +1398,12 @@ public class AssetController {
                                 bid_enter,
                                 bid_client,
                                 signer_bank_fio,
-                                signer_bank_text),
-                                0);
+                                signer_bank_text,
+                                "0", "0", "0", "0"  ), 0);
                     }
                 }
             }
         }
-        List<XWPFTable> tableList = docx.getTables();
 
         for (XWPFTable tbl : tableList) {
 
@@ -1394,17 +1420,9 @@ public class AssetController {
                                             String.valueOf(contract_address),  String.valueOf(lot.getCustomerInn()),
                                             String.valueOf(contract_protokol_num), String.valueOf(contract_protokol_date),
                                             String.valueOf(protocol_made_by), String.valueOf(lot.getFactPrice()), subscriber,
-                                            pass_seria,
-                                            pass_num,
-                                            pass_vidano,
-                                            pass_vidano_date,
-                                            operates_basis,
-                                            account_bank,
-                                            bid_enter,
-                                            bid_client,
-                                            signer_bank_fio,
-                                            signer_bank_text),
-                                            0);
+                                            pass_seria, pass_num, pass_vidano, pass_vidano_date, operates_basis,
+                                            account_bank, bid_enter, bid_client, signer_bank_fio, signer_bank_text,
+                                            "0", "0", "0", "0"  ), 0);
                                 }
                             }
                         }
@@ -1412,23 +1430,6 @@ public class AssetController {
                 }
             }
         }
-
-        XWPFTable objTable = tableList.get(0);
-        int i =0;
-        for (Asset asset : assetList) {
-            i++;
-
-            XWPFTableRow newRow = objTable.createRow();
-            newRow.getCell(0).setText(i + ".");
-            newRow.getCell(1).setText(asset.getInn());
-            newRow.getCell(2).setText(asset.getAsset_name());
-            newRow.getCell(3).setText(asset.getAsset_descr());
-            newRow.getCell(4).setText(asset.getAddress());
-            newRow.getCell(5).setText(String.valueOf(asset.getFactPrice()));
-        }
-        objTable.setInsideVBorder( XWPFTable.XWPFBorderType.SINGLE, 2, 0, "000000");
-        objTable.setInsideHBorder( XWPFTable.XWPFBorderType.SINGLE, 2, 0, "000000");
-        objTable.removeRow(1);
 
         String fileName = "C:\\projectFiles\\Lot_Assets_Docs\\Dogovir_Akt_"+lot.getLotNum()+" ("+ lot.getId() + ").docx";
         OutputStream fileOut = new FileOutputStream(fileName);
