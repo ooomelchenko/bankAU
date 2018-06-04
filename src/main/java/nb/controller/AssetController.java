@@ -169,7 +169,7 @@ public class AssetController {
             i++;
             numRow++;
             int j = 0;
-            while (j < 65) {
+            while (j < 66) {
                 row.createCell(j);
                 j++;
             }
@@ -185,7 +185,7 @@ public class AssetController {
                 row.getCell(2).setCellStyle(cellStyle);
             }
             if (lot != null) {
-                row.getCell(3).setCellValue(asset.getLot().getLotNum());
+                row.getCell(3).setCellValue(lot.getLotNum());
             }
             row.getCell(4).setCellValue("AU");
             row.getCell(5).setCellValue(asset.getAssetGroupCode());
@@ -216,7 +216,6 @@ public class AssetController {
             row.getCell(45).setCellStyle(cellStyle);
             row.getCell(46).setCellValue(lot.getCountOfParticipants());
             row.getCell(48).setCellValue(lot.getBidStage());
-
          //   BigDecimal lotStartPrice = lot.getStartPrice();
          //   BigDecimal lotFirstStartPrice = lot.getFirstStartPrice();
 
@@ -263,13 +262,26 @@ public class AssetController {
                 row.getCell(57).setCellValue(asset.getPaysBid().doubleValue());
                 row.getCell(57).setCellStyle(numStyle);
             }
+            if (asset.getPaysBid() != null) {
+                row.getCell(58).setCellValue(asset.getPaysBid().doubleValue());
+                row.getCell(58).setCellStyle(numStyle);
+            }
+            if (asset.getPaysBid() != null) {
+                row.getCell(57).setCellValue(asset.getPaysBid().doubleValue());
+                row.getCell(57).setCellStyle(numStyle);
+            }
+            try {
+                row.getCell(65).setCellValue(lot.getCustomerName());
+            }
+            catch (NullPointerException npe){
+            }
         }
         for (Credit credit : creditList) {
             HSSFRow row = sheet.createRow(numRow);
             i++;
             numRow++;
             int j = 0;
-            while (j < 65) {
+            while (j < 66) {
                 row.createCell(j);
                 j++;
             }
@@ -287,6 +299,7 @@ public class AssetController {
             }
             row.getCell(4).setCellValue("AU");
             row.getCell(5).setCellValue(credit.getAssetGroupCode());
+            row.getCell(6).setCellValue(credit.getNd());
             row.getCell(14).setCellValue(credit.getFio());
             row.getCell(15).setCellValue(credit.getInn());
             row.getCell(16).setCellValue(credit.getContractNum());
@@ -345,6 +358,11 @@ public class AssetController {
             if (credit.getPaysBid() != null) {
                 row.getCell(57).setCellValue(credit.getPaysBid().doubleValue());
                 row.getCell(57).setCellStyle(numStyle);
+            }
+            try {
+                row.getCell(65).setCellValue(lot.getCustomerName());
+            }
+            catch (NullPointerException npe){
             }
         }
 
@@ -517,6 +535,54 @@ public class AssetController {
         }
 
         String fileName = "C:\\projectFiles\\" + ("Credits " +sdfshort.format(new Date())+ ".xlsx");
+        OutputStream fileOut = new FileOutputStream(fileName);
+
+        wb.write(fileOut);
+        fileOut.close();
+        return fileName;
+    }
+
+    private String fillSoldedCrdTab(List<Credit> creditList) throws IOException {
+        InputStream ExcelFileToRead = new FileInputStream("C:\\projectFiles\\CREDITS_solded.xlsx");
+        XSSFWorkbook wb = new XSSFWorkbook(ExcelFileToRead);
+        XSSFSheet sheet = wb.getSheetAt(0);
+
+        //задаем формат даты
+        String excelFormatter = DateFormatConverter.convert(Locale.ENGLISH, "yyyy-MM-dd");
+        CellStyle dateStyle = wb.createCellStyle();
+
+        DataFormat poiFormat = wb.createDataFormat();
+        dateStyle.setDataFormat(poiFormat.getFormat(excelFormatter));
+
+        //end
+
+        int numRow = 1;
+        // int i = 0;
+        for(Credit credit : creditList){
+            XSSFRow row = sheet.createRow(numRow);
+            numRow++;
+            Lot tLot = lotService.getLot(credit.getLot());
+                try {
+                    row.createCell(1).setCellValue(tLot.getLotNum());
+
+                    try{
+                        row.createCell(0).setCellValue(tLot.getBid().getBidDate());
+                        row.getCell(0).setCellStyle(dateStyle);
+                    }
+                    catch (NullPointerException npl){
+                    }
+                }
+                catch (NullPointerException npl){
+                }
+
+            row.createCell(2).setCellValue(credit.getFio());
+            row.createCell(3).setCellValue(credit.getInn());
+            row.createCell(4).setCellValue(credit.getContractNum());
+            row.createCell(5).setCellValue(credit.getNd());
+
+        }
+
+        String fileName = "C:\\projectFiles\\" + ("CREDITS_solded " +sdfshort.format(new Date())+ ".xlsx");
         OutputStream fileOut = new FileOutputStream(fileName);
 
         wb.write(fileOut);
@@ -1028,7 +1094,6 @@ public class AssetController {
 
 
                 List<FondDecisionsByLotHistory> fondDecisionsByLotHistory = lotService.getFondDecisionsByLotHistory(lotId);
-                System.out.println("fondDecisionsByLotHistory ="+fondDecisionsByLotHistory);
                 for(FondDecisionsByLotHistory fondDecision: fondDecisionsByLotHistory){
                     numRow3++;
                     XSSFRow row = sheet3.createRow(numRow3);
@@ -2033,13 +2098,14 @@ public class AssetController {
             }
         }
 
-        if(reportNum==3){
+        /*if(reportNum==3){
             try {
                 reportPath=fillCrdTab(creditService.getCreditsByPortion(1));
             } catch (IOException e) {
                 e.printStackTrace();
             }
-        }
+        }*/
+
         Date startDate = null;
         Date endDate = null;
         try {
@@ -2052,6 +2118,14 @@ public class AssetController {
         }
         List<Asset> assetList = assetService.findAllSuccessBids(startDate, endDate);
         List<Credit> crList = creditService.getCredits_SuccessBids(startDate, endDate);
+
+        if(reportNum==3){
+            try {
+                reportPath=fillSoldedCrdTab(crList);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
 
         if (reportNum==1) {
             try {

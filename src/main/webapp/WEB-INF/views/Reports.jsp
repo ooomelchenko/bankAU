@@ -24,7 +24,9 @@
                 window.open("getReport/1/"+startDate+"/"+endDate);
             });
             $('#downloadCrdts').click(function(){
-                window.open("getReport/3/"+null+"/"+null);
+                var startDate = $('#startDate3').val();
+                var endDate = $('#endDate3').val();
+                window.open("getReport/3/"+startDate+"/"+endDate);
             });
             $('#downloadAss').click(function(){
                 window.open("getReport/4/"+null+"/"+null);
@@ -96,7 +98,13 @@
 
         <tr class="reportTr">
             <td id="report3" class="reportName">
-                Таблиця кредитів
+                Таблиця проданих кредитів
+            </td>
+            <td hidden="hidden" class="dateTd">
+                <input id="startDate3" class="datepicker" about="початкова дата" title="оберіть початкову дату торгів">
+            </td>
+            <td hidden="hidden" class="dateTd">
+                <input id="endDate3" class="datepicker" about="кінцева дата" title="оберіть кінцеву дату торгів">
             </td>
             <td hidden="hidden" class="dateTd">
                 <img id="downloadCrdts" class="icon_button" src="resources/css/images/excel.jpg" title="завантажити">
