@@ -52,12 +52,25 @@
             });
 
             function getPortion(portNum){
+                location.replace("assets/"+portNum);
+            }
+
+            function loadFile(){
+                var formData = new FormData($('form')[0]);
                 $.ajax({
-                    url: "setAssetPortionNum",
+                    url: "setAccPriceByFile",
                     type: "POST",
-                    data: {portion: portNum-1},
-                    success: function(res){
-                        location.reload(true);
+                    processData: false,
+                    contentType: false,
+                    data: formData,
+                    success: function (res) {
+                        if (res==1){
+                            alert("затверджені ціни додано!");
+                             location.reload(true);
+                        }
+                        else if (res==0){
+                            alert("затверджені ціни не додано!");
+                        }
                     }
                 })
             }
@@ -390,26 +403,6 @@
                 });
             });
 
-            function loadFile(){
-                var formData = new FormData($('form')[0]);
-                $.ajax({
-                    type: "POST",
-                    processData: false,
-                    contentType: false,
-                    url: "setAccPriceByFile",
-                    data:  formData,
-                    success: function (res) {
-                        if ((res)==1){
-                            alert("затверджені ціни додано!");
-                            location.reload(true);
-                        }
-                        else if ((res)==0){
-                            alert("затверджені ціни не додано!");
-                        }
-                    }
-                })
-            }
-
             $('#addPriceByFileBut').click(function(){
                 if($(this).val()==0) {
                     $('#div_add_dec_form').show();
@@ -422,6 +415,7 @@
                     $(this).text("ДОДАТИ ЗАТВЕРДЖЕНУ ФГВФО ЦІНУ");
                 }
             });
+
             $('#button_addPriceByFile').click(function(){
                 loadFile();
             });
@@ -505,9 +499,8 @@
                 <h3>Обрати файл зі списком Інвентарних номерів:</h3>
                 <input align="center" type="file" name="file" title="натисніть для обрання файлу"><br/>
                 <input name="idType" value="1" type="number" hidden="hidden">
-                <button id="button_addPriceByFile" title="завантажити ціну з файлу">Завантажити</button>
             </form>
-
+            <button id="button_addPriceByFile" title="завантажити ціну з файлу">Завантажити</button>
         </div>
 </div>
 

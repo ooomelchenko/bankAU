@@ -17,10 +17,12 @@ import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.DataFormat;
+import org.apache.poi.ss.usermodel.DataFormatter;
 import org.apache.poi.ss.util.DateFormatConverter;
 import org.apache.poi.xssf.streaming.SXSSFRow;
 import org.apache.poi.xssf.streaming.SXSSFSheet;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
+import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -542,7 +544,7 @@ public class AssetController {
         return fileName;
     }
 
-    private String fillSoldedCrdTab(List<Credit> creditList) throws IOException {
+    private String fillSoldedCrdTab(List<Credit> creditList) throws IOException  {
         InputStream ExcelFileToRead = new FileInputStream("C:\\projectFiles\\CREDITS_solded.xlsx");
         XSSFWorkbook wb = new XSSFWorkbook(ExcelFileToRead);
         XSSFSheet sheet = wb.getSheetAt(0);
@@ -564,7 +566,7 @@ public class AssetController {
             Lot tLot = lotService.getLot(credit.getLot());
                 try {
                     row.createCell(1).setCellValue(tLot.getLotNum());
-
+                    row.createCell(7).setCellValue(tLot.getCustomerName());
                     try{
                         row.createCell(0).setCellValue(tLot.getBid().getBidDate());
                         row.getCell(0).setCellStyle(dateStyle);
@@ -579,6 +581,12 @@ public class AssetController {
             row.createCell(3).setCellValue(credit.getInn());
             row.createCell(4).setCellValue(credit.getContractNum());
             row.createCell(5).setCellValue(credit.getNd());
+            try {
+                row.createCell(6).setCellValue(credit.getFactPrice().doubleValue());
+            }
+            catch (NumberFormatException nfe){
+                row.createCell(6).setCellValue(0.00);
+            }
 
         }
 
@@ -1233,10 +1241,21 @@ public class AssetController {
         XWPFTable objTable = tableList.get(0);
         int i =assetList.size();
         BigDecimal propertyPrice=new BigDecimal(0);
+
+
+        XWPFTableRow totalRow = objTable.getRow(1);
+        totalRow.getCell(0).setText("Основні засоби в кількості "+i+" одиниць загальною вартістю");
+        try {
+            totalRow.getCell(1).setText(String.valueOf(lot.getFactPrice()));
+        }
+        catch (NullPointerException npl){
+            totalRow.getCell(1).setText("0");
+        }
+
         for (Asset asset : assetList) {
             if(asset.getFactPrice()!=null && (asset.getAssetGroupCode().equals("101")||asset.getAssetGroupCode().equals("102") ) )
                 propertyPrice=propertyPrice.add(asset.getFactPrice());
-            XWPFTableRow newRow = objTable.insertNewTableRow(2);
+            XWPFTableRow newRow = objTable.insertNewTableRow(1);
             newRow.createCell().setText(i + ".");
             newRow.createCell().setText(asset.getInn());
             newRow.createCell().setText(asset.getAsset_name());
@@ -1246,6 +1265,7 @@ public class AssetController {
                 newRow.createCell().setText(String.valueOf(asset.getFactPrice()));
             i--;
         }
+
         BigDecimal propertyPDV = propertyPrice.divide(new BigDecimal(6), 2, BigDecimal.ROUND_HALF_UP);
         BigDecimal notPropertyPrice;
         BigDecimal notPropertyPDV;
@@ -1260,7 +1280,7 @@ public class AssetController {
 
         objTable.setInsideVBorder( XWPFTable.XWPFBorderType.SINGLE, 2, 0, "000000");
         objTable.setInsideHBorder( XWPFTable.XWPFBorderType.SINGLE, 2, 0, "000000");
-        objTable.removeRow(1);
+        //objTable.removeRow(1);
 
         for (XWPFParagraph p : docx.getParagraphs()) {
 
@@ -1431,22 +1451,34 @@ public class AssetController {
         List<XWPFTable> tableList = docx.getTables();
 
         XWPFTable objTable = tableList.get(0);
-        int i =0;
+        int i =assetList.size();
+
+        XWPFTableRow totalRow = objTable.getRow(1);
+        totalRow.getCell(0).setText("Основні засоби в кількості "+i+" одиниць загальною вартістю");
+        try {
+            totalRow.getCell(1).setText(String.valueOf(lot.getFactPrice()));
+        }
+        catch (NullPointerException npl){
+            totalRow.getCell(1).setText("0");
+        }
 
         for (Asset asset : assetList) {
-            i++;
 
-            XWPFTableRow newRow = objTable.createRow();
-            newRow.getCell(0).setText(i + ".");
-            newRow.getCell(1).setText(asset.getInn());
-            newRow.getCell(2).setText(asset.getAsset_name());
-            newRow.getCell(3).setText(asset.getAsset_descr());
-            newRow.getCell(4).setText(asset.getAddress());
-            newRow.getCell(5).setText(String.valueOf(asset.getFactPrice()));
+            XWPFTableRow newRow = objTable.insertNewTableRow(1);
+            newRow.createCell().setText(i + ".");
+            newRow.createCell().setText(asset.getInn());
+            newRow.createCell().setText(asset.getAsset_name());
+            newRow.createCell().setText(asset.getAsset_descr());
+            newRow.createCell().setText(asset.getAddress());
+            if(asset.getFactPrice()!=null)
+                newRow.createCell().setText(String.valueOf(asset.getFactPrice()));
+            i--;
         }
+//
+
         objTable.setInsideVBorder( XWPFTable.XWPFBorderType.SINGLE, 2, 0, "000000");
         objTable.setInsideHBorder( XWPFTable.XWPFBorderType.SINGLE, 2, 0, "000000");
-        objTable.removeRow(1);
+        //objTable.removeRow(1);
 
         for (XWPFParagraph p : docx.getParagraphs()) {
 
@@ -2239,7 +2271,7 @@ public class AssetController {
 
     @RequestMapping(value = "/uploadIdFileForHistory", method = RequestMethod.POST)
     private @ResponseBody
-    String uploadIdFileForHistory(@RequestParam("file") MultipartFile multipartFile, @RequestParam("idType") int idType, Model model) throws IOException {
+    String uploadIdFileForHistory(@RequestParam("file") MultipartFile multipartFile, Model model) throws IOException {
 
             List<Asset> assetList = new ArrayList<>();
             if (!multipartFile.isEmpty()) {
@@ -2251,8 +2283,13 @@ public class AssetController {
                     XSSFSheet sheet = wb.getSheetAt(0);
                     Iterator rows = sheet.rowIterator();
                     while (rows.hasNext()) {
+
                         XSSFRow row = (XSSFRow) rows.next();
-                        String inn = row.getCell(0).getStringCellValue();
+                        XSSFCell cell = row.getCell(0);
+
+                        DataFormatter formatter = new DataFormatter();
+                        String inn = formatter.formatCellValue(cell);
+
                         assetList.addAll(assetService.getAllAssetsByInNum(inn));
                     }
 
@@ -2269,7 +2306,8 @@ public class AssetController {
 
     @RequestMapping(value = "/uploadIdFile", method = RequestMethod.POST)
     private @ResponseBody
-    List uploadIdFile(@RequestParam("file") MultipartFile multipartFile, @RequestParam("idType") int idType) throws IOException {
+    List uploadIdFile(@RequestParam("file") MultipartFile multipartFile,
+                      @RequestParam("idType") int idType) throws IOException {
 
         File file = getTempFile(multipartFile);
         if (idType == 1) {
@@ -2281,17 +2319,23 @@ public class AssetController {
 
                 try {
                     wb = new XSSFWorkbook(file);
-                    XSSFSheet sheet = wb.getSheetAt(0);
-                    Iterator rows = sheet.rowIterator();
-                    while (rows.hasNext()) {
-                        XSSFRow row = (XSSFRow) rows.next();
-                        String inn = row.getCell(0).getStringCellValue();
-                        assetList.addAll(assetService.getAllAssetsByInNum(inn));
-                    }
-                    return assetList;
                 } catch (Exception e) {
                     return null;
                 }
+                XSSFSheet sheet = wb.getSheetAt(0);
+                Iterator rows = sheet.rowIterator();
+                    while (rows.hasNext()) {
+
+                        XSSFRow row = (XSSFRow) rows.next();
+                        XSSFCell cell = row.getCell(0);
+
+                        DataFormatter formatter = new DataFormatter();
+                        String inn = formatter.formatCellValue(cell);
+
+                        assetList.addAll(assetService.getAllAssetsByInNum(inn));
+                    }
+                    return assetList;
+
             } else return null;
         }
         if (idType == 0) {
@@ -2327,32 +2371,38 @@ public class AssetController {
                              @RequestParam("file") MultipartFile multipartFile,
                              @RequestParam("idType") int idType) throws IOException {
         String login = (String) session.getAttribute("userId");
-        List<Asset> assetList;
         File file = getTempFile(multipartFile);
         if (idType == 1) {
+            List<Asset> assetList = new ArrayList<>();
 
             if (!multipartFile.isEmpty()) {
-
                 XSSFWorkbook wb;
 
                 try {
                     wb = new XSSFWorkbook(file);
-                    XSSFSheet sheet = wb.getSheetAt(0);
-                    Iterator rows = sheet.rowIterator();
-                    while (rows.hasNext()) {
-                        XSSFRow row = (XSSFRow) rows.next();
-                        String inn = row.getCell(0).getStringCellValue();
-                        Double accPrice = row.getCell(1).getNumericCellValue();
-                        assetList=assetService.getAllAssetsByInNum(inn);
-                        assetList.forEach(asset -> asset.setAcceptPrice(BigDecimal.valueOf(accPrice)) );
-                        assetList.forEach(asset -> assetService.updateAsset(login, asset) );
-                    }
-                    return "1";
                 } catch (Exception e) {
-                    return "0";
+                    return null;
                 }
+                XSSFSheet sheet = wb.getSheetAt(0);
+                Iterator rows = sheet.rowIterator();
+                while (rows.hasNext()) {
+
+                    XSSFRow row = (XSSFRow) rows.next();
+                    XSSFCell cell = row.getCell(0);
+
+                    DataFormatter formatter = new DataFormatter();
+                    String inn = formatter.formatCellValue(cell);
+
+                    Double accPrice = row.getCell(1).getNumericCellValue();
+                    assetList.addAll(assetService.getAllAssetsByInNum(inn));
+                    assetList.forEach(asset -> asset.setAcceptPrice(BigDecimal.valueOf(accPrice)) );
+                    assetList.forEach(asset -> assetService.updateAsset(login, asset) );
+                }
+                return "1";
+
             } else return "0";
         }
+
         if (idType == 0) {
             if (!multipartFile.isEmpty()) {
 

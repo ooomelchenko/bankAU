@@ -29,7 +29,7 @@
                 window.open("creditsSearch")
             });
             $('#button_assets').click(function () {
-                window.open("assets")
+                window.open("assets/1")
             });
             $('#button_credits').click(function () {
                 window.open("credits")

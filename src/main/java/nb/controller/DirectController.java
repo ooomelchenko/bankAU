@@ -185,20 +185,14 @@ public class DirectController {
         }
     }
 
-    @RequestMapping(value = "/assets", method = RequestMethod.GET)
-    private String assets(HttpSession session, Model model) {
+    @RequestMapping(value = "/assets/{portion}", method = RequestMethod.GET)
+    private String assets(HttpSession session, @PathVariable int portion, Model model) {
         if (!isAuth(session)) {
             return "LogIN";
         } else {
-            int portionNum;
-            try {
-                String p = (String) session.getAttribute("assetPortionNum");
-                portionNum = Integer.parseInt(p);
-            } catch (Exception e) {
-                portionNum = 0;
-            }
-            model.addAttribute("assetPortion", portionNum + 1);
-            model.addAttribute("assetList", assetService.getAssetsByPortion(portionNum));
+
+            model.addAttribute("assetPortion", portion);
+            model.addAttribute("assetList", assetService.getAssetsByPortion(portion-1));
             model.addAttribute("fondDecisionsList", StaticStatus.fondDecisionsList);
             model.addAttribute("allBidDates", assetService.getAllBidDates());
             model.addAttribute("bidResultList", StaticStatus.bidResultList);
