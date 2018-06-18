@@ -82,7 +82,7 @@
                                 var trhL = $('<tr id="trh" class="trh" style="color: #00ffff">' +
                                     '<th>ID</th>' +
                                     '<th>№ Лоту</th>' +
-                                    '<th>Оціночна вартість, грн.</th>' +
+                                    /*'<th>Оціночна вартість, грн.</th>' +*/
                                     '<th>Статус торгів</th>' +
                                     '<th>Початкова ціна, грн.</th>' +
                                     '<th>К-ть учасників</th>' +
@@ -100,7 +100,7 @@
                                     var appendedTr = $('<tr style="color: lightcyan; cursor: pointer" class="trL">' +
                                         '<td class="lotId">' + lots[i].id + '</td>' +
                                         '<td align="center">' + lots[i].lotNum + '</td>' +
-                                        '<td align="center" class="sumOfCrd">' + '</td>' +
+                                        /*'<td align="center" class="sumOfCrd">' + '</td>' +*/
                                         '<td align="center">' + lots[i].bidStage + '</td>' +
                                         '<td align="center">' + lots[i].startPrice + '</td>' +
                                         '<td align="center">' + lots[i].countOfParticipants + '</td>' +
@@ -118,6 +118,10 @@
                                 tr.append(td);
                                 bid.after(tr);
                             }
+                            $('.trL').dblclick(function(){
+                                var idL = $(this).find('.lotId').text();
+                                window.open("lotRedactor/"+idL);
+                            });
                             lotsCalculations();
                         }
                     })

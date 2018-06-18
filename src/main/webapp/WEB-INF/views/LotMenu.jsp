@@ -30,6 +30,8 @@
     <script type="text/javascript" src="resources/js/lotsMenu.js"></script>
     <script type="text/javascript">
         $(document).ready(function () {
+            lotsCalculations();
+
             function checkBids() {
                 $('.bidStatus').each(function () {
                     if ($(this).text() === "Торги не відбулись")
@@ -281,7 +283,7 @@
                     </div>
                 </div>
             </th>
-            <th>Оціночна вартість, грн.</th>
+            <%--<th>Оціночна вартість, грн.</th>--%>
             <th>Торги</th>
             <th title="Натисніть для відображення фільтру">
                 <div class="spoiler_links" style="width: 100%; height: 100%">Статус аукціону^
@@ -321,7 +323,7 @@
             %></td>
             <td class="company"><%
                 if (bid != null && bid.getExchange() != null) out.print(bid.getExchange().getCompanyName());%></td>
-            <td class="sumOfCrd"></td>
+            <%--<td class="sumOfCrd"></td>--%>
             <td class="bidStage"><%out.print(lot.getBidStage());%></td>
             <td class="bidStatus"><%if (lot.getStatus() != null) out.print(lot.getStatus());%></td>
             <td class="lotNum"><%if (lot.getLotNum() != null) out.print(lot.getLotNum());%></td>

@@ -8,8 +8,13 @@
 <base href="${pageContext.request.contextPath}/"/>
 <html>
 <head>
-    <script src="resources/js/jquery-3.2.1.js"></script>
-    <script src="resources/js/lotsMenu.js"></script>
+    <script type="text/javascript" src="resources/js/jquery-3.2.1.js"></script>
+    <script type="text/javascript" src="resources/js/lotsMenu.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            lotsCalculations();
+        });
+    </script>
 
     <link href="resources/css/general_style.css" rel="stylesheet" type="text/css">
     <style>
@@ -52,7 +57,7 @@
             <th>ID</th>
             <th>Дата торгів</th>
             <th>Назва біржі</th>
-            <th>Оціночна вартість, грн.</th>
+            <%--<th>Оціночна вартість, грн.</th>--%>
             <th>Торги</th>
             <th>Статус аукціону</th>
             <th>№ Лоту в публікації</th>
@@ -70,7 +75,7 @@
             <td align="center" class="lotId"><%=lot.getId()%></td>
             <td align="center" class="bidDate"><%if(bid!=null&&bid.getBidDate()!=null){out.print(sdf.format(bid.getBidDate()));}%></td>
             <td align="center" class="company"><%if(bid!=null&&bid.getExchange()!=null)out.print(bid.getExchange().getCompanyName());%></td>
-            <td align="center" class="sumOfCrd"></td>
+            <%--<td align="center" class="sumOfCrd"></td>--%>
             <td align="center" class="bidStage"><%out.print(lot.getBidStage());%></td>
             <td align="center" class="bidStatus"><%if(lot.getStatus()!=null)out.print(lot.getStatus());%></td>
             <td align="center" class="lotNum"><%if(lot.getLotNum()!=null)out.print(lot.getLotNum());%></td>
