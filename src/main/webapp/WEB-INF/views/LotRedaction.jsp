@@ -854,7 +854,7 @@
                         %>>
                             <%
                                 if(bid.getBidDate()!=null&&bid.getExchange().getCompanyName()!=null) {
-                                    out.print(sdf.format(bid.getBidDate()) + " - " + bid.getExchange().getCompanyName());
+                                    out.print(sdf.format(bid.getBidDate()) + " - " + bid.getExchange().getCompanyName()+" ("+bid.getNewspaper()+")");
                                 }
                             %>
                         </option>
