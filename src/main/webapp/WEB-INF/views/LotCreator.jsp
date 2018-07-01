@@ -27,6 +27,9 @@
             border-collapse: collapse;
             font-size: small;
         }
+        table th{
+            background-color: #37415d;
+        }
         input{
             width: 100%;
         }

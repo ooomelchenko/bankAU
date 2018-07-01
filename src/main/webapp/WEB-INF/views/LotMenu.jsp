@@ -36,6 +36,8 @@
                 $('.bidStatus').each(function () {
                     if ($(this).text() === "Торги не відбулись")
                         $(this).parent().css('color', 'red');
+                    else if($(this).text() === "Торги анульовано")
+                        $(this).parent().css('color', 'darkred');
                 });
                 $('.neadNewFondDec').each(function () {
                     if ($(this).text() === "Так")
@@ -156,12 +158,12 @@
         }
 
         #table_lots tr:nth-child(odd) {
-            background-color: #37415d; /* Цвет фона */
+            background-color: white; /* Цвет фона */
         }
 
         #table_lots .trL:hover {
-            color: ghostwhite;
-            background-color: #141429; /* Цвет фона */
+            border-top: solid 2px black;
+            border-bottom: solid 2px black;
         }
 
         #table_lots td, #table_lots th {
@@ -257,7 +259,7 @@
 
 <div id="div_lots" class="view">
     <table id="table_lots" class="table">
-        <tr class="trh" style="color: #00ffff">
+        <tr style="background-color:#37415d; color: #00ffff">
             <th>ID</th>
             <th title="Натисніть для відображення фільтру">
                 <div class="spoiler_links">Дата торгів^
@@ -293,6 +295,8 @@
                         <b class="bidStatusSelector">Торги не відбулись</b>
                         <br>
                         <b class="bidStatusSelector">Торги відбулись</b>
+                        <br>
+                        <b class="bidStatusSelector">Торги анульовано</b>
                     </div>
                 </div>
             </th>

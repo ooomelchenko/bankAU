@@ -47,12 +47,13 @@
         }
         th{
             color: mediumvioletred;
+            background-color: #37415d;
             border-bottom: 1px solid mediumvioletred;
         }
         tr:hover {
             cursor: pointer;
-            color: ghostwhite;
-            border-bottom: 1px solid ghostwhite;
+            color: mediumvioletred;
+            border-bottom: 1px solid mediumvioletred;
         }
         #div_exchanges{
             margin-top: -40px;

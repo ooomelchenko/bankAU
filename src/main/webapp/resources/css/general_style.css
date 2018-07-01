@@ -1,7 +1,7 @@
 body {
-    color: rgba(210, 215, 255, 0.9);
+    color: rgb(0, 0, 0);
     font: 500 14px/16px 'Open Sans', sans-serif;
-    background: #252F48;
+    background: whitesmoke;
     height: 100%;
     margin-top: 8%;
 }
@@ -12,8 +12,8 @@ p {
 }
 
 input, select{
-    background: #37415d;
-    color: ghostwhite;
+    background: white;
+    color: black;
 }
 
 button {
@@ -31,6 +31,7 @@ header {
     height: 8%;
     background: #37415d;
     display: inline-table;
+    color: whitesmoke;
 }
 
 header div {
@@ -79,6 +80,7 @@ footer {
     width: 100%;
     height: 8%;
     background: #37415d;
+    color: whitesmoke;
 }
 
 footer div {

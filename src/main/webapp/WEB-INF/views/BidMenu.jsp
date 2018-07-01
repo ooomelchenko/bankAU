@@ -79,7 +79,7 @@
                                 var td = $('<td colspan="12"></td>');
                                 var table_lots = $('<table id="table_lots" class="table_lots" border="solid cyan"></table>');
 
-                                var trhL = $('<tr id="trh" class="trh" style="color: #00ffff">' +
+                                var trhL = $('<tr id="trh" class="trh" style="color: #00ffff; background-color: #37415d">' +
                                     '<th>ID</th>' +
                                     '<th>№ Лоту</th>' +
                                     /*'<th>Оціночна вартість, грн.</th>' +*/
@@ -97,7 +97,7 @@
                                 table_lots.append(trhL);
 
                                 for (var i = 0; i < lots.length; i++) {
-                                    var appendedTr = $('<tr style="color: lightcyan; cursor: pointer" class="trL">' +
+                                    var appendedTr = $('<tr style="color: lightcyan; background-color: #37415d; cursor: pointer" class="trL">' +
                                         '<td class="lotId">' + lots[i].id + '</td>' +
                                         '<td align="center">' + lots[i].lotNum + '</td>' +
                                         /*'<td align="center" class="sumOfCrd">' + '</td>' +*/
@@ -244,8 +244,8 @@
             font-size: x-small;
         }
         .bidTr:hover {
-            color: ghostwhite;
-            border-bottom: 1px solid ghostwhite;
+            color: orangered;
+            border-bottom: 1px solid orangered;
             cursor: pointer;
         }
 
@@ -337,7 +337,7 @@
                     <button id="buttAddBid">Підтвердити</button>
                 </td>
             </tr>
-            <tr id="addTr" style="border-bottom: 1px solid sandybrown; color: sandybrown" >
+            <tr id="addTr" style="border-bottom: 1px solid orangered; color: orangered; background-color: #37415d" >
                 <th>ID</th>
                 <th>Дата торгів</th>
                 <th>Біржа</th>

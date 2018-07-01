@@ -49,6 +49,10 @@
     <link rel="stylesheet" media="screen" type="text/css" href="resources/css/jquery-ui.structure.css"/>
     <link rel="stylesheet" media="screen" type="text/css" href="resources/css/jquery-ui.theme.css"/>
     <style type="text/css">
+        body{
+            background-color: #37415d;
+            color: #bbbbbb;
+        }
         .reportTr:hover {
             color: whitesmoke;
             border-bottom: 1px solid lightcyan;

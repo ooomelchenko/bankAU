@@ -138,7 +138,9 @@
             border-collapse: collapse;
             font-size: x-small;
         }
-
+        table th{
+            background-color: #37415d;
+        }
         #div_search {
             margin-top: -40px;
             margin-bottom: 20px;

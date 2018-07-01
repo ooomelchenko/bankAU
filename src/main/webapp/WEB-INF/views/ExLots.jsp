@@ -26,14 +26,14 @@
         table th{
             color: mediumvioletred;
             border-bottom: 1px solid mediumvioletred;
+            background-color: #37415d;
         }
         .trL{
             color: cyan;
         }
         .trL:hover{
             cursor: pointer;
-            color: ghostwhite;
-            border-bottom: 1px solid ghostwhite;
+            border-bottom: 2px solid mediumvioletred;
         }
     </style>
 

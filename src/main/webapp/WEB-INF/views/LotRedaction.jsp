@@ -595,10 +595,6 @@
         table{
             border-collapse: collapse;
         }
-        h2{
-            color: whitesmoke;
-            text-align: center;
-        }
         .tR:hover{
             cursor: pointer;
             background-color: #252F48;
@@ -626,29 +622,29 @@
 
         }
         #div_bid{
-            border: 1px solid;
             display: table-cell;
             width: 35%;
             height: 100%;
+            border: 1px solid;
         }
         #div_decisions{
             display: table-cell;
             width: 25%;
             height: 100%;
             text-align: left;
-            border: 1px solid ghostwhite;
+            border: 1px solid;
         }
         #div_payments{
             display: table-cell;
             width: 20%;
             height: 100%;
-            border: 1px solid ghostwhite;
+            border: 1px solid;
         }
         #div_documents{
             display: table-cell;
             width: 10%;
             height: 100%;
-            border: 1px solid ghostwhite;
+            border: 1px solid;
         }
         .button_reBid{
             height: 100%;
@@ -667,24 +663,21 @@
         }
 
         #div_bid table tr {
-            border: 1px solid sandybrown;
-            color: sandybrown;
+            color: orangered;
         }
         #finInfoTr{
             font-weight: bold
         }
 
-        #firstPriceTd, #bidDate, .bidHistoryTr, #bidTd
-        {
+        #firstPriceTd, #bidDate, .bidHistoryTr, #bidTd {
             cursor:pointer;
         }
         #bidDate:hover{
-            background-color: #37415d;
+            background-color: white;
             font-weight: bold
         }
         .bidHistoryTr{
-            background-color: #37415d;
-            color: whitesmoke;
+            background-color: white;
         }
         .bidHistoryTr:hover{
             background-color: white;
@@ -785,12 +778,13 @@
         }
 
         #div_finance{
+            background-color: white;
             height: 100%;
             width: 90%;
             display: table-cell;
         }
         #table_finance {
-            background-color: #37415d;
+
             font-size: small;
             height: 100%;
         }
@@ -798,6 +792,7 @@
             border: solid 1px #00ffff;
         }
         #table_finance th{
+            background-color: #37415d;
             color: #00ffff;
             border: solid 1px;
         }
@@ -807,13 +802,13 @@
         .table_obj_list{
             width: 100%;
             font-size: small;
-            background-color: #37415d;
+
         }
         #table_assets_list{
             border: 1px solid lightgreen;
          }
         #table_credits_list{
-
+            border: 1px solid deepskyblue;
         }
 
     </style>
@@ -1241,7 +1236,7 @@
         </tr>
     </table>
     <table id="table_assets_list" class="table_obj_list" hidden="hidden" border="green" style="border: 1px solid lawngreen;">
-        <tr style="color: lawngreen">
+        <tr style="color: lawngreen; background-color: #37415d">
             <th hidden="hidden">ID</th>
             <th>Інвентарний №</th>
             <th>Назва активу</th>
@@ -1255,8 +1250,8 @@
             <th>В заставі НБУ</th>
         </tr>
     </table>
-    <table id="table_credits_list" class="table_obj_list" hidden="hidden" border="blue" style="border: 1px solid deepskyblue;">
-        <tr style="color: deepskyblue">
+    <table id="table_credits_list" class="table_obj_list" hidden="hidden" border="blue">
+        <tr style="color: deepskyblue; background-color: #37415d">
             <th hidden="hidden">ID</th>
             <th>ID_Bars</th>
             <th>ІНН</th>
