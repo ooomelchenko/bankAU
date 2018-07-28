@@ -28,13 +28,6 @@
     <script type="text/javascript" src="resources/js/jquery-3.2.1.js"></script>
     <script type="text/javascript" src="resources/js/jquery-ui.js"></script>
     <script type="text/javascript" src="resources/js/Monthpicker.js"></script>
-
-    <link rel="stylesheet" media="screen" type="text/css" href="resources/css/general_style.css"/>
-    <link rel="stylesheet" media="screen" type="text/css" href="resources/css/monthpicker.css"/>
-    <link rel="stylesheet" media="screen" type="text/css" href="resources/css/jquery-ui.css"/>
-    <link rel="stylesheet" media="screen" type="text/css" href="resources/css/jquery-ui.structure.css"/>
-    <link rel="stylesheet" media="screen" type="text/css" href="resources/css/jquery-ui.theme.css"/>
-
     <script>
         $(document).ready(function(){
             var portionNum = $('#portion');
@@ -66,7 +59,7 @@
                     success: function (res) {
                         if (res==1){
                             alert("затверджені ціни додано!");
-                             location.reload(true);
+                            location.reload(true);
                         }
                         else if (res==0){
                             alert("затверджені ціни не додано!");
@@ -77,7 +70,7 @@
 
             var dp = $('#inputFondDecDate');
             dp.datepicker({dateFormat: "yy-mm-dd", dayNamesMin: ["Нд","Пн","Вт","Ср","Чт","Пт","Сб"], monthNames: ["січень","лютий","березень", "квітень", "травень","червень",
-                "липень","серпень","вересень","жовтень","листопад","грудень"] });
+                    "липень","серпень","вересень","жовтень","листопад","грудень"] });
             var countOfPortions;
             $('.objId').each(function(){
                 var obj = $(this);
@@ -167,11 +160,11 @@
             var selectors = $('.bidDateSelector, .nbuZastSelector, .payStatusSelector, .bidResSelector, .workStageSelector, .exchangeSelector, .fondDecNumSelector, .lotIDSelector');
             selectors.hover(function(){
                 $(this).css(
-                        {'color': "white"})
+                    {'color': "white"})
             })
-                    .mouseout( function(){
-                        $(this).css({'color': ""})
-            });
+                .mouseout( function(){
+                    $(this).css({'color': ""})
+                });
 
             bidDateSelector.click(function () {
                 $('.bidDateHide').each(function () {
@@ -308,26 +301,26 @@
                     $(this).find("input").show();
                     $(this).find("div").hide();
                     $(this).append($("<button class='okButton'>ok</button>").click(function () {
-                                var assetTr = $(this).parent().parent();
-                                var inAcceptPrice = $(this).parent().find('input').val();
-                                $.ajax({
-                                    url: "setAcceptedPrice",
-                                    type: "POST",
-                                    data: {
-                                        assetId: $(this).parent().parent().find('.objId').text(),
-                                        acceptPrice: inAcceptPrice
-                                    },
-                                    success: function (result) {
-                                        if (result == "1") {
-                                            assetTr.find(".acceptDiv").text(inAcceptPrice);
-                                            assetTr.find(".inputAcceptPrice").hide();
-                                            assetTr.find(".okButton").remove();
-                                            assetTr.find(".acceptDiv").show();
-                                        }
-                                        else alert("данні не внесені!");
+                            var assetTr = $(this).parent().parent();
+                            var inAcceptPrice = $(this).parent().find('input').val();
+                            $.ajax({
+                                url: "setAcceptedPrice",
+                                type: "POST",
+                                data: {
+                                    assetId: $(this).parent().parent().find('.objId').text(),
+                                    acceptPrice: inAcceptPrice
+                                },
+                                success: function (result) {
+                                    if (result == "1") {
+                                        assetTr.find(".acceptDiv").text(inAcceptPrice);
+                                        assetTr.find(".inputAcceptPrice").hide();
+                                        assetTr.find(".okButton").remove();
+                                        assetTr.find(".acceptDiv").show();
                                     }
-                                });
-                            })
+                                    else alert("данні не внесені!");
+                                }
+                            });
+                        })
                     );
                 }
 
@@ -371,7 +364,7 @@
                 $('.assetTr').show();
                 var hideElements =$('.bidDateHide, .nbuZastHide, .payStatusHide, .bidResultHide, .workStageHide, .exchangeNameHide, .fondDecNumHide, .lotIdHide');
                 hideElements.each(function(){
-                   $(this).parent().hide();
+                    $(this).parent().hide();
                 });
             }
 
@@ -422,6 +415,12 @@
 
         })
     </script>
+
+    <link rel="stylesheet" media="screen" type="text/css" href="resources/css/general_style.css"/>
+    <link rel="stylesheet" media="screen" type="text/css" href="resources/css/monthpicker.css"/>
+    <link rel="stylesheet" media="screen" type="text/css" href="resources/css/jquery-ui.css"/>
+    <link rel="stylesheet" media="screen" type="text/css" href="resources/css/jquery-ui.structure.css"/>
+    <link rel="stylesheet" media="screen" type="text/css" href="resources/css/jquery-ui.theme.css"/>
     <style type="text/css">
         table{
             border-collapse: collapse;
@@ -489,7 +488,7 @@
         </table>
     </div>
     <div id="div_right_side" class="div_header_additions">
-        <button id="addPriceByFileBut" value="0">ДОДАТИ ЗАТВЕРДЖЕНУ ФГВФО ЦІНУ</button>
+        <%--<button id="addPriceByFileBut" value="0">ДОДАТИ ЗАТВЕРДЖЕНУ ФГВФО ЦІНУ</button>--%>
     </div>
 </header>
 

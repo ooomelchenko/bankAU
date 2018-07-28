@@ -171,7 +171,7 @@ public class AssetController {
             i++;
             numRow++;
             int j = 0;
-            while (j < 66) {
+            while (j < 67) {
                 row.createCell(j);
                 j++;
             }
@@ -277,13 +277,18 @@ public class AssetController {
             }
             catch (NullPointerException npe){
             }
+            try {
+                row.getCell(66).setCellValue(lot.getCustomerInn());
+            }
+            catch (NullPointerException npe){
+            }
         }
         for (Credit credit : creditList) {
             HSSFRow row = sheet.createRow(numRow);
             i++;
             numRow++;
             int j = 0;
-            while (j < 66) {
+            while (j < 67) {
                 row.createCell(j);
                 j++;
             }
@@ -363,6 +368,11 @@ public class AssetController {
             }
             try {
                 row.getCell(65).setCellValue(lot.getCustomerName());
+            }
+            catch (NullPointerException npe){
+            }
+            try {
+                row.getCell(66).setCellValue(lot.getCustomerInn());
             }
             catch (NullPointerException npe){
             }
@@ -565,7 +575,7 @@ public class AssetController {
             numRow++;
             Lot tLot = lotService.getLot(credit.getLot());
                 try {
-                    row.createCell(1).setCellValue(tLot.getLotNum());
+                    row.createCell(2).setCellValue(tLot.getLotNum());
                     row.createCell(7).setCellValue(tLot.getCustomerName());
                     try{
                         row.createCell(0).setCellValue(tLot.getBid().getBidDate());
@@ -577,17 +587,19 @@ public class AssetController {
                 catch (NullPointerException npl){
                 }
 
-            row.createCell(2).setCellValue(credit.getFio());
-            row.createCell(3).setCellValue(credit.getInn());
-            row.createCell(4).setCellValue(credit.getContractNum());
-            row.createCell(5).setCellValue(credit.getNd());
+            row.createCell(3).setCellValue(credit.getFio());
+            row.createCell(4).setCellValue(credit.getInn());
+            row.createCell(5).setCellValue(credit.getContractNum());
+            row.createCell(6).setCellValue(credit.getNd());
             try {
-                row.createCell(6).setCellValue(credit.getFactPrice().doubleValue());
+                row.createCell(8).setCellValue(credit.getFactPrice().doubleValue());
+            }
+            catch(NullPointerException npe){
+                row.createCell(8);
             }
             catch (NumberFormatException nfe){
-                row.createCell(6).setCellValue(0.00);
+                row.createCell(8).setCellValue(0.00);
             }
-
         }
 
         String fileName = "C:\\projectFiles\\" + ("CREDITS_solded " +sdfshort.format(new Date())+ ".xlsx");
@@ -2373,7 +2385,7 @@ public class AssetController {
         String login = (String) session.getAttribute("userId");
         File file = getTempFile(multipartFile);
         if (idType == 1) {
-            List<Asset> assetList = new ArrayList<>();
+            List<Asset> assetList ;
 
             if (!multipartFile.isEmpty()) {
                 XSSFWorkbook wb;
@@ -2394,7 +2406,7 @@ public class AssetController {
                     String inn = formatter.formatCellValue(cell);
 
                     Double accPrice = row.getCell(1).getNumericCellValue();
-                    assetList.addAll(assetService.getAllAssetsByInNum(inn));
+                    assetList=assetService.getAllAssetsByInNum(inn);
                     assetList.forEach(asset -> asset.setAcceptPrice(BigDecimal.valueOf(accPrice)) );
                     assetList.forEach(asset -> assetService.updateAsset(login, asset) );
                 }
@@ -2414,17 +2426,30 @@ public class AssetController {
                     Iterator rows = sheet.rowIterator();
                     while (rows.hasNext()) {
                         XSSFRow row = (XSSFRow) rows.next();
-                        String inn = row.getCell(0).getStringCellValue();
+
+                        XSSFCell cell = row.getCell(0);
+
+                        DataFormatter formatter = new DataFormatter();
+                        String inn = formatter.formatCellValue(cell);
+
                         Double accPrice = row.getCell(1).getNumericCellValue();
-                       List<Credit> creditList = creditService.getCreditsByIdBars(Long.parseLong(inn));
-                        creditList.forEach(credit -> credit.setAcceptPrice(BigDecimal.valueOf(accPrice)) );
+                        List<Credit> creditList = creditService.getCreditsByIdBars(Long.parseLong(inn));
+                        creditList.forEach(credit -> credit.setAcceptPrice(BigDecimal.valueOf(accPrice)));
                         creditList.forEach(credit -> creditService.updateCredit(login, credit));
                     }
                     return "1";
-                } catch (Exception e) {
+                }
+                catch (FileNotFoundException fnfe) {
                     return "0";
                 }
-            } else return "0";
+                catch (IOException ioe) {
+                    return "0";
+                }
+                catch(Exception e){
+                    return "0";
+                }
+            }
+            else return "0";
         }
 
         else

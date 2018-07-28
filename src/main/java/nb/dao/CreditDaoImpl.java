@@ -337,7 +337,7 @@ public class CreditDaoImpl implements CreditDao {
     }
     @Override
     public List getCredits_SuccessBids(Date startBids, Date endBids) {
-        Query query = factory.getCurrentSession().createQuery("SELECT credit FROM nb.domain.Credit credit, nb.domain.Lot l WHERE credit.lot=l.id and l.status!='Торги не відбулись' and l.bid.bidDate>=:startBid AND l.bid.bidDate<=:endBid");
+        Query query = factory.getCurrentSession().createQuery("SELECT credit FROM nb.domain.Credit credit, nb.domain.Lot l WHERE credit.lot=l.id and l.status='Торги відбулись' and l.bid.bidDate>=:startBid AND l.bid.bidDate<=:endBid");
         query.setParameter("startBid", startBids);
         query.setParameter("endBid", endBids);
         return query.list();

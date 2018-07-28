@@ -312,7 +312,7 @@
         </table>
     </div>
     <div id="div_right_side" class="div_header_additions">
-        <button id="addPriceByFileBut" value="0">ДОДАТИ ЗАТВЕРДЖЕНУ ФГВФО ЦІНУ</button>
+        <%--<button id="addPriceByFileBut" value="0">ДОДАТИ ЗАТВЕРДЖЕНУ ФГВФО ЦІНУ</button>--%>
         <button id="showFilters">Фільтри</button>
     </div>
 </header>

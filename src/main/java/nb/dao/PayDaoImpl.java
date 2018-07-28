@@ -55,7 +55,7 @@ public class PayDaoImpl implements PayDao {
     }
     @Override
     public List getPaysByDates(Date startDate, Date endDate) {
-        Query query =factory.getCurrentSession().createQuery("FROM nb.domain.Pay pay where pay.lotId is not null and pay.date<:endDate and pay.date>:startDate order by pay.date");
+        Query query =factory.getCurrentSession().createQuery("FROM nb.domain.Pay pay where pay.lotId is not null and pay.date<=:endDate and pay.date>=:startDate order by pay.date");
         query.setParameter("startDate", startDate);
         query.setParameter("endDate", endDate);
         return query.list();

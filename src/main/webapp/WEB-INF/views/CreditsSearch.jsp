@@ -116,6 +116,43 @@
                 sendFile();
             });
 
+            $('#button_addPriceByFile').click(function(){
+                loadFile();
+            });
+
+            $('#addPriceByFileBut').click(function(){
+                if($(this).val()==0) {
+                    $('#div_add_dec_form').show();
+                    $(this).val(1);
+                    $(this).text("Приховати");
+                }
+                else if($(this).val()==1) {
+                    $('#div_add_dec_form').hide();
+                    $(this).val(0);
+                    $(this).text("ДОДАТИ ЗАТВЕРДЖЕНУ ФГВФО ЦІНУ");
+                }
+            });
+
+            function loadFile(){
+                var formData = new FormData($('#form_prices')[0]);
+                $.ajax({
+                    type: "POST",
+                    processData: false,
+                    contentType: false,
+                    url: "setAccPriceByFile",
+                    data:  formData,
+                    success: function (res) {
+                        if ((res)==="1"){
+                            alert("затверджені ціни додано!");
+                            location.reload(true);
+                        }
+                        else if ((res)==="0"){
+                            alert("затверджені ціни не додано!");
+                        }
+                    }
+                })
+            }
+
             function sendFile(){
                 var formData = new FormData($('form')[0]);
                 $.ajax({
@@ -146,7 +183,6 @@
             margin-bottom: 20px;
             width: 100%;
             display: inline-table;
-
         }
 
         .div_search_block {
@@ -172,20 +208,18 @@
     <div id="div_sheet_header">
         <h1>Пошук кредитів</h1>
     </div>
-    <div id="div_right_side" class="div_header_additions" >
-
+    <div id="div_right_side" class="div_header_additions">
+        <button id="addPriceByFileBut" value="0">ДОДАТИ ЗАТВЕРДЖЕНУ ФГВФО ЦІНУ</button>
     </div>
 </header>
 
 <div id="div_search">
 
-    <div id="div_search_inn" class="div_search_block" style="width: 60%">
+    <div id="div_search_inn" class="div_search_block" style="width: 50%">
         <input id="inn" type="text" placeholder="Введіть ІНН для пошуку" style="width: 50%; font-size: large">
 
         <input id="idBars" type="text" placeholder="Введіть ID_BARS"
                style=" width: 50%">
-
-
         <br/>
         <img id="findObjBut" class="icon_button" src="resources/css/images/search.png" title="Знайти" width="40px"
              height="40px">
@@ -193,7 +227,7 @@
         <button id="objHistoryBut">Показати історію</button>
 
     </div>
-    <div class="div_search_block" style="width: 40%">
+    <div class="div_search_block" style="width: 30%">
 
         <form method="POST" action="" enctype="multipart/form-data" lang="utf8">
             <h4>Обрати файл зі списком ID_Bars:</h4>
@@ -202,6 +236,14 @@
         </form>
         <img id="sendBut" class="icon_button" src="resources/css/images/search.png" title="Знайти по списку з файлу" width="40px" height="40px">
 
+    </div>
+    <div id="div_add_dec_form" class="div_search_block" style="width: 20%; display: none; background-color: white">
+        <form id="form_prices" method="POST" action="" enctype="multipart/form-data" lang="utf8" >
+            <h4>Обрати файл з цінами:</h4>
+            <input align="center" type="file" name="file" title="натисніть для обрання файлу"><br/>
+            <input name="idType" value="0" type="number" hidden="hidden">
+        </form>
+        <button id="button_addPriceByFile" title="завантажити ціну з файлу">Завантажити</button>
     </div>
 </div>
 

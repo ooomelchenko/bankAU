@@ -165,11 +165,11 @@
         <div style="width: 50%">
             <h4 title="поточна версія">Аукціони v2.0</h4>
         </div>
-        <div style="display: table-cell; width: 50%; text-align: center">
+       <%-- <div style="display: table-cell; width: 50%; text-align: center">
             <a href="http://172.17.2.245:8083/nb_v1.0/" title="Клікніть для переходу до старої версії програми" style="font-size: large; color: violet">Аукціони v1.0</a>
             <br/>
             <b>посилання на стару версію</b>
-        </div>
+        </div>--%>
 </footer>
 </body>
 </html>

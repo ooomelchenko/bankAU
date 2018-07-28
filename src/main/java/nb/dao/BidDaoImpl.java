@@ -62,7 +62,7 @@ public class BidDaoImpl implements BidDao {
     }
     @Override
     public List<Lot> lotsByBid (Bid bid) {
-        Query query = factory.getCurrentSession().createQuery("FROM nb.domain.Lot l WHERE l.bid=:b");
+        Query query = factory.getCurrentSession().createQuery("FROM nb.domain.Lot l WHERE l.bid=:b ORDER BY lotNum ");
         query.setParameter("b", bid);
         return query.list();
     }
