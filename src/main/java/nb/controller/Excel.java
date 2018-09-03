@@ -128,11 +128,125 @@ public class Excel implements Serializable {
         sumRow.getCell(12).setCellFormula("SUM(M7:M" + shiftCount + ")");
         sumRow.getCell(13).setCellFormula("SUM(N7:N" + shiftCount + ")");
 
-        String fileName = "C:\\projectFiles\\"+(bidDates.equals("") ? "" : bidDates.substring(2)) + " Lot N"+lotNums.substring(1, lotNums.length()-1)+ ".xls";;
+        String fileName = "C:\\projectFiles\\"+(bidDates.equals("") ? "" : bidDates.substring(2)) + " Lot N"+lotNums.substring(1, lotNums.length()-1)+ ".xls";
         OutputStream fileOut = new FileOutputStream(fileName);
 
         wb.write(fileOut);
         fileOut.close();
         return fileName;
     }
+    /*public static String loadCreditsByLot(Lot lot, List<Credit> creditList) throws IOException {
+        Set<Date> bidDateSet = new TreeSet<>();
+        Set<String> exNamesSet = new TreeSet<>();
+        Set<Long> lotNumsSet = new TreeSet<>();
+
+        for(Lot lot: lotList){
+            if(lot.getBid()!=null&&lot.getBid().getBidDate()!=null) {
+                bidDateSet.add(lot.getBid().getBidDate());
+                exNamesSet.add(lot.getBid().getExchange().getCompanyName());
+            }
+            lotNumsSet.add(lot.getId());
+        }
+        String bidDates="";
+        for(Date date: bidDateSet){
+            bidDates +=", "+sdf.format(date);
+        }
+        String exNames =exNamesSet.toString();
+        String lotNums =lotNumsSet.toString();
+
+        POIFSFileSystem fs = new POIFSFileSystem(new FileInputStream("C:\\projectFiles\\Shablon.xls"));
+        HSSFWorkbook wb = new HSSFWorkbook(fs);
+        HSSFSheet sheet = wb.getSheetAt(0);
+        int shiftCount = assetList.size() + 6;
+
+        sheet.getRow(1).getCell(0).setCellValue("Інформація про активи ПАТ «КБ «НАДРА», що пропонуються на продаж на аукціоні "
+                +(bidDates.equals("") ? "" : bidDates.substring(2))+" р. на електронному торговому майданчику "+exNames.substring(1, exNames.length()-1));
+
+        //задаем формат дати
+        String excelFormatter = DateFormatConverter.convert(Locale.ENGLISH , "yyyy-MM-dd");
+        CellStyle cellStyle = wb.createCellStyle();
+        DataFormat poiFormat = wb.createDataFormat();
+        cellStyle.setDataFormat(poiFormat.getFormat(excelFormatter));
+        //end
+        sheet.shiftRows(7, 7, assetList.size() - 1);
+        int numRow = 6;
+        for (Asset asset : assetList) {
+            HSSFRow row = sheet.createRow(numRow);
+            numRow++;
+            int j = 0;
+            while (j < 14) {
+                row.createCell(j);
+                j++;
+            }
+            row.getCell(0).setCellValue(asset.getId());
+            row.getCell(1).setCellValue(asset.getLot().getLotNum());
+            row.getCell(2).setCellValue(asset.getAsset_name());
+            row.getCell(3).setCellValue(asset.getInn());
+            row.getCell(4).setCellValue(asset.getRv().doubleValue());
+            try {
+                row.getCell(5).setCellValue(asset.getEksplDate());
+            }
+            catch (NullPointerException e){
+            }
+            row.getCell(5).setCellStyle(cellStyle);
+            row.getCell(6).setCellValue(asset.getOriginalPrice().doubleValue());
+            try {
+                row.getCell(7).setCellValue(asset.getZb().doubleValue());
+            }
+            catch(Exception e){
+            }
+            if(asset.getLot().getBidStage()!=null){
+                int bidStage = 0;
+                switch (asset.getLot().getBidStage()) {
+                    case "Перші торги":
+                        bidStage = 1;
+                        break;
+                    case "Другі торги":
+                        bidStage = 2;
+                        break;
+                    case "Треті торги":
+                        bidStage = 3;
+                        break;
+                    case "Четверті торги":
+                        bidStage = 4;
+                        break;
+                    case "П'яті торги":
+                        bidStage = 5;
+                        break;
+                }
+                row.getCell(8).setCellValue(bidStage);
+            }
+            try{
+                BigDecimal discount = (asset.getLot().getFirstStartPrice()).divide(asset.getLot().getStartPrice(), 2);
+                row.getCell(9).setCellValue(1-discount.doubleValue());
+            }
+            catch (NullPointerException e){
+                row.getCell(9).setCellValue(0);
+            }
+
+            if(asset.getAcceptPrice()!=null)
+                row.getCell(10).setCellFormula("L"+(numRow)+"/6*5" );
+            if(asset.getAcceptPrice()!=null)
+            {row.getCell(11).setCellValue(asset.getAcceptPrice().doubleValue());} //изменить!!!
+            row.getCell(12).setCellValue(asset.getLot().getCountOfParticipants());
+            if(asset.getFactPrice()!=null)
+            {row.getCell(13).setCellValue(asset.getFactPrice().doubleValue());}
+        }
+        HSSFRow sumRow = sheet.getRow(6+assetList.size());
+        sumRow.getCell(4).setCellFormula("SUM(E7:E" + shiftCount + ")");
+        sumRow.getCell(6).setCellFormula("SUM(G7:G" + shiftCount + ")");
+        sumRow.getCell(7).setCellFormula("SUM(H7:H" + shiftCount + ")");
+        //sumRow.getCell(8).setCellFormula("SUM(I7:I" + shiftCount + ")");
+        sumRow.getCell(10).setCellFormula("SUM(K7:K" + shiftCount + ")");
+        sumRow.getCell(11).setCellFormula("SUM(L7:L" + shiftCount + ")");
+        sumRow.getCell(12).setCellFormula("SUM(M7:M" + shiftCount + ")");
+        sumRow.getCell(13).setCellFormula("SUM(N7:N" + shiftCount + ")");
+
+        String fileName = "C:\\projectFiles\\"+(bidDates.equals("") ? "" : bidDates.substring(2)) + " Lot N"+lotNums.substring(1, lotNums.length()-1)+ ".xls";;
+        OutputStream fileOut = new FileOutputStream(fileName);
+
+        wb.write(fileOut);
+        fileOut.close();
+        return fileName;
+    }*/
 }

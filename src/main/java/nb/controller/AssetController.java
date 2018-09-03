@@ -590,15 +590,15 @@ public class AssetController {
             row.createCell(3).setCellValue(credit.getFio());
             row.createCell(4).setCellValue(credit.getInn());
             row.createCell(5).setCellValue(credit.getContractNum());
-            row.createCell(6).setCellValue(credit.getNd());
+            row.createCell(6).setCellValue("S"+credit.getNd());
             try {
-                row.createCell(8).setCellValue(credit.getFactPrice().doubleValue());
+                row.createCell(8).setCellValue("S"+(int)(credit.getFactPrice().doubleValue()*100));
             }
             catch(NullPointerException npe){
                 row.createCell(8);
             }
             catch (NumberFormatException nfe){
-                row.createCell(8).setCellValue(0.00);
+                row.createCell(8).setCellValue("S"+0);
             }
         }
 
@@ -2487,6 +2487,30 @@ public class AssetController {
         os.close();
         file.delete();
     }
+    /*@RequestMapping(value = "/creditsByLot/{id}", method = RequestMethod.GET)
+    public void getCreditsByLot(HttpServletResponse response, @PathVariable Long id) throws IOException {
+
+        Lot lot = lotService.getLot(id);
+
+        String filePath = Excel.loadCreditsByLot(lot, creditService.getCrditsByLotId(id));
+
+        File file = new File(filePath);
+        InputStream is = new FileInputStream(file);
+
+        response.setContentType("application/octet-stream");
+        response.setHeader("Content-Disposition", "attachment; filename=\"" + file.getName() + "\"");
+
+        OutputStream os = response.getOutputStream();
+        byte[] buffer = new byte[1024];
+        int len;
+        while ((len = is.read(buffer)) != -1) {
+            os.write(buffer, 0, len);
+        }
+        os.flush();
+        is.close();
+        os.close();
+        file.delete();
+    }*/
 
     @RequestMapping(value = "/downloadT/{id}", method = RequestMethod.GET)
     public void downloadT(HttpServletResponse response, @PathVariable Long id) throws IOException {
@@ -2946,26 +2970,35 @@ public class AssetController {
 
         lot.setCountOfParticipants(countOfParticipants);
         lot.setBidScenario(bidScenario);
-        lot.setFirstStartPrice(firstPrice);
+
         if (selectedBidId == 0L) {
             lot.setBid(null);
         }
         else
             lot.setBid(bidService.getBid(selectedBidId));
-        if(lot.getLotType()==1){
+
+        if(lot.getLotType()==1 /*&& lot.getFactPrice()!=null && !lot.getFactPrice().equals(factLotPrice)*/){
+
             setFactPriceFromLotToAssets(lot, factLotPrice, login);
         }
         if(lot.getLotType()==0) {
+         //   if(lot.getFirstStartPrice()!=null && !lot.getFirstStartPrice().equals(firstPrice))
             setFirstStartPriceFromLotToCredits(lot, firstPrice, login);
+         //   if(lot.getStartPrice()!=null && !lot.getStartPrice().equals(startPrice))
             setStartPriceFromLotToCredits(lot, startPrice, login);
+        //    if(lot.getFactPrice()!=null && !lot.getFactPrice().equals(factLotPrice))
             setFactPriceFromLotToCredits(lot, factLotPrice, login);
         }
+
+        lot.setFirstStartPrice(firstPrice);
         lot.setStartPrice(startPrice);
+        lot.setFactPrice(factLotPrice);
+
         if(lot.getFirstStartPrice() == null) {
             setFirstStartPriceFromLotToCredits(lot, startPrice, login);
             lot.setFirstStartPrice(startPrice);
         }
-        lot.setFactPrice(factLotPrice);
+
 
         if (isSold.equals("1")) {
             List<Credit> credits = lotService.getCRDTSByLot(lot);

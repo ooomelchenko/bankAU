@@ -9,9 +9,9 @@ function getFileNames(objId, objType){
         },
         success: function(fileNames){
             for(var i=0; i< fileNames.length; i++){
-                var trDoc = $('<tr class="fileTr" title="клікніть двічі для перегляду або завантаження" style="cursor: pointer; color: lightgrey" ></tr>').mouseover(function(){
+                var trDoc = $('<tr class="fileTr" title="клікніть двічі для перегляду або завантаження" style="cursor: pointer; color: mediumblue" ></tr>').mouseover(function(){
                     $(this).css({'color': "ghostwhite"})}).mouseout( function(){
-                    $(this).css({'color': "lightgrey"});});
+                    $(this).css({'color': "mediumblue"});});
 
                 var tdDoc =($('<td>'+fileNames[i]+'</td>')).dblclick(function(){
                     $.ajax({
