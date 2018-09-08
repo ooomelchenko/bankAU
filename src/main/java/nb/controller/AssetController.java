@@ -2487,12 +2487,16 @@ public class AssetController {
         os.close();
         file.delete();
     }
-    /*@RequestMapping(value = "/creditsByLot/{id}", method = RequestMethod.GET)
+    @RequestMapping(value = "/unitsByLot/{id}", method = RequestMethod.GET)
     public void getCreditsByLot(HttpServletResponse response, @PathVariable Long id) throws IOException {
 
         Lot lot = lotService.getLot(id);
+        String filePath="";
 
-        String filePath = Excel.loadCreditsByLot(lot, creditService.getCrditsByLotId(id));
+        if(lot.getLotType()==0)
+            filePath = Excel.loadCreditsByLot(lot, creditService.getCrditsByLotId(id));
+        else if(lot.getLotType()==1)
+            filePath = Excel.loadAssetsByList(lot, lotService.getAssetsByLot(lot));
 
         File file = new File(filePath);
         InputStream is = new FileInputStream(file);
@@ -2510,7 +2514,7 @@ public class AssetController {
         is.close();
         os.close();
         file.delete();
-    }*/
+    }
 
     @RequestMapping(value = "/downloadT/{id}", method = RequestMethod.GET)
     public void downloadT(HttpServletResponse response, @PathVariable Long id) throws IOException {

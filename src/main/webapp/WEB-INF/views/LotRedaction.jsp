@@ -418,16 +418,17 @@
             });
 
             $('#icon_excel_download').click(function () {
-                $.ajax({
+                window.open("unitsByLot/"+lotID);
+                /*$.ajax({
                     url: "setLotToPrint",
                     type: "GET",
-                    data: {objId: $('#lotId').text()},
+                    data: {objId: lotID},
                     success: function (res) {
                         if (res == '1') {
                             window.open("download");
                         }
                     }
-                });
+                });*/
             });
 
             $('#icon_add_pay').click(function(){
