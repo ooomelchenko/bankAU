@@ -140,7 +140,7 @@ public class Excel implements Serializable {
         return fileName;
     }
 
-    static String loadAssetsByList(Lot lot, List<Asset> assetList) throws IOException {
+    static File loadAssetsByList(Lot lot, List<Asset> assetList) throws IOException {
 
         POIFSFileSystem fs = new POIFSFileSystem(new FileInputStream("C:\\projectFiles\\Shablon_1.xls"));
         HSSFWorkbook wb = new HSSFWorkbook(fs);
@@ -245,14 +245,17 @@ public class Excel implements Serializable {
         sumRow.getCell(13).setCellFormula("SUM(N7:N" + shiftCount + ")");
 
         String fileName = "C:\\projectFiles\\"+"Credits_lot_"+lot.getId()+" ("+lot.getLotNum()+ ").xls";
-        OutputStream fileOut = new FileOutputStream(fileName);
+        File file = new File(fileName);
+
+        OutputStream fileOut = new FileOutputStream(file);
 
         wb.write(fileOut);
         fileOut.close();
-        return fileName;
+
+        return file;
     }
 
-     static String loadCreditsByLot(Lot lot, List<Credit> creditList) throws IOException {
+    static File loadCreditsByLot(Lot lot, List<Credit> creditList) throws IOException {
 
         POIFSFileSystem fs = new POIFSFileSystem(new FileInputStream("C:\\projectFiles\\Shablon_0.xls"));
         HSSFWorkbook wb = new HSSFWorkbook(fs);
@@ -357,10 +360,13 @@ public class Excel implements Serializable {
         sumRow.getCell(13).setCellFormula("SUM(N7:N" + shiftCount + ")");
 
         String fileName = "C:\\projectFiles\\"+"Credits_lot_"+lot.getId()+" ("+lot.getLotNum()+ ").xls";
-        OutputStream fileOut = new FileOutputStream(fileName);
+        File file = new File(fileName);
+
+        OutputStream fileOut = new FileOutputStream(file);
 
         wb.write(fileOut);
         fileOut.close();
-        return fileName;
+
+        return file;
     }
 }

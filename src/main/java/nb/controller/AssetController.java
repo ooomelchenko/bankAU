@@ -2491,14 +2491,16 @@ public class AssetController {
     public void getCreditsByLot(HttpServletResponse response, @PathVariable Long id) throws IOException {
 
         Lot lot = lotService.getLot(id);
-        String filePath="";
 
-        if(lot.getLotType()==0)
-            filePath = Excel.loadCreditsByLot(lot, creditService.getCrditsByLotId(id));
-        else if(lot.getLotType()==1)
-            filePath = Excel.loadAssetsByList(lot, lotService.getAssetsByLot(lot));
+        File file = null;
 
-        File file = new File(filePath);
+        if(lot.getLotType()==0) {
+            file = Excel.loadCreditsByLot(lot, creditService.getCrditsByLotId(id));
+        }
+        else if(lot.getLotType()==1){
+            file = Excel.loadAssetsByList(lot, lotService.getAssetsByLot(lot));
+        }
+         
         InputStream is = new FileInputStream(file);
 
         response.setContentType("application/octet-stream");
