@@ -1867,10 +1867,10 @@ public class AssetController {
         return lotService.paymentsByLot(lot);
     }
 
-    @RequestMapping(value = "/addPayToLot", method = RequestMethod.POST)
+    @RequestMapping(value = "/addPayToLot/{lotId}", method = RequestMethod.POST)
     private @ResponseBody
     String addPayToLot(HttpSession session,
-                       @RequestParam("lotId") Long idLot,
+                       @PathVariable("lotId") Long idLot,
                        @RequestParam("payDate") String payDate,
                        @RequestParam("pay") BigDecimal pay,
                        @RequestParam("paySource") String paySource) {
@@ -1882,6 +1882,11 @@ public class AssetController {
             return "0";
         }
         Lot lot = lotService.getLot(idLot);
+        Pay payment = new Pay(lot, date, pay, paySource);
+        payService.createPay(payment);
+
+        BigDecimal totalLotSum = paySource.equals("Біржа") ? payService.sumByLotFromBid(idLot) : payService.sumByLotFromCustomer(idLot);
+
         if(lot.getLotType()==1) {
             List<Asset> assetsByLot = lotService.getAssetsByLot(idLot);
             BigDecimal lotFactPrice = lot.getFactPrice();
@@ -1892,34 +1897,26 @@ public class AssetController {
 
                 Asset asset = assetsByLot.get(i);
 
-                BigDecimal coeff = getCoefficient(asset.getFactPrice(), lotFactPrice);
-                // asset.getFactPrice().divide(lotFactPrice, 10, BigDecimal.ROUND_HALF_UP);
+                BigDecimal coeff = getCoefficient(asset.getFactPrice(), lotFactPrice); //виправити!!!!
 
-                BigDecimal payByAsset = pay.multiply(coeff).setScale(2, BigDecimal.ROUND_HALF_UP);
+                BigDecimal payByAsset = (i == assetsByLot.size() - 1) ? totalLotSum.subtract(assetsTotalPays) : totalLotSum.multiply(coeff).setScale(2, BigDecimal.ROUND_HALF_UP);
 
                 if(paySource.equals("Біржа")) {
-                    asset.setPaysBid(asset.getPaysBid().add(payByAsset));
+                    asset.setPaysBid(payByAsset);
                     asset.setBidPayDate(date);
                 }
                 else{
-                    asset.setPaysCustomer(asset.getPaysCustomer().add(payByAsset));
+                    asset.setPaysCustomer(payByAsset);
                     asset.setCustomerPayDate(date);
                 }
                 assetsTotalPays = assetsTotalPays.add(payByAsset);
 
-                if (i == assetsByLot.size() - 1 & paySource.equals("Біржа")) {
-                    asset.setPaysBid(asset.getPaysBid().add(pay.subtract(assetsTotalPays)));
-                }
-                if (i == assetsByLot.size() - 1 & paySource.equals("Покупець")) {
-                    asset.setPaysCustomer(asset.getPaysCustomer().add(pay.subtract(assetsTotalPays)));
-                }
                 assetService.updateAsset(login, asset);
             }
-            Pay payment = new Pay(lot, date, pay, paySource);
-            if (payService.createPay(payment) > 0L) return "1";
-            else return "0";
+            return "1";
+
         }
-        if(lot.getLotType()==0) {
+        else if(lot.getLotType()==0) {
             List<Credit> creditsByLot = lotService.getCRDTSByLot(lot);
             BigDecimal lotFactPrice = lot.getFactPrice();
 
@@ -1930,82 +1927,74 @@ public class AssetController {
                 Credit credit = creditsByLot.get(i);
 
                 BigDecimal coeff = getCoefficient(credit.getFactPrice(), lotFactPrice);
-                // asset.getFactPrice().divide(lotFactPrice, 10, BigDecimal.ROUND_HALF_UP);
 
-                BigDecimal payByAsset = pay.multiply(coeff).setScale(2, BigDecimal.ROUND_HALF_UP);
+                BigDecimal payByAsset = (i == creditsByLot.size() - 1) ? totalLotSum.subtract(assetsTotalPays) : totalLotSum.multiply(coeff).setScale(2, BigDecimal.ROUND_HALF_UP);
 
                 if(paySource.equals("Біржа")) {
-                    credit.setPaysBid(credit.getPaysBid().add(payByAsset));
+                    credit.setPaysBid(payByAsset);
                     credit.setBidPayDate(date);
                 }
                 else{
-                    credit.setPaysCustomer(credit.getPaysCustomer().add(payByAsset));
+                    credit.setPaysCustomer(payByAsset);
                     credit.setCustomerPayDate(date);
                 }
                 assetsTotalPays = assetsTotalPays.add(payByAsset);
-                if (i == creditsByLot.size() - 1 & paySource.equals("Біржа")) {
-                    credit.setPaysBid(credit.getPaysBid().add(pay.subtract(assetsTotalPays)));
-                }
-                if (i == creditsByLot.size() - 1 & paySource.equals("Покупець")) {
-                    credit.setPaysCustomer(credit.getPaysCustomer().add(pay.subtract(assetsTotalPays)));
-                }
+
                 creditService.updateCredit(login, credit);
             }
-            Pay payment = new Pay(lot, date, pay, paySource);
-            if (payService.createPay(payment) > 0L) return "1";
-            else return "0";
+            return "1";
         }
-        else return "1";
+
+        else return "0";
     }
 
-    @RequestMapping(value = "/delPay", method = RequestMethod.GET)
+    @RequestMapping(value = "/delPay/{lotId}/{payId}", method = RequestMethod.POST)
     private @ResponseBody
-    String delPay(HttpSession session, @RequestParam("payId") Long payId){
+    String delPay(HttpSession session, @PathVariable("payId") Long payId, @PathVariable("lotId") Long lotId){
         String login = (String) session.getAttribute("userId");
         Pay pay = payService.getPay(payId);
-        Lot lot = lotService.getLot(pay.getLotId());
-        if (lot.getLotType() == 1) {
-            List<Asset> assetsByLot = lotService.getAssetsByLot(pay.getLotId());
+        Lot lot = lotService.getLot(lotId);
+
+        pay.setHistoryLotId(pay.getLotId());
+        pay.setLotId(null);
+        payService.updatePay(pay);
+
+        BigDecimal totalLotSum = pay.getPaySource().equals("Біржа") ? payService.sumByLotFromBid(lotId) : payService.sumByLotFromCustomer(lotId);
+
+        if(totalLotSum ==null)
+            totalLotSum = new BigDecimal(0);
+
+        if(lot.getLotType()==1) {
+            List<Asset> assetsByLot = lotService.getAssetsByLot(lot);
             BigDecimal lotFactPrice = lot.getFactPrice();
 
-            BigDecimal totalToMinus = pay.getPaySum();
-            BigDecimal currentMinus = new BigDecimal(0.00);
+            BigDecimal assetsTotalPays = new BigDecimal(0.00);
 
             for (int i = 0; i < assetsByLot.size(); i++) {
 
                 Asset asset = assetsByLot.get(i);
 
-                BigDecimal coeff = getCoefficient(asset.getFactPrice(), lotFactPrice);
+                BigDecimal coeff = getCoefficient(asset.getFactPrice(), lotFactPrice); //виправити!!!!
 
-                BigDecimal minusByAsset;
+                BigDecimal payByAsset = (i == assetsByLot.size() - 1) ? totalLotSum.subtract(assetsTotalPays) : totalLotSum.multiply(coeff).setScale(2, BigDecimal.ROUND_HALF_UP);
 
-                if (i == assetsByLot.size() - 1) {
-                    minusByAsset = totalToMinus.subtract(currentMinus);
-                } else
-                    minusByAsset = totalToMinus.multiply(coeff).setScale(2, BigDecimal.ROUND_HALF_UP);
-
-                if (pay.getPaySource().equals("Біржа")) {
-                    asset.setPaysBid(asset.getPaysBid().subtract(minusByAsset));
-                    //    asset.setBidPayDate(date); //С этого места
-                } else {
-                    asset.setPaysCustomer(asset.getPaysCustomer().subtract(minusByAsset));
-                    //    asset.setCustomerPayDate(date);
+                if(pay.getPaySource().equals("Біржа")) {
+                    asset.setPaysBid(payByAsset);
                 }
-                currentMinus = currentMinus.add(minusByAsset);
+                else{
+                    asset.setPaysCustomer(payByAsset);
+                }
+                assetsTotalPays = assetsTotalPays.add(payByAsset);
+
                 assetService.updateAsset(login, asset);
             }
-            pay.setHistoryLotId(pay.getLotId());
-            pay.setLotId(null);
-            if (payService.updatePay(pay))
-                return "1";
-            else return "0";
+            return "1";
         }
-        else if (lot.getLotType() == 0) {
+        else if(lot.getLotType()==0) {
             List<Credit> creditsByLot = lotService.getCRDTSByLot(lot);
             BigDecimal lotFactPrice = lot.getFactPrice();
 
-            BigDecimal totalToMinus = pay.getPaySum();
-            BigDecimal currentMinus = new BigDecimal(0.00);
+            BigDecimal assetsTotalPays = new BigDecimal(0.00);
 
             for (int i = 0; i < creditsByLot.size(); i++) {
 
@@ -2013,32 +2002,23 @@ public class AssetController {
 
                 BigDecimal coeff = getCoefficient(credit.getFactPrice(), lotFactPrice);
 
-                BigDecimal minusByAsset;
+                BigDecimal payByAsset = (i == creditsByLot.size() - 1) ? totalLotSum.subtract(assetsTotalPays) : totalLotSum.multiply(coeff).setScale(2, BigDecimal.ROUND_HALF_UP);
 
-                if (i == creditsByLot.size() - 1) {
-                    minusByAsset = totalToMinus.subtract(currentMinus);
-                } else
-                    minusByAsset = totalToMinus.multiply(coeff).setScale(2, BigDecimal.ROUND_HALF_UP);
+                if(pay.getPaySource().equals("Біржа")) {
+                    credit.setPaysBid(payByAsset);
 
-                if (pay.getPaySource().equals("Біржа")) {
-                    credit.setPaysBid(credit.getPaysBid().subtract(minusByAsset));
-                    //    asset.setBidPayDate(date); //С этого места
-                } else {
-                    credit.setPaysCustomer(credit.getPaysCustomer().subtract(minusByAsset));
-                    //    asset.setCustomerPayDate(date);
                 }
-                currentMinus = currentMinus.add(minusByAsset);
+                else{
+                    credit.setPaysCustomer(payByAsset);
+
+                }
+                assetsTotalPays = assetsTotalPays.add(payByAsset);
+
                 creditService.updateCredit(login, credit);
             }
-
-            pay.setHistoryLotId(pay.getLotId());
-            pay.setLotId(null);
-            if (payService.updatePay(pay))
-                return "1";
-            else return "0";
+            return "1";
         }
-        else
-        return "0";
+        else return "0";
     }
 
     @RequestMapping(value = "/setLotToPrint", method = RequestMethod.GET)
@@ -3046,7 +3026,7 @@ public class AssetController {
         if (lot.getFirstStartPrice() == null) {
             lot.setFirstStartPrice(lot.getStartPrice());
         }
-
+//Исправить говнокод
         if (requestType == 1) {
 
             if (lot.getBidStage().equals(StaticStatus.bidStatusList.get(0))) {
@@ -3066,6 +3046,9 @@ public class AssetController {
             }
             else if (lot.getBidStage().equals(StaticStatus.bidStatusList.get(6))) {
                 lot.setBidStage(StaticStatus.bidStatusList.get(7));
+            }
+            else if (lot.getBidStage().equals(StaticStatus.bidStatusList.get(7))) {
+                lot.setBidStage(StaticStatus.bidStatusList.get(8));
             }
         }
         else if(requestType==2){

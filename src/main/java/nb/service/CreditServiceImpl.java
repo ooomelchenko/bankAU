@@ -174,8 +174,8 @@ public class CreditServiceImpl implements CreditService {
     }
     @Override
     @Transactional(readOnly = true)
-    public BigDecimal getPriceByLotIdHistory(Long id, Long lotId){
-        return creditHistoryDao.getPriceByLotIdHistory(id, lotId);
+    public BigDecimal getPriceByLotIdHistory(Long crId, Long lotId){
+        return creditHistoryDao.getPriceByLotIdHistory(crId, lotId);
     }
     @Override
     @Transactional(readOnly = true)

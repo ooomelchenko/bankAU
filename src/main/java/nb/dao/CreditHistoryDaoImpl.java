@@ -2,8 +2,8 @@ package nb.dao;
 
 import nb.domain.CreditHistory;
 import nb.queryDomain.CreditAccPriceHistory;
-import org.hibernate.query.Query;
 import org.hibernate.SessionFactory;
+import org.hibernate.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -87,11 +87,13 @@ public class CreditHistoryDaoImpl implements CreditHistoryDao {
         }
     }
     @Override
-    public BigDecimal getPriceByLotIdHistory(Long id, Long lotId){
-        Query query = factory.getCurrentSession().createQuery("select ch.acceptPrice from CreditHistory ch where ch.id in (SELECT max(a.id) from CreditHistory a where a.id=:id and a.lotId=:lotId)");
-        query.setParameter("id", id);
+    public BigDecimal getPriceByLotIdHistory(Long crId, Long lotId){
+        Query query = factory.getCurrentSession().createQuery("select ch.acceptPrice from CreditHistory ch where (ch.crId=:crId and ch.lotId=:lotId) and ch.acceptPrice is not null ORDER BY ch.changeDate DESC ");
+        query.setParameter("crId", crId);
         query.setParameter("lotId", lotId);
+        query.setMaxResults(1);
         try {
+            System.out.println(query.list());
             return (BigDecimal) query.list().get(0);
         }
         catch(IndexOutOfBoundsException e){
@@ -99,9 +101,9 @@ public class CreditHistoryDaoImpl implements CreditHistoryDao {
         }
     }
     @Override
-    public List<CreditAccPriceHistory> getDateAndAccPriceHistoryByCredit(Long id){
-        Query query = factory.getCurrentSession().createQuery("select new nb.queryDomain.CreditAccPriceHistory(min(ch.changeDate), ch.acceptPrice) from CreditHistory ch where ch.id=:id and acceptPrice is not null GROUP BY ch.acceptPrice ");
-        query.setParameter("id", id);
+    public List<CreditAccPriceHistory> getDateAndAccPriceHistoryByCredit(Long crId){
+        Query query = factory.getCurrentSession().createQuery("select new nb.queryDomain.CreditAccPriceHistory(min(ch.changeDate), ch.acceptPrice) from CreditHistory ch where ch.crId=:crId and acceptPrice is not null GROUP BY ch.acceptPrice ");
+        query.setParameter("crId", crId);
         try {
             return  query.list();
         }

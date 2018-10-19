@@ -95,9 +95,8 @@
                         }
                         $('.icon_del_pay').click(function () {
                             $.ajax({
-                                url: "delPay",
-                                method: "GET",
-                                data: {payId: $(this).parent().parent().find('.payId').text()},
+                                url: "delPay/"+lotID+"/"+$(this).parent().parent().find('.payId').text(),
+                                method: "POST",
                                 success: function (res) {
                                     if (res == "1") {
                                         alert("Платіж видалено!");
@@ -419,20 +418,14 @@
 
             $('#icon_excel_download').click(function () {
                 window.open("unitsByLot/"+lotID);
-                /*$.ajax({
-                    url: "setLotToPrint",
-                    type: "GET",
-                    data: {objId: lotID},
-                    success: function (res) {
-                        if (res == '1') {
-                            window.open("download");
-                        }
-                    }
-                });*/
             });
 
             $('#icon_add_pay').click(function(){
-                if(button_addPay.val()=='0'){
+
+             if($('#factPrice').val()==""){
+                    alert("Спочатку введіть будь-ласка ціну продажу!")
+                }
+                else if(button_addPay.val()=='0'){
                     table_addPay.show();
                     button_addPay.val('1');
                 }
@@ -452,10 +445,9 @@
                     }
                     else {
                         $.ajax({
-                            url: "addPayToLot",
+                            url: "addPayToLot/"+lotID,
                             method: "POST",
                             data: {
-                                lotId: lotID,
                                 payDate: payDate.val(),
                                 pay: pay.val(),
                                 paySource: paySource.val()

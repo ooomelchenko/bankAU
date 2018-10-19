@@ -153,6 +153,21 @@
                 <img id="downloadBidReport" class="icon_button" src="resources/css/images/excel.jpg" title="завантажити">
             </td>
         </tr>
+
+        <tr class="reportTr">
+            <td id="report7" class="reportName">
+                Звірка данних
+            </td>
+            <td hidden="hidden" class="dateTd">
+                <input id="minAuditDate" class="datepicker" about="початкова дата звірки" title="оберіть початкову дату звірки">
+            </td>
+            <td hidden="hidden" class="dateTd">
+                <input id="maxAuditDate" class="datepicker" about="кінцева дата звірки" title="оберіть кінцеву дату звірки">
+            </td>
+            <td hidden="hidden" class="dateTd">
+                <img id="downloadAudit" class="icon_button" src="resources/css/images/excel.jpg" title="завантажити">
+            </td>
+        </tr>
     </table>
 </div>
 
