@@ -220,6 +220,7 @@
                                     '<td>' + objList[i].factPrice + '</td>' +
                                     '<td>' + neadNewFondDec + '</td>' +
                                     '<td>' + approveNBU + '</td>' +
+                                    '<td>' + objList[i].srvId + '</td>' +
                                     '</tr>');
                                 //var factPriceTd = trR.find('.factPriceTd');
 
@@ -1241,6 +1242,7 @@
             <th>Ціна продажу, грн.</th>
             <th>Необхідно перепогодити</th>
             <th>В заставі НБУ</th>
+            <th>SRV_ID</th>
         </tr>
     </table>
     <table id="table_credits_list" class="table_obj_list" hidden="hidden" border="blue">

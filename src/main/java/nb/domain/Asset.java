@@ -64,6 +64,8 @@ public class Asset extends Unit implements Serializable  {
     private Date customerPayDate;
     @Column(name = "ADDRESS")
     private String address;
+    @Column(name = "SRV_ID")
+    private Long srvId;
 
     @ManyToOne
     private Lot lot;//класс
@@ -278,6 +280,13 @@ public class Asset extends Unit implements Serializable  {
         this.address = address;
     }
 
+    public Long getSrvId() {
+        return srvId;
+    }
+    public void setSrvId(Long srvId) {
+        this.srvId = srvId;
+    }
+
     public Asset() {
     }
 
@@ -309,6 +318,7 @@ public class Asset extends Unit implements Serializable  {
                 ", bidPayDate=" + bidPayDate +
                 ", customerPayDate=" + customerPayDate +
                 ", address=" + address +
+                ", srvId=" + srvId +
                 ", lot=" + lot +
                 '}';
     }

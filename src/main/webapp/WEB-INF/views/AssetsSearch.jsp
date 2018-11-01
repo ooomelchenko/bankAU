@@ -37,6 +37,7 @@
 
                     var tr = $('<tr class="ftr" align="center">' +
                         '<td class="idObj">' + obj[i].id + '</td>' +
+                        '<td class="idObj">' + obj[i].srvId + '</td>' +
                         '<td class="lotId">' + lotId + '</td>' +
                         '<td>' + obj[i].inn + '</td>' +
                         '<td>' + obj[i].asset_name + '</td>' +
@@ -302,6 +303,7 @@
     <table class="findTab" border="1" hidden="hidden" style="width: 100%;">
         <tr align="center" style="color: #27d927">
             <th>ID</th>
+            <th>SRV_ID</th>
             <th>Лот</th>
             <th>Інвентарний №</th>
             <th>Назва активу</th>
