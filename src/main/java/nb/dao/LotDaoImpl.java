@@ -50,6 +50,12 @@ public class LotDaoImpl implements LotDao {
         return true;
     }
     @Override
+    public Lot findByLotNum(String lotNum) {
+        Query query = factory.getCurrentSession().createQuery("FROM nb.domain.Lot lot where lotNum = :lotNum");
+        query.setParameter("lotNum", lotNum);
+        return (Lot) query.list().get(0);
+    }
+    @Override
     public List<Lot> findAll() {
         List <Lot> lotList = factory.getCurrentSession().createQuery("FROM nb.domain.Lot lot ").list(); // ORDER BY lot.bid.bidDate DESC , lot.bid.exchange.companyName
         Collections.sort(lotList);

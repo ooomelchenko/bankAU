@@ -76,6 +76,11 @@ public class LotServiceImpl implements LotService {
     }
     @Override
     @Transactional(readOnly = true)
+    public Lot getLotByLotNum(String lotNum) {
+        return lotDao.findByLotNum(lotNum);
+    }
+    @Override
+    @Transactional(readOnly = true)
     public List getLots() {
         return lotDao.findAll();
     }

@@ -40,6 +40,11 @@
                 var startDate = $('#minBidDate').val();
                 var endDate = $('#maxBidDate').val();
                 window.open("getReport/6/"+startDate+"/"+endDate);
+            });
+            $('#downloadAudit').click(function(){
+                var startDate = $('#minAuditDate').val();
+                var endDate = $('#maxAuditDate').val();
+                window.open("getReport/7/"+startDate+"/"+endDate);
             })
         })
     </script>
@@ -83,7 +88,7 @@
     </div>
 </header>
 
-<div >
+<div>
     <table id="table_reports">
         <tr class="reportTr">
             <td id="report1" class="reportName">
@@ -154,7 +159,7 @@
             </td>
         </tr>
 
-        <tr class="reportTr">
+        <%--<tr class="reportTr">
             <td id="report7" class="reportName">
                 Звірка данних
             </td>
@@ -167,7 +172,8 @@
             <td hidden="hidden" class="dateTd">
                 <img id="downloadAudit" class="icon_button" src="resources/css/images/excel.jpg" title="завантажити">
             </td>
-        </tr>
+        </tr>--%>
+
     </table>
 </div>
 

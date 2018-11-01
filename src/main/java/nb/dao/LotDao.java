@@ -13,6 +13,9 @@ public interface LotDao {
     Lot read(Long id);
     boolean update(Lot lot);
     boolean delete(Lot lot);
+
+    Lot findByLotNum(String lotNum);
+
     List findAll();
 
     List<Lot> findAll(int lotType);

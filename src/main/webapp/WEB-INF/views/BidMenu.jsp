@@ -222,6 +222,26 @@
             $('.getObjTab').click(function () {
                 window.open("downloadT/"+bidN);
             });
+
+            $('#button_addLotsToBid').click(function(){
+
+                var form_lots_data= $('#form_lots_file');
+                $.ajax({
+                    url: bidN+"/setLotsToBid",
+                    type: "POST",
+                    processData: false,
+                    contentType: false,
+                    data: form_lots_data,
+                    success: function (res) {
+                        if (res>0){
+                            alert("додано лоти в кількості: "+ res);
+                        }
+                        else if (res<=0){
+                            alert("Лоти не додано!");
+                        }
+                    }
+                })
+            });
         })
     </script>
     <style type="text/css">
@@ -404,6 +424,14 @@
     </div>
 
     <div id="div_docs" >
+        <div class="div_documents_scan" hidden="hidden" style="color: cyan; border : solid 1px cyan">
+            <h3 >Додати лоти з файлу</h3>
+            <form id="form_lots_file" method="POST" action="" enctype="multipart/form-data" lang="utf8" >
+                <input align="center" type="file" name="file_lots" title="натисніть для обрання файлу"><br/>
+                <%--<input align="center" type="submit" value="Додати" title="натисніть для додавання">--%>
+            </form>
+            <button type="button" id="button_addLotsToBid" title="додати лоти з файлу до торгів" style="width: 100%">додати</button>
+        </div>
         <div class="div_documents_scan" hidden="hidden">
             <table>
                 <tr>

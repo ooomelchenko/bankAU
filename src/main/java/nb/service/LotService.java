@@ -22,6 +22,9 @@ public interface LotService {
 
     boolean updateLot(String userName, Lot lot);
 
+    @Transactional(readOnly = true)
+    Lot getLotByLotNum(String lotNum);
+
     List getLots();
 
     @Transactional(readOnly = true)

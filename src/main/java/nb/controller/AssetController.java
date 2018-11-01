@@ -592,7 +592,7 @@ public class AssetController {
             row.createCell(5).setCellValue(credit.getContractNum());
             row.createCell(6).setCellValue("S"+credit.getNd());
             try {
-                row.createCell(8).setCellValue("S"+(int)(credit.getFactPrice().doubleValue()*100));
+                row.createCell(8).setCellValue("S"+(long)(credit.getFactPrice().doubleValue()*100));
             }
             catch(NullPointerException npe){
                 row.createCell(8);
@@ -2171,6 +2171,13 @@ public class AssetController {
                 e.printStackTrace();
             }
         }
+        if (reportNum==7) {
+            /*try {
+                reportPath = makeBidsSumReport(lotService.getLotsHistoryByBidDates(startDate, endDate), lotService.getLotsHistoryAggregatedByBid(startDate, endDate));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }*/
+        }
 
         File file = new File(reportPath);
         InputStream is = new FileInputStream(file);
@@ -2434,6 +2441,49 @@ public class AssetController {
 
         else
             return "0";
+    }
+
+    @RequestMapping(value = "/{bidN}/setLotsToBid", method = RequestMethod.POST)
+    private @ResponseBody
+    String setLotsToBid(HttpSession session,
+                             @RequestParam("file_lots") MultipartFile multipartFile,
+                             @PathVariable ("bidN") long bidId)
+                             /*@RequestParam("bidN") long bidId)*/ throws IOException {
+
+        Bid bid = bidService.getBid(bidId);
+        System.out.println(bid);
+
+        String login = (String) session.getAttribute("userId");
+        File file = getTempFile(multipartFile);
+
+        if (!multipartFile.isEmpty()) {
+            XSSFWorkbook wb;
+
+            try {
+                wb = new XSSFWorkbook(file);
+            } catch (Exception e) {
+                return "-1";
+            }
+            XSSFSheet sheet = wb.getSheetAt(0);
+            Iterator rows = sheet.rowIterator();
+
+            int i=0;
+            while (rows.hasNext()) {
+
+                XSSFRow row = (XSSFRow) rows.next();
+
+                String lotNum = row.getCell(0).getStringCellValue();
+
+                Lot lot =lotService.getLotByLotNum(lotNum);
+                lot.setBid(bid);
+                lotService.updateLot(login, lot);
+                i++;
+
+            }
+            return String.valueOf(i);
+
+        } else return "0";
+
     }
 
     @RequestMapping(value = "/download", method = RequestMethod.GET)
