@@ -19,6 +19,8 @@ public interface AssetDao {
 
     List findAllSuccessBids(Date startBids, Date endBids);
 
+    List findAllSuccessBids(Date startBids, Date endBids, int portionNum);
+
     List findAll(int portionNum);
 
     Long totalCount();

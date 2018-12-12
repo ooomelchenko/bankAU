@@ -99,6 +99,12 @@ public class AssetServiceImpl implements AssetService {
 
     @Override
     @Transactional(readOnly = true)
+    public List findAllSuccessBids(Date startBidDate, Date endBidDate, int portion) {
+        return assetDao.findAllSuccessBids(startBidDate, endBidDate, portion);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public List getRegions() {
         return assetDao.getRegions();
     }

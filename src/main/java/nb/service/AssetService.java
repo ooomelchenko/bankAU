@@ -38,6 +38,9 @@ public interface AssetService {
     List findAllSuccessBids(Date startBidDate, Date endBidDate);
 
     @Transactional(readOnly = true)
+    List findAllSuccessBids(Date startBidDate, Date endBidDate, int portion);
+
+    @Transactional(readOnly = true)
     List getRegions();
 
     @Transactional(readOnly = true)

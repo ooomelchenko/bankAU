@@ -70,15 +70,14 @@ public class AssetController {
     private static final String bidDocumentsPath = "C:\\SCAN\\DocumentsByBid\\";
 
     private BigDecimal getCoefficient(BigDecimal divident, BigDecimal divisor) {
-        try{
+        try {
             return divident.divide(divisor, 10, BigDecimal.ROUND_HALF_UP);
-        }
-        catch (NullPointerException e){
+        } catch (NullPointerException e) {
             return BigDecimal.valueOf(0);
         }
     }
 
-    private String replaceRunText(String text, String kd, String year, String fio, String address, String inn, String prn, String prd, String pmb, String fpr, String knd, String subscr){
+    private String replaceRunText(String text, String kd, String year, String fio, String address, String inn, String prn, String prd, String pmb, String fpr, String knd, String subscr) {
         text = text.replace("kd", kd);
         text = text.replace("year", year);
         text = text.replace("fio", fio);
@@ -89,13 +88,14 @@ public class AssetController {
         text = text.replace("pmb", pmb);
         text = text.replace("fpr", fpr);
         text = text.replace("knd", knd);
-        if(subscr.equals("null"))
+        if (subscr.equals("null"))
             text = text.replace("sub", fio);
         else
             text = text.replace("sub", subscr);
         return text;
     }
-    private String replaceRunTextAssets(String text, String bidDAte, int count , String kd, String year, String fio, String address, String inn,
+
+    private String replaceRunTextAssets(String text, String bidDAte, int count, String kd, String year, String fio, String address, String inn,
                                         String prn, String prd, String pmb, String fpr, String subscr, String pass_seria,
                                         String pass_num, String pass_vidano, String pass_vidano_date, String operates_basis, String account_bank,
                                         String bid_enter, String bid_client, String signer_bank, String signer_bank_text,
@@ -103,9 +103,8 @@ public class AssetController {
 
         String factPrice_pdv;
         try {
-            factPrice_pdv = String.valueOf(BigDecimal.valueOf(Double.parseDouble(fpr)/6).setScale(2, RoundingMode.UP));
-        }
-        catch (Exception e){
+            factPrice_pdv = String.valueOf(BigDecimal.valueOf(Double.parseDouble(fpr) / 6).setScale(2, RoundingMode.UP));
+        } catch (Exception e) {
             factPrice_pdv = "";
         }
 
@@ -138,7 +137,7 @@ public class AssetController {
         text = text.replace("nefp", elseAssets_fp);
         text = text.replace("nepd", elseAssets_pdv);
 
-        if(subscr.equals("null"))
+        if (subscr.equals("null"))
             text = text.replace("sub", fio);
         else
             text = text.replace("sub", subscr);
@@ -163,7 +162,7 @@ public class AssetController {
         DataFormat poiFormat = wb.createDataFormat();
         cellStyle.setDataFormat(poiFormat.getFormat(excelFormatter));
         //end
-        sheet.shiftRows(8, 8, assetList.size()+creditList.size() - 1);
+        sheet.shiftRows(8, 8, assetList.size() + creditList.size() - 1);
         int numRow = 7;
         int i = 0;
         for (Asset asset : assetList) {
@@ -177,12 +176,12 @@ public class AssetController {
             }
             Lot lot = asset.getLot();
             Bid bid = lot.getBid();
-         //   BigDecimal coeffRV = getCoefficient(asset.getRv(), lotService.lotSum(lot));// asset.getRv().divide(lotService.lotSum(lot), 10, BigDecimal.ROUND_HALF_UP);
+            //   BigDecimal coeffRV = getCoefficient(asset.getRv(), lotService.lotSum(lot));// asset.getRv().divide(lotService.lotSum(lot), 10, BigDecimal.ROUND_HALF_UP);
             BigDecimal coeffAcc = getCoefficient(asset.getAcceptPrice(), lotService.lotAcceptedSum(lot));
             //
             row.getCell(0).setCellValue(i);
             row.getCell(1).setCellValue(380764);
-            if (lot != null && lot.getFondDecisionDate()!=null) {
+            if (lot != null && lot.getFondDecisionDate() != null) {
                 row.getCell(2).setCellValue(lot.getFondDecisionDate());
                 row.getCell(2).setCellStyle(cellStyle);
             }
@@ -199,18 +198,17 @@ public class AssetController {
                 row.getCell(9).setCellStyle(cellStyle);
             }
             row.getCell(10).setCellValue(asset.getOriginalPrice().doubleValue());
-            if(asset.getZb()!=null)
-            row.getCell(11).setCellValue(asset.getZb().doubleValue());
+            if (asset.getZb() != null)
+                row.getCell(11).setCellValue(asset.getZb().doubleValue());
             row.getCell(12).setCellValue(asset.getRv().doubleValue());
             if (lot.getFirstStartPrice() != null)
-               // row.getCell(13).setCellValue(lot.getFirstStartPrice().multiply(coeffRV).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue());// Початкова ціна реалізації активу, з ПДВ, грн.
-              //  row.getCell(13).setCellValue(asset.getAcceptPrice().doubleValue());// Початкова ціна реалізації активу, з ПДВ, грн.
-            try {
-                row.getCell(13).setCellValue(assetService.getFirstAccPrice(asset.getId()).doubleValue());
-            }
-            catch (NullPointerException e){
-                System.out.println("firstAccPrice is null");
-            }
+                // row.getCell(13).setCellValue(lot.getFirstStartPrice().multiply(coeffRV).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue());// Початкова ціна реалізації активу, з ПДВ, грн.
+                //  row.getCell(13).setCellValue(asset.getAcceptPrice().doubleValue());// Початкова ціна реалізації активу, з ПДВ, грн.
+                try {
+                    row.getCell(13).setCellValue(assetService.getFirstAccPrice(asset.getId()).doubleValue());
+                } catch (NullPointerException e) {
+                    System.out.println("firstAccPrice is null");
+                }
 
             row.getCell(43).setCellValue(bid.getExchange().getCompanyName());
             row.getCell(44).setCellValue(bid.getExchange().getInn());
@@ -218,8 +216,8 @@ public class AssetController {
             row.getCell(45).setCellStyle(cellStyle);
             row.getCell(46).setCellValue(lot.getCountOfParticipants());
             row.getCell(48).setCellValue(lot.getBidStage());
-         //   BigDecimal lotStartPrice = lot.getStartPrice();
-         //   BigDecimal lotFirstStartPrice = lot.getFirstStartPrice();
+            //   BigDecimal lotStartPrice = lot.getStartPrice();
+            //   BigDecimal lotFirstStartPrice = lot.getFirstStartPrice();
 
            /* if (lot.getFirstStartPrice() != null && lot.getStartPrice() != null)
                 row.getCell(49).setCellValue((1 - (lotStartPrice.divide(lotFirstStartPrice, 4, BigDecimal.ROUND_HALF_UP)).doubleValue()) * 100);//Зниження початкової ціни реалізації активу
@@ -232,7 +230,7 @@ public class AssetController {
             if (lot.getStartPrice() != null)
                 row.getCell(51).setCellValue(lot.getStartPrice().multiply(coeffRV).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue()); //Початкова ціна реалізації активу на актуальном аукціоні з ПДВ, грн.
 */
-            row.getCell(49).setCellFormula("(1-AZ"+numRow+"/N"+numRow+ ")*100");//Зниження початкової ціни реалізації активу
+            row.getCell(49).setCellFormula("(1-AZ" + numRow + "/N" + numRow + ")*100");//Зниження початкової ціни реалізації активу
             row.getCell(49).setCellStyle(numStyle);
             if (lot.getStartPrice() != null) {
                 BigDecimal assetStartPrise = lot.getStartPrice().multiply(coeffAcc).setScale(10, BigDecimal.ROUND_HALF_UP);
@@ -274,13 +272,11 @@ public class AssetController {
             }
             try {
                 row.getCell(65).setCellValue(lot.getCustomerName());
-            }
-            catch (NullPointerException npe){
+            } catch (NullPointerException npe) {
             }
             try {
                 row.getCell(66).setCellValue(lot.getCustomerInn());
-            }
-            catch (NullPointerException npe){
+            } catch (NullPointerException npe) {
             }
         }
         for (Credit credit : creditList) {
@@ -324,8 +320,8 @@ public class AssetController {
 
             row.getCell(19).setCellValue(credit.getCurr());
             row.getCell(20).setCellValue(credit.getRv().doubleValue());
-            if(credit.getFirstStartPrice()!=null)
-            row.getCell(21).setCellValue(credit.getFirstStartPrice().doubleValue());
+            if (credit.getFirstStartPrice() != null)
+                row.getCell(21).setCellValue(credit.getFirstStartPrice().doubleValue());
             row.getCell(22).setCellValue(credit.getGageVid());
             row.getCell(25).setCellValue(credit.getZb().doubleValue());
 
@@ -368,17 +364,15 @@ public class AssetController {
             }
             try {
                 row.getCell(65).setCellValue(lot.getCustomerName());
-            }
-            catch (NullPointerException npe){
+            } catch (NullPointerException npe) {
             }
             try {
                 row.getCell(66).setCellValue(lot.getCustomerInn());
-            }
-            catch (NullPointerException npe){
+            } catch (NullPointerException npe) {
             }
         }
 
-        int tableEnd = 7 + assetList.size()+creditList.size();
+        int tableEnd = 7 + assetList.size() + creditList.size();
         HSSFRow sumRow = sheet.getRow(tableEnd);
         sumRow.getCell(10).setCellFormula("SUM(K8:K" + tableEnd + ")");
         sumRow.getCell(11).setCellFormula("SUM(L8:L" + tableEnd + ")");
@@ -404,8 +398,8 @@ public class AssetController {
         List<Lot> lotsByBidList = lotService.getLotsByBid(bid);
         Set<String> decisionsSet = new TreeSet<>();
         for (Lot lot : lotsByBidList) {
-            if(lot.getFondDecisionDate()!=null)
-            decisionsSet.add(lot.getDecisionNumber() + " від " + sdfpoints.format(lot.getFondDecisionDate()));
+            if (lot.getFondDecisionDate() != null)
+                decisionsSet.add(lot.getDecisionNumber() + " від " + sdfpoints.format(lot.getFondDecisionDate()));
         }
 
         InputStream fs = new FileInputStream("C:\\\\projectFiles\\\\Dodatok 2.docx");
@@ -529,8 +523,8 @@ public class AssetController {
         //end
 
         int numRow = 1;
-       // int i = 0;
-        for(Credit credit : creditList){
+        // int i = 0;
+        for (Credit credit : creditList) {
             XSSFRow row = sheet.createRow(numRow);
             numRow++;
             row.createCell(0).setCellValue(credit.getNd());
@@ -546,7 +540,7 @@ public class AssetController {
             row.createCell(10).setCellValue(credit.getFio());
         }
 
-        String fileName = "C:\\projectFiles\\" + ("Credits " +sdfshort.format(new Date())+ ".xlsx");
+        String fileName = "C:\\projectFiles\\" + ("Credits " + sdfshort.format(new Date()) + ".xlsx");
         OutputStream fileOut = new FileOutputStream(fileName);
 
         wb.write(fileOut);
@@ -554,7 +548,7 @@ public class AssetController {
         return fileName;
     }
 
-    private String fillSoldedCrdTab(List<Credit> creditList) throws IOException  {
+    private String fillSoldedCrdTab(List<Credit> creditList) throws IOException {
         InputStream ExcelFileToRead = new FileInputStream("C:\\projectFiles\\CREDITS_solded.xlsx");
         XSSFWorkbook wb = new XSSFWorkbook(ExcelFileToRead);
         XSSFSheet sheet = wb.getSheetAt(0);
@@ -570,39 +564,35 @@ public class AssetController {
 
         int numRow = 1;
         // int i = 0;
-        for(Credit credit : creditList){
+        for (Credit credit : creditList) {
             XSSFRow row = sheet.createRow(numRow);
             numRow++;
             Lot tLot = lotService.getLot(credit.getLot());
+            try {
+                row.createCell(2).setCellValue(tLot.getLotNum());
+                row.createCell(7).setCellValue(tLot.getCustomerName());
                 try {
-                    row.createCell(2).setCellValue(tLot.getLotNum());
-                    row.createCell(7).setCellValue(tLot.getCustomerName());
-                    try{
-                        row.createCell(0).setCellValue(tLot.getBid().getBidDate());
-                        row.getCell(0).setCellStyle(dateStyle);
-                    }
-                    catch (NullPointerException npl){
-                    }
+                    row.createCell(0).setCellValue(tLot.getBid().getBidDate());
+                    row.getCell(0).setCellStyle(dateStyle);
+                } catch (NullPointerException npl) {
                 }
-                catch (NullPointerException npl){
-                }
+            } catch (NullPointerException npl) {
+            }
 
             row.createCell(3).setCellValue(credit.getFio());
             row.createCell(4).setCellValue(credit.getInn());
             row.createCell(5).setCellValue(credit.getContractNum());
-            row.createCell(6).setCellValue("S"+credit.getNd());
+            row.createCell(6).setCellValue("S" + credit.getNd());
             try {
-                row.createCell(8).setCellValue("S"+(long)(credit.getFactPrice().doubleValue()*100));
-            }
-            catch(NullPointerException npe){
+            row.createCell(8).setCellValue("S" + (credit.getFactPrice().multiply(new BigDecimal(100))).longValue());
+            } catch (NullPointerException npe) {
                 row.createCell(8);
-            }
-            catch (NumberFormatException nfe){
-                row.createCell(8).setCellValue("S"+0);
+            } catch (NumberFormatException nfe) {
+                row.createCell(8).setCellValue("S" + 0);
             }
         }
 
-        String fileName = "C:\\projectFiles\\" + ("CREDITS_solded " +sdfshort.format(new Date())+ ".xlsx");
+        String fileName = "C:\\projectFiles\\" + ("CREDITS_solded " + sdfshort.format(new Date()) + ".xlsx");
         OutputStream fileOut = new FileOutputStream(fileName);
 
         wb.write(fileOut);
@@ -667,8 +657,8 @@ public class AssetController {
         lotUKRTitleRow.createCell(14).setCellValue("Дата торгів");
         lotUKRTitleRow.createCell(15).setCellValue("Біржа");
 
-        int lotN=2;
-        for(Lot lot: lotList){
+        int lotN = 2;
+        for (Lot lot : lotList) {
             SXSSFRow lotDataRow = lotSheet.createRow(lotN);
             lotN++;
             lotDataRow.createCell(0).setCellValue(lot.getId());
@@ -676,47 +666,40 @@ public class AssetController {
             lotDataRow.createCell(2).setCellValue(lot.getWorkStage());
             lotDataRow.createCell(3).setCellValue(lot.getItSold());
             lotDataRow.createCell(4).setCellValue(lot.getComment());
-            try{
-            lotDataRow.createCell(5).setCellValue(lot.getLotDate());
+            try {
+                lotDataRow.createCell(5).setCellValue(lot.getLotDate());
                 lotDataRow.getCell(5).setCellStyle(dateStyle);
-            }
-            catch(NullPointerException e){
+            } catch (NullPointerException e) {
             }
             lotDataRow.createCell(6).setCellValue(lot.getBidStage());
             lotDataRow.createCell(7).setCellValue(lot.getCountOfParticipants());
             try {
                 lotDataRow.createCell(8).setCellValue(lot.getStartPrice().doubleValue());
-            }
-            catch(NullPointerException e){
+            } catch (NullPointerException e) {
             }
             try {
                 lotDataRow.createCell(9).setCellValue(lot.getFirstStartPrice().doubleValue());
-            }
-            catch(NullPointerException e){
+            } catch (NullPointerException e) {
             }
             try {
-            lotDataRow.createCell(10).setCellValue(lot.getFactPrice().doubleValue());
-            }
-            catch(NullPointerException e){
+                lotDataRow.createCell(10).setCellValue(lot.getFactPrice().doubleValue());
+            } catch (NullPointerException e) {
             }
             lotDataRow.createCell(11).setCellValue(lot.getCustomerName());
             lotDataRow.createCell(12).setCellValue(lot.getStatus());
             try {
                 lotDataRow.createCell(13).setCellValue(lot.getActSignedDate());
                 lotDataRow.getCell(13).setCellStyle(dateStyle);
+            } catch (NullPointerException e) {
             }
-            catch(NullPointerException e){
-            }
-            try{
+            try {
                 lotDataRow.createCell(14).setCellValue(lot.getBid().getBidDate());
                 lotDataRow.getCell(14).setCellStyle(dateStyle);
+            } catch (NullPointerException e) {
             }
-            catch (NullPointerException e){
-            }
-            try{
+            try {
                 lotDataRow.createCell(15).setCellValue(lot.getBid().getExchange().getCompanyName());
-            }
-            catch (NullPointerException e){
+            } catch (NullPointerException e) {
             }
         }
 
@@ -888,9 +871,9 @@ public class AssetController {
                 }
                 row.createCell(18).setCellValue(lot.getFondDecision());
                 row.createCell(19).setCellValue(lot.getDecisionNumber());
-                if(lot.isNeedNewFondDec())
+                if (lot.isNeedNewFondDec())
                     row.createCell(21).setCellValue("Так");
-                else{
+                else {
                     row.createCell(21).setCellValue("Ні");
                 }
                 try {
@@ -913,7 +896,7 @@ public class AssetController {
             }
         }
 
-        String fileName = "C:\\projectFiles\\" + ("Assets " +sdfshort.format(new Date())+ ".xlsx");
+        String fileName = "C:\\projectFiles\\" + ("Assets " + sdfshort.format(new Date()) + ".xlsx");
         OutputStream fileOut = new FileOutputStream(fileName);
 
         wb.write(fileOut);
@@ -940,7 +923,7 @@ public class AssetController {
         return file;
     }
 
-    private String makePaymentsReport(List <Pay> payList, String start, String end){
+    private String makePaymentsReport(List<Pay> payList, String start, String end) {
         InputStream ExcelFileToRead = null;
         try {
             ExcelFileToRead = new FileInputStream("C:\\projectFiles\\Pays.xlsx");
@@ -959,9 +942,9 @@ public class AssetController {
         CellStyle cellStyle = wb.createCellStyle();
         cellStyle.setDataFormat(wb.createDataFormat().getFormat(excelFormatter));
 
-        for(int i=0; i<payList.size(); i++){
+        for (int i = 0; i < payList.size(); i++) {
             Pay pay = payList.get(i);
-            XSSFRow payRow = sheet.createRow(i+1);
+            XSSFRow payRow = sheet.createRow(i + 1);
             payRow.createCell(0).setCellValue(pay.getDate());
             payRow.getCell(0).setCellStyle(cellStyle);
             payRow.createCell(1).setCellValue(pay.getPaySum().doubleValue());
@@ -969,7 +952,7 @@ public class AssetController {
             payRow.createCell(3).setCellValue(pay.getLotId());
             payRow.createCell(4).setCellValue(lotService.getLot(pay.getLotId()).getLotNum());
         }
-        String fileName = "C:\\projectFiles\\Payments_"+start+"_"+end+".xlsx";
+        String fileName = "C:\\projectFiles\\Payments_" + start + "_" + end + ".xlsx";
         OutputStream fileOut = null;
         try {
             fileOut = new FileOutputStream(fileName);
@@ -1012,33 +995,32 @@ public class AssetController {
         headRow.createCell(4).setCellValue("ID_Лоту");
         headRow.createCell(5).setCellValue("Сума, грн.");
 
-        int rowNum=0;
+        int rowNum = 0;
 
-            for (LotHistory lot : lotList) {
-                rowNum++;
-                SXSSFRow row = sheet.createRow(rowNum);
-                row.createCell(0).setCellValue(lot.getBidId());
-                Bid bid = bidService.getBid(lot.getBidId());
-                try{
-                    row.createCell(1).setCellValue(bid.getExchange().getCompanyName()+"_"+sdfshort.format(bid.getBidDate()));
-                }
-                catch (NullPointerException e){
-                }
-                try {
-                    row.createCell(2).setCellValue(bid.getExchange().getCompanyName());
-                } catch (NullPointerException e) {
-                }
-                try {
-                    row.createCell(3).setCellValue(bid.getBidDate());
-                    row.getCell(3).setCellStyle(dateStyle);
-                } catch (NullPointerException e) {
-                }
-                row.createCell(4).setCellValue(lot.getId());
-                try {
-                    row.createCell(5).setCellValue(lot.getStartPrice().doubleValue());
-                } catch (NullPointerException e) {
-                }
+        for (LotHistory lot : lotList) {
+            rowNum++;
+            SXSSFRow row = sheet.createRow(rowNum);
+            row.createCell(0).setCellValue(lot.getBidId());
+            Bid bid = bidService.getBid(lot.getBidId());
+            try {
+                row.createCell(1).setCellValue(bid.getExchange().getCompanyName() + "_" + sdfshort.format(bid.getBidDate()));
+            } catch (NullPointerException e) {
             }
+            try {
+                row.createCell(2).setCellValue(bid.getExchange().getCompanyName());
+            } catch (NullPointerException e) {
+            }
+            try {
+                row.createCell(3).setCellValue(bid.getBidDate());
+                row.getCell(3).setCellStyle(dateStyle);
+            } catch (NullPointerException e) {
+            }
+            row.createCell(4).setCellValue(lot.getId());
+            try {
+                row.createCell(5).setCellValue(lot.getStartPrice().doubleValue());
+            } catch (NullPointerException e) {
+            }
+        }
 
         SXSSFSheet sheetST = wb.getSheetAt(1);
         //Заполнение листа 2 сумами по торгам
@@ -1049,17 +1031,16 @@ public class AssetController {
         headRow2.createCell(3).setCellValue("Дата");
         headRow2.createCell(4).setCellValue("Сума, грн.");
 
-        int rowN=0;
+        int rowN = 0;
 
         for (BidDetails aggregatedLot : aggregatedLotList) {
             rowN++;
             SXSSFRow row = sheetST.createRow(rowN);
             row.createCell(0).setCellValue(aggregatedLot.getBidId());
             Bid bid = bidService.getBid(aggregatedLot.getBidId());
-            try{
-                row.createCell(1).setCellValue(bid.getExchange().getCompanyName()+"_"+sdfshort.format(bid.getBidDate()));
-            }
-            catch (NullPointerException e){
+            try {
+                row.createCell(1).setCellValue(bid.getExchange().getCompanyName() + "_" + sdfshort.format(bid.getBidDate()));
+            } catch (NullPointerException e) {
             }
             try {
                 row.createCell(2).setCellValue(bid.getExchange().getCompanyName());
@@ -1085,7 +1066,7 @@ public class AssetController {
         return fileName;
     }
 
-    private String makeHistoryReportByAssets(List <Asset> assetList) throws IOException {
+    private String makeHistoryReportByAssets(List<Asset> assetList) throws IOException {
         InputStream ExcelFileToRead = new FileInputStream("C:\\projectFiles\\History.xlsx");
         XSSFWorkbook wb = new XSSFWorkbook(ExcelFileToRead);
         XSSFSheet sheet1 = wb.getSheetAt(0);
@@ -1107,21 +1088,20 @@ public class AssetController {
         int numRow2 = 0;
         int numRow3 = 0;
         // int i = 0;
-        for(Asset asset : assetList){
+        for (Asset asset : assetList) {
 
             List<Long> lotIdList = assetService.getLotIdHistoryByAsset(asset.getId());
-            for(Long lotId: lotIdList){
+            for (Long lotId : lotIdList) {
 
 
                 List<FondDecisionsByLotHistory> fondDecisionsByLotHistory = lotService.getFondDecisionsByLotHistory(lotId);
-                for(FondDecisionsByLotHistory fondDecision: fondDecisionsByLotHistory){
+                for (FondDecisionsByLotHistory fondDecision : fondDecisionsByLotHistory) {
                     numRow3++;
                     XSSFRow row = sheet3.createRow(numRow3);
                     row.createCell(0).setCellValue(lotId);
                     try {
                         row.createCell(1).setCellValue(sdfshort.format(fondDecision.getFondDecisionDate()));
-                    }
-                    catch(Exception e){
+                    } catch (Exception e) {
 
                     }
                     row.createCell(2).setCellValue(fondDecision.getDecisionNumber());
@@ -1130,7 +1110,7 @@ public class AssetController {
 
                 List<Bid> bidList = lotService.getLotHistoryAggregatedByBid(lotId);
                 Collections.sort(bidList);
-                for(Bid bid: bidList){
+                for (Bid bid : bidList) {
                     numRow1++;
                     XSSFRow row = sheet1.createRow(numRow1);
                     row.createCell(0).setCellValue(asset.getInn());
@@ -1139,14 +1119,13 @@ public class AssetController {
                     row.createCell(3).setCellValue(sdfshort.format(bid.getBidDate()));
                     try {
                         row.createCell(4).setCellValue(assetService.getAccPriceByLotIdHistory(asset.getId(), lotId).doubleValue());
-                    }
-                    catch(NullPointerException e){
+                    } catch (NullPointerException e) {
                     }
 
                 }
             }
             List<AcceptPriceHistory> acceptPriceHistoryList = assetService.getDateAndAccPriceHistoryByAsset(asset.getId());
-            for(AcceptPriceHistory acceptPriceHistory: acceptPriceHistoryList){
+            for (AcceptPriceHistory acceptPriceHistory : acceptPriceHistoryList) {
                 numRow2++;
                 XSSFRow row2 = sheet2.createRow(numRow2);
                 row2.createCell(0).setCellValue(asset.getInn());
@@ -1155,7 +1134,7 @@ public class AssetController {
             }
         }
 
-        String fileName = "C:\\projectFiles\\" + ("History " +sdfshort.format(new Date())+ ".xlsx");
+        String fileName = "C:\\projectFiles\\" + ("History " + sdfshort.format(new Date()) + ".xlsx");
         OutputStream fileOut = new FileOutputStream(fileName);
 
         wb.write(fileOut);
@@ -1165,7 +1144,7 @@ public class AssetController {
 
     private String creditContract(Lot lot, String contract_year, String contract_address, String contract_protokol_num, String contract_protokol_date, String protocol_made_by, String subscriber) throws IOException {
 
-        List <Credit> creditList = lotService.getCRDTSByLot(lot);
+        List<Credit> creditList = lotService.getCRDTSByLot(lot);
 
         InputStream fs = new FileInputStream("C:\\projectFiles\\Lot_Credits_Docs\\Dogovir.docx");
 
@@ -1179,13 +1158,13 @@ public class AssetController {
                     String text = r.getText(0);
                     if (text != null) {
                         String tempText = "";
-                        if (!creditList.isEmpty() && text.contains("knd")){
-                            for(Credit credit: creditList){
-                                tempText+="№"+credit.getContractNum()+" від "+ sdfpoints.format(credit.getContractStart())+"року,";
+                        if (!creditList.isEmpty() && text.contains("knd")) {
+                            for (Credit credit : creditList) {
+                                tempText += "№" + credit.getContractNum() + " від " + sdfpoints.format(credit.getContractStart()) + "року,";
                             }
                         }
                         r.setText(replaceRunText(text, String.valueOf(creditList.get(0).getContractNum()), contract_year, String.valueOf(lot.getCustomerName()),
-                                String.valueOf(contract_address),  String.valueOf(lot.getCustomerInn()),
+                                String.valueOf(contract_address), String.valueOf(lot.getCustomerInn()),
                                 String.valueOf(contract_protokol_num), String.valueOf(contract_protokol_date),
                                 String.valueOf(protocol_made_by), String.valueOf(lot.getFactPrice()), tempText, subscriber), 0);
                     }
@@ -1204,14 +1183,14 @@ public class AssetController {
                                 String text = r.getText(0);
                                 if (text != null) {
                                     String tempText = "";
-                                    if (!creditList.isEmpty() && text.contains("knd")){
-                                        for(Credit credit: creditList){
-                                            tempText+="№"+credit.getContractNum()+" від "+ sdfpoints.format(credit.getContractStart())+"року,";
+                                    if (!creditList.isEmpty() && text.contains("knd")) {
+                                        for (Credit credit : creditList) {
+                                            tempText += "№" + credit.getContractNum() + " від " + sdfpoints.format(credit.getContractStart()) + "року,";
                                         }
                                     }
 
                                     r.setText(replaceRunText(text, String.valueOf(creditList.get(0).getContractNum()), contract_year, String.valueOf(lot.getCustomerName()),
-                                            String.valueOf(contract_address),  String.valueOf(lot.getCustomerInn()),
+                                            String.valueOf(contract_address), String.valueOf(lot.getCustomerInn()),
                                             String.valueOf(contract_protokol_num), String.valueOf(contract_protokol_date),
                                             String.valueOf(protocol_made_by), String.valueOf(lot.getFactPrice()), tempText, subscriber), 0);
                                 }
@@ -1232,16 +1211,15 @@ public class AssetController {
 
     private String assetContract(Lot lot, String contract_year, String contract_address, String contract_protokol_num, String contract_protokol_date, String protocol_made_by, String subscriber,
                                  String pass_seria, String pass_num, String pass_vidano, String pass_vidano_date, String operates_basis, String account_bank,
-                                 String bid_enter, String bid_client, String signer_bank_fio, String signer_bank_text) throws IOException{
+                                 String bid_enter, String bid_client, String signer_bank_fio, String signer_bank_text) throws IOException {
 
         List<Asset> assetList = lotService.getAssetsByLot(lot);
 
         String bidDate;
-        try{
+        try {
             bidDate = sdfpoints.format(lot.getBid().getBidDate());
-        }
-        catch(NullPointerException e){
-            bidDate= "дата торгів";
+        } catch (NullPointerException e) {
+            bidDate = "дата торгів";
         }
 
         InputStream fs = new FileInputStream("C:\\projectFiles\\Lot_Assets_Docs\\Dogovir.docx");
@@ -1251,29 +1229,28 @@ public class AssetController {
         List<XWPFTable> tableList = docx.getTables();
 
         XWPFTable objTable = tableList.get(0);
-        int i =assetList.size();
-        BigDecimal propertyPrice=new BigDecimal(0);
+        int i = assetList.size();
+        BigDecimal propertyPrice = new BigDecimal(0);
 
 
         XWPFTableRow totalRow = objTable.getRow(1);
-        totalRow.getCell(0).setText("Основні засоби в кількості "+i+" одиниць загальною вартістю");
+        totalRow.getCell(0).setText("Основні засоби в кількості " + i + " одиниць загальною вартістю");
         try {
             totalRow.getCell(1).setText(String.valueOf(lot.getFactPrice()));
-        }
-        catch (NullPointerException npl){
+        } catch (NullPointerException npl) {
             totalRow.getCell(1).setText("0");
         }
 
         for (Asset asset : assetList) {
-            if(asset.getFactPrice()!=null && (asset.getAssetGroupCode().equals("101")||asset.getAssetGroupCode().equals("102") ) )
-                propertyPrice=propertyPrice.add(asset.getFactPrice());
+            if (asset.getFactPrice() != null && (asset.getAssetGroupCode().equals("101") || asset.getAssetGroupCode().equals("102")))
+                propertyPrice = propertyPrice.add(asset.getFactPrice());
             XWPFTableRow newRow = objTable.insertNewTableRow(1);
             newRow.createCell().setText(i + ".");
             newRow.createCell().setText(asset.getInn());
             newRow.createCell().setText(asset.getAsset_name());
             newRow.createCell().setText(asset.getAsset_descr());
             newRow.createCell().setText(asset.getAddress());
-            if(asset.getFactPrice()!=null)
+            if (asset.getFactPrice() != null)
                 newRow.createCell().setText(String.valueOf(asset.getFactPrice()));
             i--;
         }
@@ -1281,17 +1258,16 @@ public class AssetController {
         BigDecimal propertyPDV = propertyPrice.divide(new BigDecimal(6), 2, BigDecimal.ROUND_HALF_UP);
         BigDecimal notPropertyPrice;
         BigDecimal notPropertyPDV;
-        try{
-            notPropertyPrice=lot.getFactPrice().subtract(propertyPrice);
-            notPropertyPDV=(lot.getFactPrice().divide(new BigDecimal(6), 2, BigDecimal.ROUND_HALF_UP)).subtract(propertyPDV);
-        }
-        catch(Exception npe){
-            notPropertyPrice=new BigDecimal(0);
-            notPropertyPDV=new BigDecimal(0);
+        try {
+            notPropertyPrice = lot.getFactPrice().subtract(propertyPrice);
+            notPropertyPDV = (lot.getFactPrice().divide(new BigDecimal(6), 2, BigDecimal.ROUND_HALF_UP)).subtract(propertyPDV);
+        } catch (Exception npe) {
+            notPropertyPrice = new BigDecimal(0);
+            notPropertyPDV = new BigDecimal(0);
         }
 
-        objTable.setInsideVBorder( XWPFTable.XWPFBorderType.SINGLE, 2, 0, "000000");
-        objTable.setInsideHBorder( XWPFTable.XWPFBorderType.SINGLE, 2, 0, "000000");
+        objTable.setInsideVBorder(XWPFTable.XWPFBorderType.SINGLE, 2, 0, "000000");
+        objTable.setInsideHBorder(XWPFTable.XWPFBorderType.SINGLE, 2, 0, "000000");
         //objTable.removeRow(1);
 
         for (XWPFParagraph p : docx.getParagraphs()) {
@@ -1303,7 +1279,7 @@ public class AssetController {
                     if (text != null) {
 
                         r.setText(replaceRunTextAssets(text, bidDate, assetList.size(), lot.getLotNum(), contract_year, String.valueOf(lot.getCustomerName()),
-                                String.valueOf(contract_address),  String.valueOf(lot.getCustomerInn()),
+                                String.valueOf(contract_address), String.valueOf(lot.getCustomerInn()),
                                 String.valueOf(contract_protokol_num), String.valueOf(contract_protokol_date),
                                 String.valueOf(protocol_made_by), String.valueOf(lot.getFactPrice()), subscriber,
                                 pass_seria, pass_num, pass_vidano, pass_vidano_date, operates_basis, account_bank,
@@ -1328,7 +1304,7 @@ public class AssetController {
                                 if (text != null) {
 
                                     r.setText(replaceRunTextAssets(text, bidDate, assetList.size(), lot.getLotNum(), contract_year, String.valueOf(lot.getCustomerName()),
-                                            String.valueOf(contract_address),  String.valueOf(lot.getCustomerInn()),
+                                            String.valueOf(contract_address), String.valueOf(lot.getCustomerInn()),
                                             String.valueOf(contract_protokol_num), String.valueOf(contract_protokol_date),
                                             String.valueOf(protocol_made_by), String.valueOf(lot.getFactPrice()), subscriber,
                                             pass_seria, pass_num, pass_vidano, pass_vidano_date, operates_basis,
@@ -1343,7 +1319,7 @@ public class AssetController {
             }
         }
 
-        String fileName = "C:\\projectFiles\\Lot_Assets_Docs\\Dogovir_"+lot.getLotNum()+" ("+ lot.getId() + ").docx";
+        String fileName = "C:\\projectFiles\\Lot_Assets_Docs\\Dogovir_" + lot.getLotNum() + " (" + lot.getId() + ").docx";
         OutputStream fileOut = new FileOutputStream(fileName);
 
         docx.write(fileOut);
@@ -1353,7 +1329,7 @@ public class AssetController {
 
     private String creditContract_Akt(Lot lot, String contract_year, String contract_address, String contract_protokol_num, String contract_protokol_date, String protocol_made_by, String subscriber) throws IOException {
 
-        List <Credit> creditList = lotService.getCRDTSByLot(lot);
+        List<Credit> creditList = lotService.getCRDTSByLot(lot);
 
         InputStream fs = new FileInputStream("C:\\projectFiles\\Lot_Credits_Docs\\Dogovir_Akt.docx");
 
@@ -1367,13 +1343,13 @@ public class AssetController {
                     String text = r.getText(0);
                     if (text != null) {
                         String tempText = "";
-                        if (!creditList.isEmpty() && text.contains("knd")){
-                            for(Credit credit: creditList){
-                                tempText+="№"+credit.getContractNum()+" від "+ sdfpoints.format(credit.getContractStart())+"року,";
+                        if (!creditList.isEmpty() && text.contains("knd")) {
+                            for (Credit credit : creditList) {
+                                tempText += "№" + credit.getContractNum() + " від " + sdfpoints.format(credit.getContractStart()) + "року,";
                             }
                         }
                         r.setText(replaceRunText(text, String.valueOf(creditList.get(0).getContractNum()), contract_year, String.valueOf(lot.getCustomerName()),
-                                String.valueOf(contract_address),  String.valueOf(lot.getCustomerInn()),
+                                String.valueOf(contract_address), String.valueOf(lot.getCustomerInn()),
                                 String.valueOf(contract_protokol_num), String.valueOf(contract_protokol_date),
                                 String.valueOf(protocol_made_by), String.valueOf(lot.getFactPrice()), tempText, subscriber), 0);
                     }
@@ -1394,14 +1370,14 @@ public class AssetController {
                                 String text = r.getText(0);
                                 if (text != null) {
                                     String tempText = "";
-                                    if (!creditList.isEmpty() && text.contains("knd")){
-                                        for(Credit credit: creditList){
-                                            tempText+="№"+credit.getContractNum()+" від "+ sdfpoints.format(credit.getContractStart())+"року,";
+                                    if (!creditList.isEmpty() && text.contains("knd")) {
+                                        for (Credit credit : creditList) {
+                                            tempText += "№" + credit.getContractNum() + " від " + sdfpoints.format(credit.getContractStart()) + "року,";
                                         }
                                     }
 
                                     r.setText(replaceRunText(text, String.valueOf(creditList.get(0).getContractNum()), contract_year, String.valueOf(lot.getCustomerName()),
-                                            String.valueOf(contract_address),  String.valueOf(lot.getCustomerInn()),
+                                            String.valueOf(contract_address), String.valueOf(lot.getCustomerInn()),
                                             String.valueOf(contract_protokol_num), String.valueOf(contract_protokol_date),
                                             String.valueOf(protocol_made_by), String.valueOf(lot.getFactPrice()), tempText, subscriber), 0);
                                 }
@@ -1413,25 +1389,24 @@ public class AssetController {
         }
 
         XWPFTable objTable = tableList.get(0);
-        int i =0;
+        int i = 0;
         for (Credit credit : creditList) {
             i++;
 
             XWPFTableRow newRow = objTable.createRow();
             newRow.getCell(0).setText(i + ".");
             newRow.getCell(1).setText("Кредитний договір");
-            String creditStartDate="";
+            String creditStartDate = "";
             try {
                 creditStartDate = sdfpoints.format(credit.getContractStart());
+            } catch (NullPointerException e) {
             }
-            catch (NullPointerException e){
-            }
-            newRow.getCell(2).setText(credit.getContractNum()+" від "+ creditStartDate);
+            newRow.getCell(2).setText(credit.getContractNum() + " від " + creditStartDate);
             newRow.getCell(3).setText("оригінал");
 
         }
-        objTable.setInsideVBorder( XWPFTable.XWPFBorderType.SINGLE, 2, 0, "000000");
-        objTable.setInsideHBorder( XWPFTable.XWPFBorderType.SINGLE, 2, 0, "000000");
+        objTable.setInsideVBorder(XWPFTable.XWPFBorderType.SINGLE, 2, 0, "000000");
+        objTable.setInsideHBorder(XWPFTable.XWPFBorderType.SINGLE, 2, 0, "000000");
         objTable.removeRow(1);
 
         String fileName = "C:\\projectFiles\\Lot_Credits_Docs\\Dogovir_Akt_" + lot.getId() + ".docx";
@@ -1444,16 +1419,15 @@ public class AssetController {
 
     private String assetContract_Akt(Lot lot, String contract_year, String contract_address, String contract_protokol_num,
                                      String contract_protokol_date, String protocol_made_by, String subscriber, String pass_seria, String pass_num, String pass_vidano, String pass_vidano_date, String operates_basis, String account_bank,
-                                     String bid_enter, String bid_client, String signer_bank_fio, String signer_bank_text) throws IOException{
+                                     String bid_enter, String bid_client, String signer_bank_fio, String signer_bank_text) throws IOException {
 
         List<Asset> assetList = lotService.getAssetsByLot(lot);
 
         String bidDate;
-        try{
+        try {
             bidDate = sdfpoints.format(lot.getBid().getBidDate());
-        }
-        catch(NullPointerException e){
-            bidDate= "дата торгів";
+        } catch (NullPointerException e) {
+            bidDate = "дата торгів";
         }
 
         InputStream fs = new FileInputStream("C:\\projectFiles\\Lot_Assets_Docs\\Dogovir_Akt.docx");
@@ -1463,14 +1437,13 @@ public class AssetController {
         List<XWPFTable> tableList = docx.getTables();
 
         XWPFTable objTable = tableList.get(0);
-        int i =assetList.size();
+        int i = assetList.size();
 
         XWPFTableRow totalRow = objTable.getRow(1);
-        totalRow.getCell(0).setText("Основні засоби в кількості "+i+" одиниць загальною вартістю");
+        totalRow.getCell(0).setText("Основні засоби в кількості " + i + " одиниць загальною вартістю");
         try {
             totalRow.getCell(1).setText(String.valueOf(lot.getFactPrice()));
-        }
-        catch (NullPointerException npl){
+        } catch (NullPointerException npl) {
             totalRow.getCell(1).setText("0");
         }
 
@@ -1482,14 +1455,14 @@ public class AssetController {
             newRow.createCell().setText(asset.getAsset_name());
             newRow.createCell().setText(asset.getAsset_descr());
             newRow.createCell().setText(asset.getAddress());
-            if(asset.getFactPrice()!=null)
+            if (asset.getFactPrice() != null)
                 newRow.createCell().setText(String.valueOf(asset.getFactPrice()));
             i--;
         }
 //
 
-        objTable.setInsideVBorder( XWPFTable.XWPFBorderType.SINGLE, 2, 0, "000000");
-        objTable.setInsideHBorder( XWPFTable.XWPFBorderType.SINGLE, 2, 0, "000000");
+        objTable.setInsideVBorder(XWPFTable.XWPFBorderType.SINGLE, 2, 0, "000000");
+        objTable.setInsideHBorder(XWPFTable.XWPFBorderType.SINGLE, 2, 0, "000000");
         //objTable.removeRow(1);
 
         for (XWPFParagraph p : docx.getParagraphs()) {
@@ -1500,7 +1473,7 @@ public class AssetController {
                     String text = r.getText(0);
                     if (text != null) {
                         r.setText(replaceRunTextAssets(text, bidDate, assetList.size(), lot.getLotNum(), contract_year, String.valueOf(lot.getCustomerName()),
-                                String.valueOf(contract_address),  String.valueOf(lot.getCustomerInn()),
+                                String.valueOf(contract_address), String.valueOf(lot.getCustomerInn()),
                                 String.valueOf(contract_protokol_num), String.valueOf(contract_protokol_date),
                                 String.valueOf(protocol_made_by), String.valueOf(lot.getFactPrice()), subscriber,
                                 pass_seria, pass_num, pass_vidano, pass_vidano_date, operates_basis, account_bank,
@@ -1508,7 +1481,7 @@ public class AssetController {
                                 bid_client,
                                 signer_bank_fio,
                                 signer_bank_text,
-                                "0", "0", "0", "0"  ), 0);
+                                "0", "0", "0", "0"), 0);
                     }
                 }
             }
@@ -1526,12 +1499,12 @@ public class AssetController {
                                 String text = r.getText(0);
                                 if (text != null) {
                                     r.setText(replaceRunTextAssets(text, bidDate, assetList.size(), lot.getLotNum(), contract_year, String.valueOf(lot.getCustomerName()),
-                                            String.valueOf(contract_address),  String.valueOf(lot.getCustomerInn()),
+                                            String.valueOf(contract_address), String.valueOf(lot.getCustomerInn()),
                                             String.valueOf(contract_protokol_num), String.valueOf(contract_protokol_date),
                                             String.valueOf(protocol_made_by), String.valueOf(lot.getFactPrice()), subscriber,
                                             pass_seria, pass_num, pass_vidano, pass_vidano_date, operates_basis,
                                             account_bank, bid_enter, bid_client, signer_bank_fio, signer_bank_text,
-                                            "0", "0", "0", "0"  ), 0);
+                                            "0", "0", "0", "0"), 0);
                                 }
                             }
                         }
@@ -1540,7 +1513,7 @@ public class AssetController {
             }
         }
 
-        String fileName = "C:\\projectFiles\\Lot_Assets_Docs\\Dogovir_Akt_"+lot.getLotNum()+" ("+ lot.getId() + ").docx";
+        String fileName = "C:\\projectFiles\\Lot_Assets_Docs\\Dogovir_Akt_" + lot.getLotNum() + " (" + lot.getId() + ").docx";
         OutputStream fileOut = new FileOutputStream(fileName);
 
         docx.write(fileOut);
@@ -1550,7 +1523,7 @@ public class AssetController {
 
     private String creditContract_Dodatok1(Lot lot, String contract_year, String contract_address, String contract_protokol_num, String contract_protokol_date, String protocol_made_by, String subscriber) throws IOException {
 
-        List <Credit> creditList = lotService.getCRDTSByLot(lot);
+        List<Credit> creditList = lotService.getCRDTSByLot(lot);
 
         InputStream fs = new FileInputStream("C:\\projectFiles\\Lot_Credits_Docs\\Dogovir_Dodatok1.docx");
 
@@ -1564,13 +1537,13 @@ public class AssetController {
                     String text = r.getText(0);
                     if (text != null) {
                         String tempText = "";
-                        if (!creditList.isEmpty() && text.contains("knd")){
-                            for(Credit credit: creditList){
-                                tempText+="№"+credit.getContractNum()+" від "+ sdfpoints.format(credit.getContractStart())+"року,";
+                        if (!creditList.isEmpty() && text.contains("knd")) {
+                            for (Credit credit : creditList) {
+                                tempText += "№" + credit.getContractNum() + " від " + sdfpoints.format(credit.getContractStart()) + "року,";
                             }
                         }
                         r.setText(replaceRunText(text, String.valueOf(creditList.get(0).getContractNum()), contract_year, String.valueOf(lot.getCustomerName()),
-                                String.valueOf(contract_address),  String.valueOf(lot.getCustomerInn()),
+                                String.valueOf(contract_address), String.valueOf(lot.getCustomerInn()),
                                 String.valueOf(contract_protokol_num), String.valueOf(contract_protokol_date),
                                 String.valueOf(protocol_made_by), String.valueOf(lot.getFactPrice()), tempText, subscriber), 0);
                     }
@@ -1591,14 +1564,14 @@ public class AssetController {
                                 String text = r.getText(0);
                                 if (text != null) {
                                     String tempText = "";
-                                    if (!creditList.isEmpty() && text.contains("knd")){
-                                        for(Credit credit: creditList){
-                                            tempText+="№"+credit.getContractNum()+" від "+ sdfpoints.format(credit.getContractStart())+"року,";
+                                    if (!creditList.isEmpty() && text.contains("knd")) {
+                                        for (Credit credit : creditList) {
+                                            tempText += "№" + credit.getContractNum() + " від " + sdfpoints.format(credit.getContractStart()) + "року,";
                                         }
                                     }
 
                                     r.setText(replaceRunText(text, String.valueOf(creditList.get(0).getContractNum()), contract_year, String.valueOf(lot.getCustomerName()),
-                                            String.valueOf(contract_address),  String.valueOf(lot.getCustomerInn()),
+                                            String.valueOf(contract_address), String.valueOf(lot.getCustomerInn()),
                                             String.valueOf(contract_protokol_num), String.valueOf(contract_protokol_date),
                                             String.valueOf(protocol_made_by), String.valueOf(lot.getFactPrice()), tempText, subscriber), 0);
                                 }
@@ -1610,18 +1583,17 @@ public class AssetController {
         }
 
         XWPFTable objTable = tableList.get(0);
-        int i =creditList.size();
+        int i = creditList.size();
         for (Credit credit : creditList) {
             XWPFTableRow newRow = objTable.insertNewTableRow(2);
             newRow.createCell().setText(i + ".");
-            newRow.createCell().setText("Позичальник – "+credit.getFio()+", РНОКПП "+ credit.getInn());
-            String creditStartDate="";
+            newRow.createCell().setText("Позичальник – " + credit.getFio() + ", РНОКПП " + credit.getInn());
+            String creditStartDate = "";
             try {
                 creditStartDate = sdfpoints.format(credit.getContractStart());
+            } catch (NullPointerException e) {
             }
-            catch (NullPointerException e){
-            }
-            newRow.createCell().setText("Кредитний договір "+credit.getContractNum()+" від "+ creditStartDate);
+            newRow.createCell().setText("Кредитний договір " + credit.getContractNum() + " від " + creditStartDate);
             i--;
         }
         objTable.removeRow(1);
@@ -1636,7 +1608,7 @@ public class AssetController {
 
     private String creditContract_Dodatok2(Lot lot, String contract_year, String contract_address, String contract_protokol_num, String contract_protokol_date, String protocol_made_by, String subscriber) throws IOException {
 
-        List <Credit> creditList = lotService.getCRDTSByLot(lot);
+        List<Credit> creditList = lotService.getCRDTSByLot(lot);
 
         InputStream fs = new FileInputStream("C:\\projectFiles\\Lot_Credits_Docs\\Dogovir_Dodatok2.docx");
 
@@ -1650,13 +1622,13 @@ public class AssetController {
                     String text = r.getText(0);
                     if (text != null) {
                         String tempText = "";
-                        if (!creditList.isEmpty() && text.contains("knd")){
-                            for(Credit credit: creditList){
-                                tempText+="№"+credit.getContractNum()+" від "+ sdfpoints.format(credit.getContractStart())+"року,";
+                        if (!creditList.isEmpty() && text.contains("knd")) {
+                            for (Credit credit : creditList) {
+                                tempText += "№" + credit.getContractNum() + " від " + sdfpoints.format(credit.getContractStart()) + "року,";
                             }
                         }
                         r.setText(replaceRunText(text, String.valueOf(creditList.get(0).getContractNum()), contract_year, String.valueOf(lot.getCustomerName()),
-                                String.valueOf(contract_address),  String.valueOf(lot.getCustomerInn()),
+                                String.valueOf(contract_address), String.valueOf(lot.getCustomerInn()),
                                 String.valueOf(contract_protokol_num), String.valueOf(contract_protokol_date),
                                 String.valueOf(protocol_made_by), String.valueOf(lot.getFactPrice()), tempText, subscriber), 0);
                     }
@@ -1677,14 +1649,14 @@ public class AssetController {
                                 String text = r.getText(0);
                                 if (text != null) {
                                     String tempText = "";
-                                    if (!creditList.isEmpty() && text.contains("knd")){
-                                        for(Credit credit: creditList){
-                                            tempText+="№"+credit.getContractNum()+" від "+ sdfpoints.format(credit.getContractStart())+"року,";
+                                    if (!creditList.isEmpty() && text.contains("knd")) {
+                                        for (Credit credit : creditList) {
+                                            tempText += "№" + credit.getContractNum() + " від " + sdfpoints.format(credit.getContractStart()) + "року,";
                                         }
                                     }
 
                                     r.setText(replaceRunText(text, String.valueOf(creditList.get(0).getContractNum()), contract_year, String.valueOf(lot.getCustomerName()),
-                                            String.valueOf(contract_address),  String.valueOf(lot.getCustomerInn()),
+                                            String.valueOf(contract_address), String.valueOf(lot.getCustomerInn()),
                                             String.valueOf(contract_protokol_num), String.valueOf(contract_protokol_date),
                                             String.valueOf(protocol_made_by), String.valueOf(lot.getFactPrice()), tempText, subscriber), 0);
                                 }
@@ -1707,6 +1679,7 @@ public class AssetController {
         Lot lot = lotService.getLot(lotId);
         return creditContract(lot, contract_year, contract_address, contract_protokol_num, contract_protokol_date, protocol_made_by, subscriber);
     }
+
     private String makeAssetContract(Long lotId, String contract_year, String contract_address, String contract_protokol_num, String contract_protokol_date, String protocol_made_by, String subscriber,
                                      String pass_seria, String pass_num, String pass_vidano, String pass_vidano_date, String operates_basis, String account_bank,
                                      String bid_enter, String bid_client, String signer_bank) throws Exception {
@@ -1727,7 +1700,7 @@ public class AssetController {
                 break;
         }
         return assetContract(lot, contract_year, contract_address, contract_protokol_num, contract_protokol_date, protocol_made_by, subscriber,
-                     pass_seria, pass_num, pass_vidano, pass_vidano_date, operates_basis, account_bank,
+                pass_seria, pass_num, pass_vidano, pass_vidano_date, operates_basis, account_bank,
                 bid_enter, bid_client, signerBank.getFio(), signerBank.getText());// assetContract();
     }
 
@@ -1735,6 +1708,7 @@ public class AssetController {
         Lot lot = lotService.getLot(lotId);
         return creditContract_Akt(lot, contract_year, contract_address, contract_protokol_num, contract_protokol_date, protocol_made_by, subscriber);
     }
+
     private String makeAssetContract_Akt(Long lotId, String contract_year, String contract_address, String contract_protokol_num, String contract_protokol_date, String protocol_made_by, String subscriber,
                                          String pass_seria, String pass_num, String pass_vidano, String pass_vidano_date, String operates_basis, String account_bank,
                                          String bid_enter, String bid_client, String signer_bank) throws Exception {
@@ -1756,7 +1730,7 @@ public class AssetController {
         }
         return assetContract_Akt(lot, contract_year, contract_address, contract_protokol_num, contract_protokol_date,
                 protocol_made_by, subscriber, pass_seria, pass_num, pass_vidano, pass_vidano_date, operates_basis, account_bank,
-                 bid_enter, bid_client, signerBank.getFio(), signerBank.getText());
+                bid_enter, bid_client, signerBank.getFio(), signerBank.getText());
     }
 
     private String makeContract_Dodatok1(Long lotId, String contract_year, String contract_address, String contract_protokol_num, String contract_protokol_date, String protocol_made_by, String subscriber) throws Exception {
@@ -1847,10 +1821,10 @@ public class AssetController {
         Lot lot = lotService.getLot(idLot);
         Long count = lotService.lotCount(lot);
         BigDecimal sum = lotService.lotSum(lot);
-        if(count!=null)
-        countSumList.add(count.toString());
-        if(sum!=null)
-        countSumList.add(sum.toString());
+        if (count != null)
+            countSumList.add(count.toString());
+        if (sum != null)
+            countSumList.add(sum.toString());
         return countSumList;
     }
 
@@ -1887,7 +1861,7 @@ public class AssetController {
 
         BigDecimal totalLotSum = paySource.equals("Біржа") ? payService.sumByLotFromBid(idLot) : payService.sumByLotFromCustomer(idLot);
 
-        if(lot.getLotType()==1) {
+        if (lot.getLotType() == 1) {
             List<Asset> assetsByLot = lotService.getAssetsByLot(idLot);
             BigDecimal lotFactPrice = lot.getFactPrice();
 
@@ -1901,11 +1875,10 @@ public class AssetController {
 
                 BigDecimal payByAsset = (i == assetsByLot.size() - 1) ? totalLotSum.subtract(assetsTotalPays) : totalLotSum.multiply(coeff).setScale(2, BigDecimal.ROUND_HALF_UP);
 
-                if(paySource.equals("Біржа")) {
+                if (paySource.equals("Біржа")) {
                     asset.setPaysBid(payByAsset);
                     asset.setBidPayDate(date);
-                }
-                else{
+                } else {
                     asset.setPaysCustomer(payByAsset);
                     asset.setCustomerPayDate(date);
                 }
@@ -1915,8 +1888,7 @@ public class AssetController {
             }
             return "1";
 
-        }
-        else if(lot.getLotType()==0) {
+        } else if (lot.getLotType() == 0) {
             List<Credit> creditsByLot = lotService.getCRDTSByLot(lot);
             BigDecimal lotFactPrice = lot.getFactPrice();
 
@@ -1930,11 +1902,10 @@ public class AssetController {
 
                 BigDecimal payByAsset = (i == creditsByLot.size() - 1) ? totalLotSum.subtract(assetsTotalPays) : totalLotSum.multiply(coeff).setScale(2, BigDecimal.ROUND_HALF_UP);
 
-                if(paySource.equals("Біржа")) {
+                if (paySource.equals("Біржа")) {
                     credit.setPaysBid(payByAsset);
                     credit.setBidPayDate(date);
-                }
-                else{
+                } else {
                     credit.setPaysCustomer(payByAsset);
                     credit.setCustomerPayDate(date);
                 }
@@ -1943,14 +1914,12 @@ public class AssetController {
                 creditService.updateCredit(login, credit);
             }
             return "1";
-        }
-
-        else return "0";
+        } else return "0";
     }
 
     @RequestMapping(value = "/delPay/{lotId}/{payId}", method = RequestMethod.POST)
     private @ResponseBody
-    String delPay(HttpSession session, @PathVariable("payId") Long payId, @PathVariable("lotId") Long lotId){
+    String delPay(HttpSession session, @PathVariable("payId") Long payId, @PathVariable("lotId") Long lotId) {
         String login = (String) session.getAttribute("userId");
         Pay pay = payService.getPay(payId);
         Lot lot = lotService.getLot(lotId);
@@ -1961,10 +1930,10 @@ public class AssetController {
 
         BigDecimal totalLotSum = pay.getPaySource().equals("Біржа") ? payService.sumByLotFromBid(lotId) : payService.sumByLotFromCustomer(lotId);
 
-        if(totalLotSum ==null)
+        if (totalLotSum == null)
             totalLotSum = new BigDecimal(0);
 
-        if(lot.getLotType()==1) {
+        if (lot.getLotType() == 1) {
             List<Asset> assetsByLot = lotService.getAssetsByLot(lot);
             BigDecimal lotFactPrice = lot.getFactPrice();
 
@@ -1978,10 +1947,9 @@ public class AssetController {
 
                 BigDecimal payByAsset = (i == assetsByLot.size() - 1) ? totalLotSum.subtract(assetsTotalPays) : totalLotSum.multiply(coeff).setScale(2, BigDecimal.ROUND_HALF_UP);
 
-                if(pay.getPaySource().equals("Біржа")) {
+                if (pay.getPaySource().equals("Біржа")) {
                     asset.setPaysBid(payByAsset);
-                }
-                else{
+                } else {
                     asset.setPaysCustomer(payByAsset);
                 }
                 assetsTotalPays = assetsTotalPays.add(payByAsset);
@@ -1989,8 +1957,7 @@ public class AssetController {
                 assetService.updateAsset(login, asset);
             }
             return "1";
-        }
-        else if(lot.getLotType()==0) {
+        } else if (lot.getLotType() == 0) {
             List<Credit> creditsByLot = lotService.getCRDTSByLot(lot);
             BigDecimal lotFactPrice = lot.getFactPrice();
 
@@ -2004,11 +1971,10 @@ public class AssetController {
 
                 BigDecimal payByAsset = (i == creditsByLot.size() - 1) ? totalLotSum.subtract(assetsTotalPays) : totalLotSum.multiply(coeff).setScale(2, BigDecimal.ROUND_HALF_UP);
 
-                if(pay.getPaySource().equals("Біржа")) {
+                if (pay.getPaySource().equals("Біржа")) {
                     credit.setPaysBid(payByAsset);
 
-                }
-                else{
+                } else {
                     credit.setPaysCustomer(payByAsset);
 
                 }
@@ -2017,8 +1983,7 @@ public class AssetController {
                 creditService.updateCredit(login, credit);
             }
             return "1";
-        }
-        else return "0";
+        } else return "0";
     }
 
     @RequestMapping(value = "/setLotToPrint", method = RequestMethod.GET)
@@ -2049,9 +2014,9 @@ public class AssetController {
                          Model model) {
         String reportPath = "";
 
-        if(reportNum==4){
+        if (reportNum == 4) {
             try {
-                reportPath=fillAssTab();
+                reportPath = fillAssTab();
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -2059,9 +2024,9 @@ public class AssetController {
             return "1";
         }
 
-        if(reportNum==3){
+        if (reportNum == 3) {
             try {
-                reportPath=fillCrdTab(creditService.getCreditsByPortion(1));
+                reportPath = fillCrdTab(creditService.getCreditsByPortion(1));
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -2084,20 +2049,20 @@ public class AssetController {
         List<Asset> assetList = assetService.findAllSuccessBids(startDate, endDate);
         List<Credit> crList = creditService.getCredits_SuccessBids(startDate, endDate);
 
-        if (reportNum==1) {
+        if (reportNum == 1) {
             try {
                 reportPath = makeDodatok(assetList, crList, start, end);
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
-        if (reportNum==2) {
+        if (reportNum == 2) {
             reportPath = "C:\\projectFiles\\Dodatok 2_14.xls";
         }
-        if (reportNum==5) {
-                reportPath = makePaymentsReport(payService.getPaysByDates(startDate, endDate), start, end);
+        if (reportNum == 5) {
+            reportPath = makePaymentsReport(payService.getPaysByDates(startDate, endDate), start, end);
         }
-        if (reportNum==6) {
+        if (reportNum == 6) {
             try {
                 reportPath = makeBidsSumReport(lotService.getLotsHistoryByBidDates(startDate, endDate), lotService.getLotsHistoryAggregatedByBid(startDate, endDate));
             } catch (IOException e) {
@@ -2111,12 +2076,12 @@ public class AssetController {
 
     @RequestMapping(value = "/getReport/{reportNum}/{start}/{end}", method = RequestMethod.GET)
     public void getReport(HttpServletResponse response, @PathVariable String start, @PathVariable String end,
-                         @PathVariable int reportNum) throws IOException {
+                          @PathVariable int reportNum) throws IOException {
         String reportPath = "";
 
-        if(reportNum==4){
+        if (reportNum == 4) {
             try {
-                reportPath=fillAssTab();
+                reportPath = fillAssTab();
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -2143,40 +2108,82 @@ public class AssetController {
         List<Asset> assetList = assetService.findAllSuccessBids(startDate, endDate);
         List<Credit> crList = creditService.getCredits_SuccessBids(startDate, endDate);
 
-        if(reportNum==3){
+        if (reportNum == 3) {
             try {
-                reportPath=fillSoldedCrdTab(crList);
+                reportPath = fillSoldedCrdTab(crList);
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
 
-        if (reportNum==1) {
+        if (reportNum == 1) {
             try {
                 reportPath = makeDodatok(assetList, crList, start, end);
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
-        if (reportNum==2) {
+        if (reportNum == 2) {
             reportPath = "C:\\projectFiles\\Dodatok 2_14.xls";
         }
-        if (reportNum==5) {
+        if (reportNum == 5) {
             reportPath = makePaymentsReport(payService.getPaysByDates(startDate, endDate), start, end);
         }
-        if (reportNum==6) {
+        if (reportNum == 6) {
             try {
                 reportPath = makeBidsSumReport(lotService.getLotsHistoryByBidDates(startDate, endDate), lotService.getLotsHistoryAggregatedByBid(startDate, endDate));
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
-        if (reportNum==7) {
+        if (reportNum == 7) {
             /*try {
                 reportPath = makeBidsSumReport(lotService.getLotsHistoryByBidDates(startDate, endDate), lotService.getLotsHistoryAggregatedByBid(startDate, endDate));
             } catch (IOException e) {
                 e.printStackTrace();
             }*/
+        }
+
+        File file = new File(reportPath);
+        InputStream is = new FileInputStream(file);
+
+        response.setContentType("application/octet-stream");
+        response.setHeader("Content-Disposition", "attachment; filename=\"" + file.getName() + "\"");
+
+        OutputStream os = response.getOutputStream();
+        byte[] buffer = new byte[1024];
+        int len;
+        while ((len = is.read(buffer)) != -1) {
+            os.write(buffer, 0, len);
+        }
+        os.flush();
+        is.close();
+        os.close();
+        file.delete();
+    }
+
+    @RequestMapping(value = "/getSalesReport/{portion}/{start}/{end}", method = RequestMethod.GET)
+    public void getSalesReport(HttpServletResponse response, @PathVariable String start, @PathVariable String end,
+                               @PathVariable int portion) throws IOException {
+        String reportPath = "";
+
+        Date startDate = null;
+        Date endDate = null;
+        try {
+            startDate = sdfshort.parse(start);
+        } catch (ParseException e) {
+        }
+        try {
+            endDate = sdfshort.parse(end);
+        } catch (ParseException e) {
+        }
+        List<Asset> assetList = assetService.findAllSuccessBids(startDate, endDate, portion);
+        List<Credit> crList = creditService.getCredits_SuccessBids(startDate, endDate);
+
+        try {
+            reportPath = makeDodatok(assetList, crList, start, end);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
 
         File file = new File(reportPath);
@@ -2211,7 +2218,7 @@ public class AssetController {
         if (objType.equals("bid"))
             F = new File(bidDocumentsPath + objId);
         try {
-        fList = F.listFiles();
+            fList = F.listFiles();
             for (File aFList : fList) {
                 if (aFList.isFile())
                     fileList.add(aFList.getName());
@@ -2272,35 +2279,34 @@ public class AssetController {
     private @ResponseBody
     String uploadIdFileForHistory(@RequestParam("file") MultipartFile multipartFile, Model model) throws IOException {
 
-            List<Asset> assetList = new ArrayList<>();
-            if (!multipartFile.isEmpty()) {
-                File file = getTempFile(multipartFile);
-                XSSFWorkbook wb;
+        List<Asset> assetList = new ArrayList<>();
+        if (!multipartFile.isEmpty()) {
+            File file = getTempFile(multipartFile);
+            XSSFWorkbook wb;
 
-                try {
-                    wb = new XSSFWorkbook(file);
-                    XSSFSheet sheet = wb.getSheetAt(0);
-                    Iterator rows = sheet.rowIterator();
-                    while (rows.hasNext()) {
+            try {
+                wb = new XSSFWorkbook(file);
+                XSSFSheet sheet = wb.getSheetAt(0);
+                Iterator rows = sheet.rowIterator();
+                while (rows.hasNext()) {
 
-                        XSSFRow row = (XSSFRow) rows.next();
-                        XSSFCell cell = row.getCell(0);
+                    XSSFRow row = (XSSFRow) rows.next();
+                    XSSFCell cell = row.getCell(0);
 
-                        DataFormatter formatter = new DataFormatter();
-                        String inn = formatter.formatCellValue(cell);
+                    DataFormatter formatter = new DataFormatter();
+                    String inn = formatter.formatCellValue(cell);
 
-                        assetList.addAll(assetService.getAllAssetsByInNum(inn));
-                    }
-
-                } catch (Exception e) {
-                    return "4";
+                    assetList.addAll(assetService.getAllAssetsByInNum(inn));
                 }
-                String reportPath = makeHistoryReportByAssets(assetList);
-                model.addAttribute("reportPath", reportPath);
 
-                return "1";
+            } catch (Exception e) {
+                return "4";
             }
-            else return "0";
+            String reportPath = makeHistoryReportByAssets(assetList);
+            model.addAttribute("reportPath", reportPath);
+
+            return "1";
+        } else return "0";
     }
 
     @RequestMapping(value = "/uploadIdFile", method = RequestMethod.POST)
@@ -2323,17 +2329,17 @@ public class AssetController {
                 }
                 XSSFSheet sheet = wb.getSheetAt(0);
                 Iterator rows = sheet.rowIterator();
-                    while (rows.hasNext()) {
+                while (rows.hasNext()) {
 
-                        XSSFRow row = (XSSFRow) rows.next();
-                        XSSFCell cell = row.getCell(0);
+                    XSSFRow row = (XSSFRow) rows.next();
+                    XSSFCell cell = row.getCell(0);
 
-                        DataFormatter formatter = new DataFormatter();
-                        String inn = formatter.formatCellValue(cell);
+                    DataFormatter formatter = new DataFormatter();
+                    String inn = formatter.formatCellValue(cell);
 
-                        assetList.addAll(assetService.getAllAssetsByInNum(inn));
-                    }
-                    return assetList;
+                    assetList.addAll(assetService.getAllAssetsByInNum(inn));
+                }
+                return assetList;
 
             } else return null;
         }
@@ -2372,7 +2378,7 @@ public class AssetController {
         String login = (String) session.getAttribute("userId");
         File file = getTempFile(multipartFile);
         if (idType == 1) {
-            List<Asset> assetList ;
+            List<Asset> assetList;
 
             if (!multipartFile.isEmpty()) {
                 XSSFWorkbook wb;
@@ -2393,9 +2399,9 @@ public class AssetController {
                     String inn = formatter.formatCellValue(cell);
 
                     Double accPrice = row.getCell(1).getNumericCellValue();
-                    assetList=assetService.getAllAssetsByInNum(inn);
-                    assetList.forEach(asset -> asset.setAcceptPrice(BigDecimal.valueOf(accPrice)) );
-                    assetList.forEach(asset -> assetService.updateAsset(login, asset) );
+                    assetList = assetService.getAllAssetsByInNum(inn);
+                    assetList.forEach(asset -> asset.setAcceptPrice(BigDecimal.valueOf(accPrice)));
+                    assetList.forEach(asset -> assetService.updateAsset(login, asset));
                 }
                 return "1";
 
@@ -2425,30 +2431,24 @@ public class AssetController {
                         creditList.forEach(credit -> creditService.updateCredit(login, credit));
                     }
                     return "1";
-                }
-                catch (FileNotFoundException fnfe) {
+                } catch (FileNotFoundException fnfe) {
+                    return "0";
+                } catch (IOException ioe) {
+                    return "0";
+                } catch (Exception e) {
                     return "0";
                 }
-                catch (IOException ioe) {
-                    return "0";
-                }
-                catch(Exception e){
-                    return "0";
-                }
-            }
-            else return "0";
-        }
-
-        else
+            } else return "0";
+        } else
             return "0";
     }
 
     @RequestMapping(value = "/{bidN}/setLotsToBid", method = RequestMethod.POST)
     private @ResponseBody
     String setLotsToBid(HttpSession session,
-                             @RequestParam("file_lots") MultipartFile multipartFile,
-                             @PathVariable ("bidN") long bidId)
-                             /*@RequestParam("bidN") long bidId)*/ throws IOException {
+                        @RequestParam("file_lots") MultipartFile multipartFile,
+                        @PathVariable("bidN") long bidId)
+        /*@RequestParam("bidN") long bidId)*/ throws IOException {
 
         Bid bid = bidService.getBid(bidId);
         System.out.println(bid);
@@ -2467,14 +2467,14 @@ public class AssetController {
             XSSFSheet sheet = wb.getSheetAt(0);
             Iterator rows = sheet.rowIterator();
 
-            int i=0;
+            int i = 0;
             while (rows.hasNext()) {
 
                 XSSFRow row = (XSSFRow) rows.next();
 
                 String lotNum = row.getCell(0).getStringCellValue();
 
-                Lot lot =lotService.getLotByLotNum(lotNum);
+                Lot lot = lotService.getLotByLotNum(lotNum);
                 lot.setBid(bid);
                 lotService.updateLot(login, lot);
                 i++;
@@ -2517,6 +2517,7 @@ public class AssetController {
         os.close();
         file.delete();
     }
+
     @RequestMapping(value = "/unitsByLot/{id}", method = RequestMethod.GET)
     public void getCreditsByLot(HttpServletResponse response, @PathVariable Long id) throws IOException {
 
@@ -2524,13 +2525,12 @@ public class AssetController {
 
         File file = null;
 
-        if(lot.getLotType()==0) {
+        if (lot.getLotType() == 0) {
             file = Excel.loadCreditsByLot(lot, creditService.getCrditsByLotId(id));
-        }
-        else if(lot.getLotType()==1){
+        } else if (lot.getLotType() == 1) {
             file = Excel.loadAssetsByList(lot, lotService.getAssetsByLot(lot));
         }
-         
+
         InputStream is = new FileInputStream(file);
 
         response.setContentType("application/octet-stream");
@@ -2553,11 +2553,11 @@ public class AssetController {
 
         Bid bid = bidService.getBid(id);
 
-        List<Lot> lotList ;
-        List<Asset> assetList ;
+        List<Lot> lotList;
+        List<Asset> assetList;
 
         lotList = lotService.getLotsByBid(bid);
-        assetList =bidService.getAssetsByBid(bid);
+        assetList = bidService.getAssetsByBid(bid);
 
         String filePath = Excel.loadCreditsByList(lotList, assetList);
 
@@ -2631,7 +2631,7 @@ public class AssetController {
     @RequestMapping(value = "/downloadOgolosh/{id}", method = RequestMethod.GET)
     public void downloadOgoloshennya(HttpServletResponse response, @PathVariable Long id) throws IOException {
 
-        File file ;
+        File file;
         String docName = makeOgoloshennya(id);
         file = new File(docName);
 
@@ -2653,16 +2653,17 @@ public class AssetController {
     }
 
     @RequestMapping(value = "/downloadCreditContract/{lotId}/{contract_year}/{contract_address}/{contract_protokol_num}/{contract_protokol_date}/{protocol_made_by}/{subscriber}",
-            method = RequestMethod.GET) public void downloadCreditContract(HttpServletResponse response,
-                                 @PathVariable Long lotId,
-                                 @PathVariable String contract_year,
-                                 @PathVariable String contract_address,
-                                 @PathVariable String contract_protokol_num,
-                                 @PathVariable String contract_protokol_date,
-                                 @PathVariable String protocol_made_by,
-                                 @PathVariable String subscriber) throws Exception {
+            method = RequestMethod.GET)
+    public void downloadCreditContract(HttpServletResponse response,
+                                       @PathVariable Long lotId,
+                                       @PathVariable String contract_year,
+                                       @PathVariable String contract_address,
+                                       @PathVariable String contract_protokol_num,
+                                       @PathVariable String contract_protokol_date,
+                                       @PathVariable String protocol_made_by,
+                                       @PathVariable String subscriber) throws Exception {
 
-        File file ;
+        File file;
         file = new File(makeContract(lotId, contract_year, contract_address, contract_protokol_num, contract_protokol_date, protocol_made_by, subscriber));
         InputStream is = new FileInputStream(file);
 
@@ -2682,24 +2683,25 @@ public class AssetController {
     }
 
     @RequestMapping(value = "/downloadAssetContract/{lotId}/{contract_year}/{contract_address}/{contract_protokol_num}/{contract_protokol_date}/{protocol_made_by}/{subscriber}/{pass_seria}/{pass_num}/{pass_vidano}/{pass_vidano_date}/{operates_basis}/{account_bank}/{bid_enter}/{bid_client}/{signer_bank}",
-            method = RequestMethod.GET) public void downloadAssetContract(HttpServletResponse response,
-                                                                     @PathVariable Long lotId,
-                                                                     @PathVariable String contract_year,
-                                                                     @PathVariable String contract_address,
-                                                                     @PathVariable String contract_protokol_num,
-                                                                     @PathVariable String contract_protokol_date,
-                                                                     @PathVariable String protocol_made_by,
-                                                                     @PathVariable String subscriber,
-                                                                          @PathVariable String pass_seria,
-                                                                          @PathVariable String pass_num,
-                                                                          @PathVariable String pass_vidano,
-                                                                          @PathVariable String pass_vidano_date,
-                                                                          @PathVariable String operates_basis,
-                                                                          @PathVariable String account_bank,
-                                                                          @PathVariable String bid_enter,
-                                                                          @PathVariable String bid_client,
-                                                                          @PathVariable String signer_bank) throws Exception {
-        File file ;
+            method = RequestMethod.GET)
+    public void downloadAssetContract(HttpServletResponse response,
+                                      @PathVariable Long lotId,
+                                      @PathVariable String contract_year,
+                                      @PathVariable String contract_address,
+                                      @PathVariable String contract_protokol_num,
+                                      @PathVariable String contract_protokol_date,
+                                      @PathVariable String protocol_made_by,
+                                      @PathVariable String subscriber,
+                                      @PathVariable String pass_seria,
+                                      @PathVariable String pass_num,
+                                      @PathVariable String pass_vidano,
+                                      @PathVariable String pass_vidano_date,
+                                      @PathVariable String operates_basis,
+                                      @PathVariable String account_bank,
+                                      @PathVariable String bid_enter,
+                                      @PathVariable String bid_client,
+                                      @PathVariable String signer_bank) throws Exception {
+        File file;
         file = new File(makeAssetContract(lotId, contract_year, contract_address, contract_protokol_num, contract_protokol_date, protocol_made_by, subscriber,
                 pass_seria,
                 pass_num,
@@ -2710,7 +2712,7 @@ public class AssetController {
                 bid_enter,
                 bid_client,
                 signer_bank
-                ));
+        ));
         InputStream is = new FileInputStream(file);
 
         response.setContentType("application/octet-stream");
@@ -2729,16 +2731,17 @@ public class AssetController {
     }
 
     @RequestMapping(value = "/downloadContract_Akt/{lotId}/{contract_year}/{contract_address}/{contract_protokol_num}/{contract_protokol_date}/{protocol_made_by}/{subscriber}",
-            method = RequestMethod.GET) public void downloadContract_Akt(HttpServletResponse response,
-                                                                     @PathVariable Long lotId,
-                                                                     @PathVariable String contract_year,
-                                                                     @PathVariable String contract_address,
-                                                                     @PathVariable String contract_protokol_num,
-                                                                     @PathVariable String contract_protokol_date,
-                                                                     @PathVariable String protocol_made_by,
-                                                                     @PathVariable String subscriber) throws Exception {
+            method = RequestMethod.GET)
+    public void downloadContract_Akt(HttpServletResponse response,
+                                     @PathVariable Long lotId,
+                                     @PathVariable String contract_year,
+                                     @PathVariable String contract_address,
+                                     @PathVariable String contract_protokol_num,
+                                     @PathVariable String contract_protokol_date,
+                                     @PathVariable String protocol_made_by,
+                                     @PathVariable String subscriber) throws Exception {
 
-        File file ;
+        File file;
         file = new File(makeContract_Akt(lotId, contract_year, contract_address, contract_protokol_num, contract_protokol_date, protocol_made_by, subscriber));
         InputStream is = new FileInputStream(file);
 
@@ -2758,26 +2761,27 @@ public class AssetController {
     }
 
     @RequestMapping(value = "/downloadAssetContract_Akt/{lotId}/{contract_year}/{contract_address}/{contract_protokol_num}/{contract_protokol_date}/{protocol_made_by}/{subscriber}/{pass_seria}/{pass_num}/{pass_vidano}/{pass_vidano_date}/{operates_basis}/{account_bank}/{bid_enter}/{bid_client}/{signer_bank}",
-            method = RequestMethod.GET) public void downloadAssetContract_Akt(HttpServletResponse response,
-                                                                         @PathVariable Long lotId,
-                                                                         @PathVariable String contract_year,
-                                                                         @PathVariable String contract_address,
-                                                                         @PathVariable String contract_protokol_num,
-                                                                         @PathVariable String contract_protokol_date,
-                                                                         @PathVariable String protocol_made_by,
-                                                                         @PathVariable String subscriber,
-                                                                         @PathVariable String pass_seria,
-                                                                         @PathVariable String pass_num,
-                                                                         @PathVariable String pass_vidano,
-                                                                         @PathVariable String pass_vidano_date,
-                                                                         @PathVariable String operates_basis,
-                                                                         @PathVariable String account_bank,
-                                                                              @PathVariable String bid_enter,
-                                                                              @PathVariable String bid_client,
-                                                                              @PathVariable String signer_bank
-                                                                              ) throws Exception {
+            method = RequestMethod.GET)
+    public void downloadAssetContract_Akt(HttpServletResponse response,
+                                          @PathVariable Long lotId,
+                                          @PathVariable String contract_year,
+                                          @PathVariable String contract_address,
+                                          @PathVariable String contract_protokol_num,
+                                          @PathVariable String contract_protokol_date,
+                                          @PathVariable String protocol_made_by,
+                                          @PathVariable String subscriber,
+                                          @PathVariable String pass_seria,
+                                          @PathVariable String pass_num,
+                                          @PathVariable String pass_vidano,
+                                          @PathVariable String pass_vidano_date,
+                                          @PathVariable String operates_basis,
+                                          @PathVariable String account_bank,
+                                          @PathVariable String bid_enter,
+                                          @PathVariable String bid_client,
+                                          @PathVariable String signer_bank
+    ) throws Exception {
 
-        File file ;
+        File file;
         file = new File(makeAssetContract_Akt(lotId, contract_year, contract_address, contract_protokol_num, contract_protokol_date, protocol_made_by, subscriber,
                 pass_seria, pass_num, pass_vidano, pass_vidano_date, operates_basis, account_bank,
                 bid_enter, bid_client, signer_bank));
@@ -2799,20 +2803,21 @@ public class AssetController {
     }
 
     @RequestMapping(value = "/downloadContract_Dodatok/{dodatok_num}/{lotId}/{contract_year}/{contract_address}/{contract_protokol_num}/{contract_protokol_date}/{protocol_made_by}/{subscriber}",
-            method = RequestMethod.GET) public void downloadContractDodatok(HttpServletResponse response,
-                                                                            @PathVariable Long dodatok_num,
-                                                                     @PathVariable Long lotId,
-                                                                     @PathVariable String contract_year,
-                                                                     @PathVariable String contract_address,
-                                                                     @PathVariable String contract_protokol_num,
-                                                                     @PathVariable String contract_protokol_date,
-                                                                     @PathVariable String protocol_made_by,
-                                                                     @PathVariable String subscriber) throws Exception {
+            method = RequestMethod.GET)
+    public void downloadContractDodatok(HttpServletResponse response,
+                                        @PathVariable Long dodatok_num,
+                                        @PathVariable Long lotId,
+                                        @PathVariable String contract_year,
+                                        @PathVariable String contract_address,
+                                        @PathVariable String contract_protokol_num,
+                                        @PathVariable String contract_protokol_date,
+                                        @PathVariable String protocol_made_by,
+                                        @PathVariable String subscriber) throws Exception {
 
-        File file ;
-        if(dodatok_num==1)
+        File file;
+        if (dodatok_num == 1)
             file = new File(makeContract_Dodatok1(lotId, contract_year, contract_address, contract_protokol_num, contract_protokol_date, protocol_made_by, subscriber));
-        else if(dodatok_num==2)
+        else if (dodatok_num == 2)
             file = new File(makeContract_Dodatok2(lotId, contract_year, contract_address, contract_protokol_num, contract_protokol_date, protocol_made_by, subscriber));
         else return;
         InputStream is = new FileInputStream(file);
@@ -2854,18 +2859,17 @@ public class AssetController {
     }
     //LOT_ID_LIST.xlsx
 
-    public void setFactPriceFromLotToCredits(Lot lot, BigDecimal factLotPrice, String login){
-        List <Credit> credits = lotService.getCRDTSByLot(lot);
-        if(lot.getFactPrice() != null && lot.getFactPrice().equals(factLotPrice)){
-           return;
+    public void setFactPriceFromLotToCredits(Lot lot, BigDecimal factLotPrice, String login) {
+        List<Credit> credits = lotService.getCRDTSByLot(lot);
+        if (lot.getFactPrice() != null && lot.getFactPrice().equals(factLotPrice)) {
+            return;
         }
         if (factLotPrice == null) {
             for (Credit credit : credits) {
                 credit.setFactPrice(null);
                 creditService.updateCredit(login, credit);
             }
-        }
-        else if (!factLotPrice.equals(BigDecimal.valueOf(0.00))) {
+        } else if (!factLotPrice.equals(BigDecimal.valueOf(0.00))) {
             BigDecimal lotAcceptedSum = lotService.lotAcceptedSum(lot);
             BigDecimal creditsTotalFact = new BigDecimal(0.00);
 
@@ -2884,16 +2888,15 @@ public class AssetController {
         }
     }
 
-    public void setFactPriceFromLotToAssets(Lot lot, BigDecimal factLotPrice, String login){
-        List <Asset> assets = lotService.getAssetsByLot(lot);
+    public void setFactPriceFromLotToAssets(Lot lot, BigDecimal factLotPrice, String login) {
+        List<Asset> assets = lotService.getAssetsByLot(lot);
 
         if (factLotPrice == null) {
             for (Asset asset : assets) {
                 asset.setFactPrice(null);
                 assetService.updateAsset(login, asset);
             }
-        }
-        else if (!factLotPrice.equals(new BigDecimal(0.00))) {
+        } else if (!factLotPrice.equals(new BigDecimal(0.00))) {
             BigDecimal lotAcceptedSum = lotService.lotAcceptedSum(lot);
             BigDecimal assetsTotalFact = new BigDecimal(0.00);
 
@@ -2912,19 +2915,17 @@ public class AssetController {
         }
     }
 
-    public void setFirstStartPriceFromLotToCredits(Lot lot, BigDecimal firstStartLotPrice, String login){
-        List <Credit> credits = lotService.getCRDTSByLot(lot);
-        if(firstStartLotPrice!=null && lot.getFirstStartPrice()!=null && lot.getFirstStartPrice().equals(firstStartLotPrice)){
+    public void setFirstStartPriceFromLotToCredits(Lot lot, BigDecimal firstStartLotPrice, String login) {
+        List<Credit> credits = lotService.getCRDTSByLot(lot);
+        if (firstStartLotPrice != null && lot.getFirstStartPrice() != null && lot.getFirstStartPrice().equals(firstStartLotPrice)) {
             return;
         }
-        if(firstStartLotPrice == null || firstStartLotPrice.equals(new BigDecimal(0.00))) {
+        if (firstStartLotPrice == null || firstStartLotPrice.equals(new BigDecimal(0.00))) {
             for (Credit credit : credits) {
                 credit.setFirstStartPrice(firstStartLotPrice);
                 creditService.updateCredit(login, credit);
             }
-        }
-
-        else {
+        } else {
             BigDecimal lotSum = lotService.lotSum(lot);
             BigDecimal crTotalFirstPrice = new BigDecimal(0.00);
             for (int i = 0; i < credits.size(); i++) {
@@ -2932,8 +2933,7 @@ public class AssetController {
                 BigDecimal firstPrice;
                 if (i == credits.size() - 1) {
                     firstPrice = firstStartLotPrice.subtract(crTotalFirstPrice);
-                }
-                else {
+                } else {
                     firstPrice = (credit.getRv().divide(lotSum, 10, BigDecimal.ROUND_HALF_UP)).multiply(firstStartLotPrice).setScale(2, BigDecimal.ROUND_HALF_UP);
                     crTotalFirstPrice = crTotalFirstPrice.add(firstPrice);
                 }
@@ -2942,10 +2942,11 @@ public class AssetController {
             }
         }
     }
+
     //можно улучшить
-    public void setStartPriceFromLotToCredits(Lot lot, BigDecimal startLotPrice, String login){
-        List <Credit> credits = lotService.getCRDTSByLot(lot);
-        if(lot.getStartPrice()!=null && lot.getStartPrice().equals(startLotPrice)){
+    public void setStartPriceFromLotToCredits(Lot lot, BigDecimal startLotPrice, String login) {
+        List<Credit> credits = lotService.getCRDTSByLot(lot);
+        if (lot.getStartPrice() != null && lot.getStartPrice().equals(startLotPrice)) {
             return;
         }
         if (startLotPrice == null || startLotPrice.equals(new BigDecimal(0.00))) {
@@ -2953,8 +2954,7 @@ public class AssetController {
                 credit.setStartPrice(startLotPrice);
                 creditService.updateCredit(login, credit);
             }
-        }
-        else  {
+        } else {
             BigDecimal lotSum = lotService.lotSum(lot);
             BigDecimal crTotalStartPrice = new BigDecimal(0.00);
             for (int i = 0; i < credits.size(); i++) {
@@ -2973,23 +2973,23 @@ public class AssetController {
     }
 
     @RequestMapping(value = "/changeLotParams", method = RequestMethod.POST)
-    private @ResponseBody String changeLotParams (HttpSession session,
-                            @RequestParam("lotId") String lotId,
-                            @RequestParam("lotNum") String lotNum,
-                            @RequestParam("workStage") String status,
-                            @RequestParam("comment") String comment,
-                            @RequestParam("bidStage") String bidStage,
-                            @RequestParam("resultStatus") String resultStatus,
-                            @RequestParam("customer") String customer,
-                            @RequestParam("customerInn") String customerInn,
-                            @RequestParam("firstPrice") BigDecimal firstPrice,
-                            @RequestParam("startPrice") BigDecimal startPrice,
-                            @RequestParam("factPrice") BigDecimal factLotPrice,
-                            @RequestParam("isSold") String isSold,
-                            @RequestParam("selectedBidId") Long selectedBidId,
-                            @RequestParam("countOfParticipants") int countOfParticipants,
-                            @RequestParam("bidScenario") short bidScenario)
-    {
+    private @ResponseBody
+    String changeLotParams(HttpSession session,
+                           @RequestParam("lotId") String lotId,
+                           @RequestParam("lotNum") String lotNum,
+                           @RequestParam("workStage") String status,
+                           @RequestParam("comment") String comment,
+                           @RequestParam("bidStage") String bidStage,
+                           @RequestParam("resultStatus") String resultStatus,
+                           @RequestParam("customer") String customer,
+                           @RequestParam("customerInn") String customerInn,
+                           @RequestParam("firstPrice") BigDecimal firstPrice,
+                           @RequestParam("startPrice") BigDecimal startPrice,
+                           @RequestParam("factPrice") BigDecimal factLotPrice,
+                           @RequestParam("isSold") String isSold,
+                           @RequestParam("selectedBidId") Long selectedBidId,
+                           @RequestParam("countOfParticipants") int countOfParticipants,
+                           @RequestParam("bidScenario") short bidScenario) {
         String login = (String) session.getAttribute("userId");
         Lot lot = lotService.getLot(Long.parseLong(lotId));
         lot.setLotNum(lotNum);
@@ -3002,27 +3002,26 @@ public class AssetController {
         if (customerInn.equals(""))
             lot.setCustomerInn(0L);
         else
-        lot.setCustomerInn(Long.parseLong(customerInn));
+            lot.setCustomerInn(Long.parseLong(customerInn));
 
         lot.setCountOfParticipants(countOfParticipants);
         lot.setBidScenario(bidScenario);
 
         if (selectedBidId == 0L) {
             lot.setBid(null);
-        }
-        else
+        } else
             lot.setBid(bidService.getBid(selectedBidId));
 
-        if(lot.getLotType()==1 /*&& lot.getFactPrice()!=null && !lot.getFactPrice().equals(factLotPrice)*/){
+        if (lot.getLotType() == 1 /*&& lot.getFactPrice()!=null && !lot.getFactPrice().equals(factLotPrice)*/) {
 
             setFactPriceFromLotToAssets(lot, factLotPrice, login);
         }
-        if(lot.getLotType()==0) {
-         //   if(lot.getFirstStartPrice()!=null && !lot.getFirstStartPrice().equals(firstPrice))
+        if (lot.getLotType() == 0) {
+            //   if(lot.getFirstStartPrice()!=null && !lot.getFirstStartPrice().equals(firstPrice))
             setFirstStartPriceFromLotToCredits(lot, firstPrice, login);
-         //   if(lot.getStartPrice()!=null && !lot.getStartPrice().equals(startPrice))
+            //   if(lot.getStartPrice()!=null && !lot.getStartPrice().equals(startPrice))
             setStartPriceFromLotToCredits(lot, startPrice, login);
-        //    if(lot.getFactPrice()!=null && !lot.getFactPrice().equals(factLotPrice))
+            //    if(lot.getFactPrice()!=null && !lot.getFactPrice().equals(factLotPrice))
             setFactPriceFromLotToCredits(lot, factLotPrice, login);
         }
 
@@ -3030,7 +3029,7 @@ public class AssetController {
         lot.setStartPrice(startPrice);
         lot.setFactPrice(factLotPrice);
 
-        if(lot.getFirstStartPrice() == null) {
+        if (lot.getFirstStartPrice() == null) {
             setFirstStartPriceFromLotToCredits(lot, startPrice, login);
             lot.setFirstStartPrice(startPrice);
         }
@@ -3045,7 +3044,7 @@ public class AssetController {
                 credit.setSold(true);
                 creditService.updateCredit(login, credit);
             }
-            for(Asset asset: assetList){
+            for (Asset asset : assetList) {
                 asset.setSold(true);
                 assetService.updateAsset(login, asset);
             }
@@ -3064,13 +3063,13 @@ public class AssetController {
         String login = (String) session.getAttribute("userId");
         Lot lot = lotService.getLot(Long.parseLong(lotId));
 
-        if(lot.getLotType()==0) {
+        if (lot.getLotType() == 0) {
             if (lot.getFirstStartPrice() == null) {
                 setFirstStartPriceFromLotToCredits(lot, lot.getStartPrice(), login);
             }
             setFactPriceFromLotToCredits(lot, null, login);
         }
-        if(lot.getLotType()==1) {
+        if (lot.getLotType() == 1) {
             setFactPriceFromLotToAssets(lot, null, login);
         }
         if (lot.getFirstStartPrice() == null) {
@@ -3087,21 +3086,16 @@ public class AssetController {
                 lot.setBidStage(StaticStatus.bidStatusList.get(3));
             } else if (lot.getBidStage().equals(StaticStatus.bidStatusList.get(3))) {
                 lot.setBidStage(StaticStatus.bidStatusList.get(4));
-            }
-            else if (lot.getBidStage().equals(StaticStatus.bidStatusList.get(4))) {
+            } else if (lot.getBidStage().equals(StaticStatus.bidStatusList.get(4))) {
                 lot.setBidStage(StaticStatus.bidStatusList.get(5));
-            }
-            else if (lot.getBidStage().equals(StaticStatus.bidStatusList.get(5))) {
+            } else if (lot.getBidStage().equals(StaticStatus.bidStatusList.get(5))) {
                 lot.setBidStage(StaticStatus.bidStatusList.get(6));
-            }
-            else if (lot.getBidStage().equals(StaticStatus.bidStatusList.get(6))) {
+            } else if (lot.getBidStage().equals(StaticStatus.bidStatusList.get(6))) {
                 lot.setBidStage(StaticStatus.bidStatusList.get(7));
-            }
-            else if (lot.getBidStage().equals(StaticStatus.bidStatusList.get(7))) {
+            } else if (lot.getBidStage().equals(StaticStatus.bidStatusList.get(7))) {
                 lot.setBidStage(StaticStatus.bidStatusList.get(8));
             }
-        }
-        else if(requestType==2){
+        } else if (requestType == 2) {
             //lot.setFirstStartPrice(null);
             lot.setStartPrice(null);
             lot.setBidStage(StaticStatus.bidStatusList.get(0));
@@ -3149,7 +3143,7 @@ public class AssetController {
         bid.setBidDate(bDate);
         bid.setNewspaper(newNP);
         bid.setNews1Date(ND1);
-      //  bid.setComent(coment);
+        //  bid.setComent(coment);
         bid.setRegistrEndDate(RED);
         bidService.updateBid(bid);
         return "1";
@@ -3179,18 +3173,18 @@ public class AssetController {
     @RequestMapping(value = "/createLotByCheckedAssets", method = RequestMethod.POST)
     private @ResponseBody
     String createLotByAssets(@RequestParam("idList") String idList, HttpSession session) {
-        if(idList.equals("")){
+        if (idList.equals("")) {
             return "0";
         }
         String[] idMass = idList.split(",");
-            session.setAttribute("assetsListToLot", idMass);
-            return "1";
+        session.setAttribute("assetsListToLot", idMass);
+        return "1";
     }
 
     @RequestMapping(value = "/createLotByCheckedCredits", method = RequestMethod.POST)
     private @ResponseBody
     String createLotByCheckedCredits(@RequestParam("idList") String idList, HttpSession session) {
-        if(idList.equals("")){
+        if (idList.equals("")) {
             return "0";
         }
         String[] idMass = idList.split(",");
@@ -3206,6 +3200,7 @@ public class AssetController {
             @RequestParam("idBars") Long idBars) {
         return creditService.getCreditsByClient(inn, idBars);
     }
+
     @RequestMapping(value = "/allCreditsByClient", method = RequestMethod.POST)
     private @ResponseBody
     List<Credit> getAllCreditsByClient(
@@ -3268,7 +3263,7 @@ public class AssetController {
 
     @RequestMapping(value = "/sumByIDBars", method = RequestMethod.POST)
     private @ResponseBody
-    String sumByIDBars (@RequestParam("idMass") String ids) {
+    String sumByIDBars(@RequestParam("idMass") String ids) {
         BigDecimal sum = new BigDecimal(0.00);
         String[] idm;
         try {
@@ -3292,11 +3287,11 @@ public class AssetController {
     @RequestMapping(value = "/comentsByLotsFromBid", method = RequestMethod.GET)
     private @ResponseBody
     List<String> getComments(@RequestParam("bidId") String bidId) {
-        String aggregatedComment="";
-        List<String> resList= new ArrayList<>();
+        String aggregatedComment = "";
+        List<String> resList = new ArrayList<>();
         Bid bid = bidService.getBid(Long.parseLong(bidId));
-        for(Lot l: (List<Lot>)bidService.lotsByBid(bid)){
-            aggregatedComment+=l.getComment()+" ||";
+        for (Lot l : (List<Lot>) bidService.lotsByBid(bid)) {
+            aggregatedComment += l.getComment() + " ||";
         }
         resList.add(aggregatedComment);
         return resList;
@@ -3312,18 +3307,16 @@ public class AssetController {
         } else {
             Lot lot = asset.getLot();
             BigDecimal coeff = getCoefficient(asset.getFactPrice(), lot.getFactPrice());// asset.getFactPrice().divide(lot.getFactPrice(), 10, BigDecimal.ROUND_HALF_UP);
-            BigDecimal paySumByAsset ;
+            BigDecimal paySumByAsset;
             try {
                 paySumByAsset = lotService.paymentsSumByLot(lot).multiply(coeff).setScale(2, BigDecimal.ROUND_HALF_UP);
-            }
-            catch(NullPointerException npe){
+            } catch (NullPointerException npe) {
                 paySumByAsset = BigDecimal.valueOf(0);
             }
             BigDecimal residualToPay;
             try {
-                residualToPay  = asset.getFactPrice().subtract(paySumByAsset);
-            }
-            catch (NullPointerException npe){
+                residualToPay = asset.getFactPrice().subtract(paySumByAsset);
+            } catch (NullPointerException npe) {
                 residualToPay = null;
             }
             list.add(paySumByAsset);
@@ -3354,24 +3347,21 @@ public class AssetController {
                               @RequestParam("inIDBarses") String inIDBarses,
                               @RequestParam("inINNs") String inINNs,
                               @RequestParam("inIDLots") String inIDLots) {
-        String [] idBarsMass;
-        String [] innMass;
-        String [] idLotMass;
-        if(inIDBarses.equals("")){
-            idBarsMass=new String [0];
-        }
-        else idBarsMass = inIDBarses.split(",");
+        String[] idBarsMass;
+        String[] innMass;
+        String[] idLotMass;
+        if (inIDBarses.equals("")) {
+            idBarsMass = new String[0];
+        } else idBarsMass = inIDBarses.split(",");
 
-        if(inINNs.equals("")){
-            innMass=new String [0];
-        }
-        else innMass = inINNs.split(",");
+        if (inINNs.equals("")) {
+            innMass = new String[0];
+        } else innMass = inINNs.split(",");
 
-        if(inIDLots.equals("")){
-            idLotMass=new String [0];
-        }
-        else idLotMass = inIDLots.split(",");
-        return creditService.countOfFilteredCredits(isSold, isInLot, clientType, isNbu, isFondDec, idBarsMass , innMass, idLotMass);
+        if (inIDLots.equals("")) {
+            idLotMass = new String[0];
+        } else idLotMass = inIDLots.split(",");
+        return creditService.countOfFilteredCredits(isSold, isInLot, clientType, isNbu, isFondDec, idBarsMass, innMass, idLotMass);
     }
 
     @RequestMapping(value = "/creditsByPortions", method = RequestMethod.POST)
@@ -3385,32 +3375,29 @@ public class AssetController {
                                    @RequestParam("inIDBarses") String inIDBarses,
                                    @RequestParam("inINNs") String inINNs,
                                    @RequestParam("inIDLots") String inIDLots
-                                                         ) {
-        String [] idBarsMass;
-        String [] innMass;
-        String [] idLotMass;
-        if(inIDBarses.equals("")){
-            idBarsMass=new String [0];
-        }
-        else idBarsMass = inIDBarses.split(",");
+    ) {
+        String[] idBarsMass;
+        String[] innMass;
+        String[] idLotMass;
+        if (inIDBarses.equals("")) {
+            idBarsMass = new String[0];
+        } else idBarsMass = inIDBarses.split(",");
 
-        if(inINNs.equals("")){
-            innMass=new String [0];
-        }
-        else innMass = inINNs.split(",");
+        if (inINNs.equals("")) {
+            innMass = new String[0];
+        } else innMass = inINNs.split(",");
 
-        if(inIDLots.equals("")){
-            idLotMass=new String [0];
-        }
-        else idLotMass = inIDLots.split(",");
+        if (inIDLots.equals("")) {
+            idLotMass = new String[0];
+        } else idLotMass = inIDLots.split(",");
 
-        List<Credit> crList = creditService.getCreditsByPortion(portionNumber, isSold, isInLot, clientType, isNbu, isFondDec, idBarsMass , innMass, idLotMass);
+        List<Credit> crList = creditService.getCreditsByPortion(portionNumber, isSold, isInLot, clientType, isNbu, isFondDec, idBarsMass, innMass, idLotMass);
         List<String> rezList = new ArrayList<>();
         for (Credit cr : crList) {
             String lotId = "";
 
-            String bidDate="";
-            String exchangeName="";
+            String bidDate = "";
+            String exchangeName = "";
 
             /*String nbuPledge = "Ні";
             if (cr.getNbuPladge())
@@ -3433,19 +3420,19 @@ public class AssetController {
             String nbuDecision = "";
             String nbuDecisionNumber = "";
 
-            String acceptedPrice="";
-            String acceptedExchange="";
+            String acceptedPrice = "";
+            String acceptedExchange = "";
 
-            if(cr.getAcceptPrice()!=null)
-                acceptedPrice=String.valueOf(cr.getAcceptPrice());
+            if (cr.getAcceptPrice() != null)
+                acceptedPrice = String.valueOf(cr.getAcceptPrice());
             String actSignedDate = "";
             if (cr.getLot() != null) {
                 lotId = String.valueOf(cr.getLot());
                 Lot lot = lotService.getLot(cr.getLot());
 
-                if(lot.getBid()!=null){
-                    bidDate=String.valueOf(sdfpoints.format(lot.getBid().getBidDate()));
-                    exchangeName=lot.getBid().getExchange().getCompanyName();
+                if (lot.getBid() != null) {
+                    bidDate = String.valueOf(sdfpoints.format(lot.getBid().getBidDate()));
+                    exchangeName = lot.getBid().getExchange().getCompanyName();
                 }
                 bidStage = lot.getBidStage();
                 bidResult = lot.getStatus();
@@ -3462,20 +3449,20 @@ public class AssetController {
                 workStage = lot.getWorkStage();
                 if (lot.getFondDecisionDate() != null)
                     fondDecisionDate = String.valueOf(sdfpoints.format(lot.getFondDecisionDate()));
-                fondDecision=lot.getFondDecision();
-                fondDecisionNumber=lot.getDecisionNumber();
+                fondDecision = lot.getFondDecision();
+                fondDecisionNumber = lot.getDecisionNumber();
                 if (lot.getNbuDecisionDate() != null)
                     nbuDecisionDate = String.valueOf(sdfpoints.format(lot.getNbuDecisionDate()));
-                nbuDecision=lot.getNbuDecision();
-                nbuDecisionNumber=lot.getNbuDecisionNumber();
-                acceptedExchange=lot.getAcceptExchange();
+                nbuDecision = lot.getNbuDecision();
+                nbuDecisionNumber = lot.getNbuDecisionNumber();
+                acceptedExchange = lot.getAcceptExchange();
 
                 if (lot.getActSignedDate() != null)
-                actSignedDate = sdfpoints.format(lot.getActSignedDate());
+                    actSignedDate = sdfpoints.format(lot.getActSignedDate());
             }
-            String planSaleDate="";
-            if(cr.getPlanSaleDate()!=null)
-                planSaleDate=yearMonthFormat.format(cr.getPlanSaleDate());
+            String planSaleDate = "";
+            if (cr.getPlanSaleDate() != null)
+                planSaleDate = yearMonthFormat.format(cr.getPlanSaleDate());
 
             rezList.add(lotId
                     + "||" + cr.getNd()
@@ -3656,8 +3643,7 @@ public class AssetController {
         Lot lot = lotService.getLot(Long.parseLong(lotId));
         try {
             lot.setAcceptExchange(exchangeService.getExchange(exId).getCompanyName());
-        }
-        catch (NullPointerException e){
+        } catch (NullPointerException e) {
             lot.setAcceptExchange(null);
         }
         lotService.updateLot(login, lot);
@@ -3670,8 +3656,7 @@ public class AssetController {
                          @RequestParam("lotId") Long lotId,
                          @RequestParam("fondDecDate") String fondDecDate,
                          @RequestParam("fondDec") String fondDec,
-                         @RequestParam("decNum") String decNum)
-    {
+                         @RequestParam("decNum") String decNum) {
 
         String login = (String) session.getAttribute("userId");
 
@@ -3693,12 +3678,11 @@ public class AssetController {
 
     @RequestMapping(value = "/changeNBUDec", method = RequestMethod.POST)
     private @ResponseBody
-    String changeNBUDec (HttpSession session,
-                         @RequestParam("lotId") Long lotId,
-                         @RequestParam("NBUDecDate") String nbuDecDate,
-                         @RequestParam("NBUDec") String nbuDec,
-                         @RequestParam("decNum") String decNum)
-    {
+    String changeNBUDec(HttpSession session,
+                        @RequestParam("lotId") Long lotId,
+                        @RequestParam("NBUDecDate") String nbuDecDate,
+                        @RequestParam("NBUDec") String nbuDec,
+                        @RequestParam("decNum") String decNum) {
 
         String login = (String) session.getAttribute("userId");
 
@@ -3827,19 +3811,18 @@ public class AssetController {
         Long lotRid = lotService.createLot(userLogin, newlot);
         for (String id : idm) {
             Credit crdt = creditService.getCredit(Long.parseLong(id));
-            BigDecimal acceptedPr =crdt.getAcceptPrice();
-            BigDecimal rv =crdt.getRv();
+            BigDecimal acceptedPr = crdt.getAcceptPrice();
+            BigDecimal rv = crdt.getRv();
             if (acceptedPr != null) {
                 startPrice = startPrice.add(acceptedPr);
                 crdt.setFirstStartPrice(acceptedPr);
                 crdt.setStartPrice(acceptedPr);
-             //   creditService.updateCredit(crdt);
-            }
-            else {
+                //   creditService.updateCredit(crdt);
+            } else {
                 startPrice = startPrice.add(rv);
                 crdt.setFirstStartPrice(rv);
                 crdt.setStartPrice(rv);
-              //  creditService.updateCredit(crdt);
+                //  creditService.updateCredit(crdt);
             }
             if (crdt.getLot() == null) crdt.setLot(lotRid);
             creditService.updateCredit(userLogin, crdt);
@@ -3882,15 +3865,15 @@ public class AssetController {
         Asset asset = (Asset) assetService.getAllAssetsByInNum(inn).get(0);
 
         List<Long> lotIdList = assetService.getLotIdHistoryByAsset(asset.getId());
-        for(Long lotId: lotIdList){
+        for (Long lotId : lotIdList) {
             List<Bid> bidList = lotService.getLotHistoryAggregatedByBid(lotId);
             Collections.sort(bidList);
-            for(Bid bid: bidList){
-                temp = asset.getInn() + "||" + lotId+ "||" +bid.getExchange().getCompanyName()+ "||" +sdfshort.format(bid.getBidDate()) + "||" +assetService.getAccPriceByLotIdHistory(asset.getId(), lotId);
+            for (Bid bid : bidList) {
+                temp = asset.getInn() + "||" + lotId + "||" + bid.getExchange().getCompanyName() + "||" + sdfshort.format(bid.getBidDate()) + "||" + assetService.getAccPriceByLotIdHistory(asset.getId(), lotId);
                 rezList.add(temp);
             }
         }
-            return rezList;
+        return rezList;
     }
 
     @RequestMapping(value = "/getAccPriceHistory", method = RequestMethod.POST)
@@ -3907,12 +3890,12 @@ public class AssetController {
         List<String> rezList = new ArrayList<>();
         String temp;
         Credit credit = (Credit) creditService.getAllCreditsByClient(inn, idBars).get(0);
-        List <Long> lotIdList = creditService.getLotIdHistoryByCredit(credit.getNd());
-        for(Long lotId: lotIdList){
+        List<Long> lotIdList = creditService.getLotIdHistoryByCredit(credit.getNd());
+        for (Long lotId : lotIdList) {
             List<Bid> bidList = lotService.getLotHistoryAggregatedByBid(lotId);
             Collections.sort(bidList);
-            for(Bid bid: bidList){
-                temp = credit.getInn() + "||" + lotId+ "||" +bid.getExchange().getCompanyName()+ "||" +sdfshort.format(bid.getBidDate()) + "||" +creditService.getPriceByLotIdHistory(credit.getId(), lotId);
+            for (Bid bid : bidList) {
+                temp = credit.getInn() + "||" + lotId + "||" + bid.getExchange().getCompanyName() + "||" + sdfshort.format(bid.getBidDate()) + "||" + creditService.getPriceByLotIdHistory(credit.getId(), lotId);
                 rezList.add(temp);
             }
         }

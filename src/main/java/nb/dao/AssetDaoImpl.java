@@ -67,6 +67,15 @@ public class AssetDaoImpl implements AssetDao {
         return query.list();
     }
     @Override
+    public List findAllSuccessBids(Date startBids, Date endBids, int portionNum) {
+        Query query = factory.getCurrentSession().createQuery("SELECT asset FROM nb.domain.Asset asset LEFT JOIN asset.lot lot LEFT JOIN lot.bid bid WHERE lot.status!='Торги не відбулись' and lot.bid.bidDate>=:startBid AND lot.bid.bidDate<=:endBid ORDER BY bid.bidDate");
+        query.setParameter("startBid", startBids);
+        query.setParameter("endBid", endBids);
+        query.setFirstResult(portionNum*2000);
+        query.setMaxResults(2000);
+        return query.list();
+    }
+    @Override
     public List findAll(int portionNum) {
         Query query = factory.getCurrentSession().createQuery("SELECT asset FROM nb.domain.Asset asset LEFT JOIN asset.lot lot LEFT JOIN lot.bid bid ORDER BY bid.bidDate, lot.fondDecisionDate");
         query.setFirstResult(portionNum*5000);
