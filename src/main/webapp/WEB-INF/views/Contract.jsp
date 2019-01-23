@@ -129,7 +129,7 @@
     <select id="selected_bank_signer" title="уповноважена особа банку">
         <option value=1>Кулібаба І.В.</option>
         <option value=2>Глущенко С.В.</option>
-        <option value=3>Стрюкова І.О.</option>
+        <option value=3>Біла І.В.</option>
     </select>
     <br>
     <input class="input_contract_field" id="input_pass_seria" type="text" placeholder="Серія паспорту">

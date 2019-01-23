@@ -21,7 +21,6 @@ public class Word implements Serializable {
         XWPFTable tab1= tableList.get(0);
         tab1.getRow(1).getCell(0).setText("hello");
         tab1.addRow(tab1.getRow(1));
-        System.out.println();
 
         String fileName = "C:\\projectFiles\\Dodatok 2222.docx";
         OutputStream fileOut = new FileOutputStream(fileName);
