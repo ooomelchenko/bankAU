@@ -38,7 +38,6 @@
 
         <!-- Spring -->
         <spring-framework.version>4.3.14.RELEASE</spring-framework.version>
-        <springsecurity.version>4.0.4.RELEASE</springsecurity.version>
         <spring-data-jpa.version>1.8.2.RELEASE</spring-data-jpa.version>
         <jackson.library>2.7.5</jackson.library>
 
@@ -94,7 +93,7 @@
         </dependency>
 
         <!-- Spring Security -->
-        <dependency>
+        <!--<dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-web</artifactId>
             <version>${springsecurity.version}</version>
@@ -108,7 +107,7 @@
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-taglibs</artifactId>
             <version>${springsecurity.version}</version>
-        </dependency>
+        </dependency>-->
 
         <!-- Hibernate -->
         <dependency>

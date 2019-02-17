@@ -62,6 +62,8 @@ public class AssetController {
     private AssetService assetService;
     @Autowired
     private PayService payService;
+    @Autowired
+    private CustomerService customerService;
 
     private static final SimpleDateFormat sdfshort = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
     private static final SimpleDateFormat sdfpoints = new SimpleDateFormat("dd.MM.yyyy", Locale.ENGLISH);
@@ -271,11 +273,11 @@ public class AssetController {
                 row.getCell(57).setCellStyle(numStyle);
             }
             try {
-                row.getCell(65).setCellValue(lot.getCustomerName());
+                row.getCell(65).setCellValue(lot.getCustomer().getCustomerName());
             } catch (NullPointerException npe) {
             }
             try {
-                row.getCell(66).setCellValue(lot.getCustomerInn());
+                row.getCell(66).setCellValue(lot.getCustomer().getCustomerInn());
             } catch (NullPointerException npe) {
             }
         }
@@ -363,11 +365,11 @@ public class AssetController {
                 row.getCell(57).setCellStyle(numStyle);
             }
             try {
-                row.getCell(65).setCellValue(lot.getCustomerName());
+                row.getCell(65).setCellValue(lot.getCustomer().getCustomerName());
             } catch (NullPointerException npe) {
             }
             try {
-                row.getCell(66).setCellValue(lot.getCustomerInn());
+                row.getCell(66).setCellValue(lot.getCustomer().getCustomerInn());
             } catch (NullPointerException npe) {
             }
         }
@@ -570,7 +572,7 @@ public class AssetController {
             Lot tLot = lotService.getLot(credit.getLot());
             try {
                 row.createCell(2).setCellValue(tLot.getLotNum());
-                row.createCell(7).setCellValue(tLot.getCustomerName());
+                row.createCell(7).setCellValue(tLot.getCustomer().getCustomerName());
                 try {
                     row.createCell(0).setCellValue(tLot.getBid().getBidDate());
                     row.getCell(0).setCellStyle(dateStyle);
@@ -685,7 +687,12 @@ public class AssetController {
                 lotDataRow.createCell(10).setCellValue(lot.getFactPrice().doubleValue());
             } catch (NullPointerException e) {
             }
-            lotDataRow.createCell(11).setCellValue(lot.getCustomerName());
+            try{
+            lotDataRow.createCell(11).setCellValue(lot.getCustomer()==null ? "":lot.getCustomer().getCustomerName());
+            }
+            catch (Exception e){
+            }
+
             lotDataRow.createCell(12).setCellValue(lot.getStatus());
             try {
                 lotDataRow.createCell(13).setCellValue(lot.getActSignedDate());
@@ -1157,16 +1164,16 @@ public class AssetController {
                 for (XWPFRun r : runs) {
                     String text = r.getText(0);
                     if (text != null) {
-                        String tempText = "";
+                        StringBuilder tempText = new StringBuilder();
                         if (!creditList.isEmpty() && text.contains("knd")) {
                             for (Credit credit : creditList) {
-                                tempText += "№" + credit.getContractNum() + " від " + sdfpoints.format(credit.getContractStart()) + "року,";
+                                tempText.append("№").append(credit.getContractNum()).append(" від ").append(sdfpoints.format(credit.getContractStart())).append("року,");
                             }
                         }
-                        r.setText(replaceRunText(text, String.valueOf(creditList.get(0).getContractNum()), contract_year, String.valueOf(lot.getCustomerName()),
-                                String.valueOf(contract_address), String.valueOf(lot.getCustomerInn()),
+                        r.setText(replaceRunText(text, String.valueOf(creditList.get(0).getContractNum()), contract_year, String.valueOf((lot.getCustomer()==null) ?  "" : lot.getCustomer().getCustomerName()),
+                                String.valueOf(contract_address), String.valueOf((lot.getCustomer()==null) ?  "" : lot.getCustomer().getCustomerInn()),
                                 String.valueOf(contract_protokol_num), String.valueOf(contract_protokol_date),
-                                String.valueOf(protocol_made_by), String.valueOf(lot.getFactPrice()), tempText, subscriber), 0);
+                                String.valueOf(protocol_made_by), String.valueOf(lot.getFactPrice()), tempText.toString(), subscriber), 0);
                     }
                 }
             }
@@ -1189,8 +1196,8 @@ public class AssetController {
                                         }
                                     }
 
-                                    r.setText(replaceRunText(text, String.valueOf(creditList.get(0).getContractNum()), contract_year, String.valueOf(lot.getCustomerName()),
-                                            String.valueOf(contract_address), String.valueOf(lot.getCustomerInn()),
+                                    r.setText(replaceRunText(text, String.valueOf(creditList.get(0).getContractNum()), contract_year, String.valueOf((lot.getCustomer()==null) ?  "" : lot.getCustomer().getCustomerName()),
+                                            String.valueOf(contract_address), String.valueOf((lot.getCustomer()==null) ?  "" : lot.getCustomer().getCustomerInn()),
                                             String.valueOf(contract_protokol_num), String.valueOf(contract_protokol_date),
                                             String.valueOf(protocol_made_by), String.valueOf(lot.getFactPrice()), tempText, subscriber), 0);
                                 }
@@ -1278,8 +1285,8 @@ public class AssetController {
                     String text = r.getText(0);
                     if (text != null) {
 
-                        r.setText(replaceRunTextAssets(text, bidDate, assetList.size(), lot.getLotNum(), contract_year, String.valueOf(lot.getCustomerName()),
-                                String.valueOf(contract_address), String.valueOf(lot.getCustomerInn()),
+                        r.setText(replaceRunTextAssets(text, bidDate, assetList.size(), lot.getLotNum(), contract_year, String.valueOf((lot.getCustomer()==null) ?  "" : lot.getCustomer().getCustomerName()),
+                                String.valueOf(contract_address), String.valueOf((lot.getCustomer()==null) ?  "" : lot.getCustomer().getCustomerInn()),
                                 String.valueOf(contract_protokol_num), String.valueOf(contract_protokol_date),
                                 String.valueOf(protocol_made_by), String.valueOf(lot.getFactPrice()), subscriber,
                                 pass_seria, pass_num, pass_vidano, pass_vidano_date, operates_basis, account_bank,
@@ -1303,8 +1310,8 @@ public class AssetController {
                                 String text = r.getText(0);
                                 if (text != null) {
 
-                                    r.setText(replaceRunTextAssets(text, bidDate, assetList.size(), lot.getLotNum(), contract_year, String.valueOf(lot.getCustomerName()),
-                                            String.valueOf(contract_address), String.valueOf(lot.getCustomerInn()),
+                                    r.setText(replaceRunTextAssets(text, bidDate, assetList.size(), lot.getLotNum(), contract_year, String.valueOf((lot.getCustomer()==null) ?  "" : lot.getCustomer().getCustomerName()),
+                                            String.valueOf(contract_address), String.valueOf((lot.getCustomer()==null) ?  "" : lot.getCustomer().getCustomerInn()),
                                             String.valueOf(contract_protokol_num), String.valueOf(contract_protokol_date),
                                             String.valueOf(protocol_made_by), String.valueOf(lot.getFactPrice()), subscriber,
                                             pass_seria, pass_num, pass_vidano, pass_vidano_date, operates_basis,
@@ -1348,8 +1355,8 @@ public class AssetController {
                                 tempText += "№" + credit.getContractNum() + " від " + sdfpoints.format(credit.getContractStart()) + "року,";
                             }
                         }
-                        r.setText(replaceRunText(text, String.valueOf(creditList.get(0).getContractNum()), contract_year, String.valueOf(lot.getCustomerName()),
-                                String.valueOf(contract_address), String.valueOf(lot.getCustomerInn()),
+                        r.setText(replaceRunText(text, String.valueOf(creditList.get(0).getContractNum()), contract_year, String.valueOf((lot.getCustomer()==null) ?  "" : lot.getCustomer().getCustomerName()),
+                                String.valueOf(contract_address), String.valueOf((lot.getCustomer()==null) ?  "" : lot.getCustomer().getCustomerInn()),
                                 String.valueOf(contract_protokol_num), String.valueOf(contract_protokol_date),
                                 String.valueOf(protocol_made_by), String.valueOf(lot.getFactPrice()), tempText, subscriber), 0);
                     }
@@ -1376,8 +1383,8 @@ public class AssetController {
                                         }
                                     }
 
-                                    r.setText(replaceRunText(text, String.valueOf(creditList.get(0).getContractNum()), contract_year, String.valueOf(lot.getCustomerName()),
-                                            String.valueOf(contract_address), String.valueOf(lot.getCustomerInn()),
+                                    r.setText(replaceRunText(text, String.valueOf(creditList.get(0).getContractNum()), contract_year, String.valueOf((lot.getCustomer()==null) ?  "" : lot.getCustomer().getCustomerName()),
+                                            String.valueOf(contract_address), String.valueOf((lot.getCustomer()==null) ?  "" : lot.getCustomer().getCustomerInn()),
                                             String.valueOf(contract_protokol_num), String.valueOf(contract_protokol_date),
                                             String.valueOf(protocol_made_by), String.valueOf(lot.getFactPrice()), tempText, subscriber), 0);
                                 }
@@ -1472,8 +1479,8 @@ public class AssetController {
                 for (XWPFRun r : runs) {
                     String text = r.getText(0);
                     if (text != null) {
-                        r.setText(replaceRunTextAssets(text, bidDate, assetList.size(), lot.getLotNum(), contract_year, String.valueOf(lot.getCustomerName()),
-                                String.valueOf(contract_address), String.valueOf(lot.getCustomerInn()),
+                        r.setText(replaceRunTextAssets(text, bidDate, assetList.size(), lot.getLotNum(), contract_year, String.valueOf((lot.getCustomer()==null) ?  "" : lot.getCustomer().getCustomerName()),
+                                String.valueOf(contract_address), String.valueOf((lot.getCustomer()==null) ?  "" : lot.getCustomer().getCustomerInn()),
                                 String.valueOf(contract_protokol_num), String.valueOf(contract_protokol_date),
                                 String.valueOf(protocol_made_by), String.valueOf(lot.getFactPrice()), subscriber,
                                 pass_seria, pass_num, pass_vidano, pass_vidano_date, operates_basis, account_bank,
@@ -1498,8 +1505,8 @@ public class AssetController {
                             for (XWPFRun r : runs) {
                                 String text = r.getText(0);
                                 if (text != null) {
-                                    r.setText(replaceRunTextAssets(text, bidDate, assetList.size(), lot.getLotNum(), contract_year, String.valueOf(lot.getCustomerName()),
-                                            String.valueOf(contract_address), String.valueOf(lot.getCustomerInn()),
+                                    r.setText(replaceRunTextAssets(text, bidDate, assetList.size(), lot.getLotNum(), contract_year, String.valueOf((lot.getCustomer()==null) ?  "" : lot.getCustomer().getCustomerName()),
+                                            String.valueOf(contract_address), String.valueOf((lot.getCustomer()==null) ?  "" : lot.getCustomer().getCustomerInn()),
                                             String.valueOf(contract_protokol_num), String.valueOf(contract_protokol_date),
                                             String.valueOf(protocol_made_by), String.valueOf(lot.getFactPrice()), subscriber,
                                             pass_seria, pass_num, pass_vidano, pass_vidano_date, operates_basis,
@@ -1542,8 +1549,8 @@ public class AssetController {
                                 tempText += "№" + credit.getContractNum() + " від " + sdfpoints.format(credit.getContractStart()) + "року,";
                             }
                         }
-                        r.setText(replaceRunText(text, String.valueOf(creditList.get(0).getContractNum()), contract_year, String.valueOf(lot.getCustomerName()),
-                                String.valueOf(contract_address), String.valueOf(lot.getCustomerInn()),
+                        r.setText(replaceRunText(text, String.valueOf(creditList.get(0).getContractNum()), contract_year, String.valueOf((lot.getCustomer()==null) ?  "" : lot.getCustomer().getCustomerName()),
+                                String.valueOf(contract_address), String.valueOf((lot.getCustomer()==null) ?  "" : lot.getCustomer().getCustomerInn()),
                                 String.valueOf(contract_protokol_num), String.valueOf(contract_protokol_date),
                                 String.valueOf(protocol_made_by), String.valueOf(lot.getFactPrice()), tempText, subscriber), 0);
                     }
@@ -1570,8 +1577,8 @@ public class AssetController {
                                         }
                                     }
 
-                                    r.setText(replaceRunText(text, String.valueOf(creditList.get(0).getContractNum()), contract_year, String.valueOf(lot.getCustomerName()),
-                                            String.valueOf(contract_address), String.valueOf(lot.getCustomerInn()),
+                                    r.setText(replaceRunText(text, String.valueOf(creditList.get(0).getContractNum()), contract_year, String.valueOf((lot.getCustomer()==null) ?  "" : lot.getCustomer().getCustomerName()),
+                                            String.valueOf(contract_address), String.valueOf((lot.getCustomer()==null) ?  "" : lot.getCustomer().getCustomerInn()),
                                             String.valueOf(contract_protokol_num), String.valueOf(contract_protokol_date),
                                             String.valueOf(protocol_made_by), String.valueOf(lot.getFactPrice()), tempText, subscriber), 0);
                                 }
@@ -1627,8 +1634,8 @@ public class AssetController {
                                 tempText += "№" + credit.getContractNum() + " від " + sdfpoints.format(credit.getContractStart()) + "року,";
                             }
                         }
-                        r.setText(replaceRunText(text, String.valueOf(creditList.get(0).getContractNum()), contract_year, String.valueOf(lot.getCustomerName()),
-                                String.valueOf(contract_address), String.valueOf(lot.getCustomerInn()),
+                        r.setText(replaceRunText(text, String.valueOf(creditList.get(0).getContractNum()), contract_year, String.valueOf((lot.getCustomer()==null) ?  "" : lot.getCustomer().getCustomerName()),
+                                String.valueOf(contract_address), String.valueOf((lot.getCustomer()==null) ?  "" : lot.getCustomer().getCustomerInn()),
                                 String.valueOf(contract_protokol_num), String.valueOf(contract_protokol_date),
                                 String.valueOf(protocol_made_by), String.valueOf(lot.getFactPrice()), tempText, subscriber), 0);
                     }
@@ -1655,8 +1662,8 @@ public class AssetController {
                                         }
                                     }
 
-                                    r.setText(replaceRunText(text, String.valueOf(creditList.get(0).getContractNum()), contract_year, String.valueOf(lot.getCustomerName()),
-                                            String.valueOf(contract_address), String.valueOf(lot.getCustomerInn()),
+                                    r.setText(replaceRunText(text, String.valueOf(creditList.get(0).getContractNum()), contract_year, String.valueOf((lot.getCustomer()==null) ?  "" : lot.getCustomer().getCustomerName()),
+                                            String.valueOf(contract_address), String.valueOf((lot.getCustomer()==null) ?  "" : lot.getCustomer().getCustomerInn()),
                                             String.valueOf(contract_protokol_num), String.valueOf(contract_protokol_date),
                                             String.valueOf(protocol_made_by), String.valueOf(lot.getFactPrice()), tempText, subscriber), 0);
                                 }
@@ -2981,8 +2988,8 @@ public class AssetController {
                            @RequestParam("comment") String comment,
                            @RequestParam("bidStage") String bidStage,
                            @RequestParam("resultStatus") String resultStatus,
-                           @RequestParam("customer") String customer,
-                           @RequestParam("customerInn") String customerInn,
+                           /*@RequestParam("customer") String customer,
+                           @RequestParam("customerInn") String customerInn,*/
                            @RequestParam("firstPrice") BigDecimal firstPrice,
                            @RequestParam("startPrice") BigDecimal startPrice,
                            @RequestParam("factPrice") BigDecimal factLotPrice,
@@ -2997,12 +3004,12 @@ public class AssetController {
         lot.setComment(comment);
         lot.setBidStage(bidStage);
         lot.setStatus(resultStatus);
-        lot.setCustomerName(customer);
+      /*  lot.setCustomerName(customer);
 
         if (customerInn.equals(""))
             lot.setCustomerInn(0L);
         else
-            lot.setCustomerInn(Long.parseLong(customerInn));
+            lot.setCustomerInn(Long.parseLong(customerInn));*/
 
         lot.setCountOfParticipants(countOfParticipants);
         lot.setBidScenario(bidScenario);
@@ -3107,7 +3114,7 @@ public class AssetController {
         lot.setCountOfParticipants(0);
         lot.setWorkStage("Новий лот");
         lot.setStatus(null);
-        lot.setCustomerName(null);
+       // lot.setCustomerName(null);
         lotService.updateLot(login, lot);
         return "1";
     }
@@ -3445,7 +3452,9 @@ public class AssetController {
                         payStatus = "Часткова оплата";
                     residualToPay = String.valueOf(lot.getFactPrice().subtract(paysSum));
                 }
-                customerName = lot.getCustomerName();
+
+                customerName = (lot.getCustomer()==null) ?  "" : lot.getCustomer().getCustomerName();
+
                 workStage = lot.getWorkStage();
                 if (lot.getFondDecisionDate() != null)
                     fondDecisionDate = String.valueOf(sdfpoints.format(lot.getFondDecisionDate()));
@@ -3908,5 +3917,111 @@ public class AssetController {
         Credit credit = (Credit) creditService.getAllCreditsByClient(inn, idBars).get(0);
         List<CreditAccPriceHistory> creditPriceHistoryList = creditService.getDateAndAccPriceHistoryByCredit(credit.getId());
         return creditPriceHistoryList;
+    }
+
+    @RequestMapping(value = "/{lotId}/customer/update", method = RequestMethod.POST)
+    private @ResponseBody Customer updateCustomer(HttpSession session, @PathVariable Long lotId,
+                                  @RequestParam("inn") Long inn,
+                                  @RequestParam("name") String name,
+                                  @RequestParam("middleName") String middleName,
+                                  @RequestParam("lastName") String lastName,
+                                  @RequestParam("isMerried") boolean isMerried,
+                                  @RequestParam("type") String type,
+                                                  @RequestParam("legalType") String legalType
+
+                                  ) {
+
+        String login = (String) session.getAttribute("userId");
+
+        Lot lot = lotService.getLot(lotId);
+
+        Customer customer = customerService.getCustomerByInn(inn);
+
+        if(customer==null){
+
+            customer = new Customer();
+
+            customer.setCustomerInn(inn);
+            customer.setCustomerName(name);
+            customer.setMiddleName(middleName);
+            customer.setLastName(lastName);
+            customer.setMerried(isMerried);
+            customer.setType(Customer.SubscriberType.valueOf(type));
+            customer.setLegalType(Customer.LegalType.valueOf(legalType));
+
+            customerService.createCustomer(customer);
+
+            lot.setCustomer(customer);
+
+            lotService.updateLot(login, lot);
+        }
+        else {
+            customer.setCustomerInn(inn);
+            customer.setCustomerName(name);
+            customer.setMiddleName(middleName);
+            customer.setLastName(lastName);
+            customer.setMerried(isMerried);
+            customer.setType(Customer.SubscriberType.valueOf(type));
+            customer.setLegalType(Customer.LegalType.valueOf(legalType));
+
+            customerService.updateCustomer(customer);
+
+            if(lot.getCustomer()==null || !lot.getCustomer().equals(customer)){
+
+                lot.setCustomer(customer);
+                lotService.updateLot(login, lot);
+
+            }
+        }
+
+        return customer;
+
+    }
+
+    @RequestMapping(value = "/customer/{id}", method = RequestMethod.POST)
+    private @ResponseBody Customer getCustomerFromLot(@PathVariable Long id) {
+        return customerService.getCustomerByInn(id);
+    }
+
+    @RequestMapping(value = "/{lotId}/customer/delete", method = RequestMethod.POST)
+    private @ResponseBody String updateCustomer(@PathVariable Long lotId) {
+
+        Lot lot = lotService.getLot(lotId);
+
+        lot.setCustomer(null);
+        lotService.updateLot(lot);
+
+        return "успішно видалено!";
+    }
+
+    @RequestMapping(value = "/{lotId}/setDates", method = RequestMethod.POST)
+    private @ResponseBody String setDates(HttpSession session, @PathVariable Long lotId,
+                                          @RequestParam("dateProzoro") String dateProzoro,
+                                          @RequestParam("dateDeadline") String dateDeadline ) {
+
+        Lot lot = lotService.getLot(lotId);
+
+        Date datePro;
+        Date dateDead;
+
+        try{
+            datePro = sdfshort.parse(dateProzoro);
+        }
+        catch (NullPointerException | ParseException e) {
+            datePro=null;
+        }
+        try{
+            dateDead = sdfshort.parse(dateDeadline);
+        }
+        catch (NullPointerException | ParseException e) {
+            dateDead=null;
+        }
+
+        lot.setProzoroDate(datePro);
+        lot.setDeadlineDate(dateDead);
+
+        lotService.updateLot(lot);
+
+        return "ok";
     }
 }

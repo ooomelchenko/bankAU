@@ -11,13 +11,16 @@ import java.util.Date;
 import java.util.List;
 
 public interface LotService {
+
     Lot getLot(Long id);
+
     Long createLot(Lot lot);
 
     Long createLot(String userName, Lot lot);
 
     boolean delete(Long id);
     boolean delete(Lot lot);
+
     boolean updateLot(Lot lot);
 
     boolean updateLot(String userName, Lot lot);

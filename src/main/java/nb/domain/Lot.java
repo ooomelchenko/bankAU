@@ -33,10 +33,10 @@ public class Lot implements Serializable, Comparable<Lot> {
     private BigDecimal firstStartPrice;
     @Column(name = "FACT_PRICE")
     private BigDecimal factPrice;
-    @Column(name = "CUSTOMER")
+    /*@Column(name = "CUSTOMER")
     private String customerName;
     @Column(name = "CUSTOMER_INN")
-    private Long customerInn;
+    private Long customerInn;*/
     @Column(name = "RESULT_Status")
     private String status;
     @Column(name = "ACT_SIGNED_DATE")
@@ -65,11 +65,17 @@ public class Lot implements Serializable, Comparable<Lot> {
     private String nbuDecisionNumber;
     @Column(name = "BID_SCENARIO")
     private short bidScenario;
+    @Column(name = "PROZORO_DATE")
+    private Date prozoroDate;
+    @Column(name = "SIGN_DEADLINE")
+    private Date deadlineDate;
 
     @ManyToOne
     private User user;//класс
     @ManyToOne
     private Bid bid;//класс
+    @ManyToOne
+    private Customer customer;
 
     @Override
     public int compareTo(Lot entryLot) {
@@ -165,12 +171,12 @@ public class Lot implements Serializable, Comparable<Lot> {
         this.countOfParticipants = countOfParticipants;
     }
 
-    public String getCustomerName() {
+   /* public String getCustomerName() {
         return customerName;
     }
     public void setCustomerName(String customerName) {
         this.customerName = customerName;
-    }
+    }*/
 
     public String getStatus() {
         return status;
@@ -242,12 +248,12 @@ public class Lot implements Serializable, Comparable<Lot> {
         this.decisionNumber = decisionNumber;
     }
 
-    public long getCustomerInn() {
+  /*  public long getCustomerInn() {
         return customerInn;
     }
-    public void setCustomerInn(long customerInn) {
+    public void setCustomerInn(Long customerInn) {
         this.customerInn = customerInn;
-    }
+    }*/
 
     public Date getNbuDecisionDate() {
         return nbuDecisionDate;
@@ -277,6 +283,27 @@ public class Lot implements Serializable, Comparable<Lot> {
         this.bidScenario = bidScenario;
     }
 
+    public Customer getCustomer() {
+        return customer;
+    }
+    public void setCustomer(Customer customer) {
+        this.customer = customer;
+    }
+
+    public Date getProzoroDate() {
+        return prozoroDate;
+    }
+    public void setProzoroDate(Date prozoroDate) {
+        this.prozoroDate = prozoroDate;
+    }
+
+    public Date getDeadlineDate() {
+        return deadlineDate;
+    }
+    public void setDeadlineDate(Date deadlineDate) {
+        this.deadlineDate = deadlineDate;
+    }
+
     //Конструктора
     public Lot() {
     }
@@ -297,11 +324,10 @@ public class Lot implements Serializable, Comparable<Lot> {
         this.fondDecision = null;
         this.decisionNumber = null;
         this.bid = null;
-        this.customerInn = 0L;
+       // this.customerInn = 0L;
         this.nbuDecision = null;
         this.nbuDecisionDate = null;
         this.nbuDecisionNumber = null;
-        this.bidScenario = 0;
     }
 
     @Override
@@ -318,8 +344,8 @@ public class Lot implements Serializable, Comparable<Lot> {
                 ", startPrice=" + startPrice +
                 ", firstStartPrice=" + firstStartPrice +
                 ", factPrice=" + factPrice +
-                ", customerName='" + customerName + '\'' +
-                ", customerInn=" + customerInn +
+              //  ", customerName='" + customerName + '\'' +
+             //   ", customerInn=" + customerInn +
                 ", status='" + status + '\'' +
                 ", actSignedDate=" + actSignedDate +
                 ", lotType=" + lotType +

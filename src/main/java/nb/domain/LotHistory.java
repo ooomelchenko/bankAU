@@ -41,6 +41,8 @@ public class LotHistory implements Serializable {
     private BigDecimal factPrice;
     @Column(name = "CUSTOMER")
     private String customerName;
+    @Column(name = "CUSTOMER_INN")
+    private Long customerInn;
     @Column(name = "RESULT_Status")
     private String status;
     @Column(name = "ACT_SIGNED_DATE")
@@ -180,6 +182,13 @@ public class LotHistory implements Serializable {
         this.customerName = customerName;
     }
 
+    public Long getCustomerInn() {
+        return customerInn;
+    }
+    public void setCustomerInn(Long customerInn) {
+        this.customerInn = customerInn;
+    }
+
     public String getStatus() {
         return status;
     }
@@ -303,7 +312,8 @@ public class LotHistory implements Serializable {
         this.startPrice = lot.getStartPrice();
         this.firstStartPrice = lot.getFirstStartPrice();
         this.factPrice = lot.getFactPrice();
-        this.customerName = lot.getCustomerName();
+        this.customerName = lot.getCustomer()==null ? "" : lot.getCustomer().getCustomerName();
+        this.customerInn = lot.getCustomer()==null ? null : lot.getCustomer().getCustomerInn();
         this.status = lot.getStatus();
         this.actSignedDate = lot.getActSignedDate();
         if(lot.getUser()!=null)

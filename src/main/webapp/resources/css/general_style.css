@@ -32,6 +32,7 @@ header {
     background: #37415d;
     display: inline-table;
     color: whitesmoke;
+    z-index: 999;
 }
 
 header div {

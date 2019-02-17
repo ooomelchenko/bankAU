@@ -1,4 +1,5 @@
 <%@ page import="nb.domain.Bid" %>
+<%@ page import="nb.domain.Customer" %>
 <%@ page import="nb.domain.Exchange" %>
 <%@ page import="nb.domain.Lot" %>
 <%@ page import="java.math.BigDecimal" %>
@@ -8,9 +9,14 @@
 <%@ page import="java.util.Set" %>
 <%@ page import="java.util.TreeSet" %>
 <%@ page contentType="text/html;charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+
 <base href="${pageContext.request.contextPath}/"/>
+
 <%request.setCharacterEncoding("UTF-8");%>
 <%response.setCharacterEncoding("UTF-8");%>
+
 <%
     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
     Lot lot = (Lot) request.getAttribute("lott");
@@ -30,6 +36,10 @@
     <script type="text/javascript" src="resources/js/jquery-3.2.1.js"></script>
     <script type="text/javascript" src="resources/js/jquery-ui.js"></script>
 
+    <script type="text/javascript" src="resources/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+    <link rel="stylesheet" media="screen" type="text/css" href="resources/bootstrap/css/bootstrap.css"/>
+
     <script type="text/javascript" src="resources/js/docUploads.js"></script>
     <script>
         $(document).ready(function () {
@@ -44,7 +54,7 @@
                 dateFormat: "yy-mm-dd", dayNamesMin: ["Нд", "Пн", "Вт", "Ср", "Чт", "Пт", "Сб"],
                 monthNames: ["січень", "лютий", "березень", "квітень", "травень", "червень", "липень", "серпень", "вересень", "жовтень", "листопад", "грудень"]
             });
-            $('#inputFondDecDate, #inputNBUDecDate').datepicker({
+            $('#inputFondDecDate, #inputNBUDecDate, #input_Date_signDeadline, #input_Date_prozoro').datepicker({
                 dateFormat: "yy-mm-dd", dayNamesMin: ["Нд", "Пн", "Вт", "Ср", "Чт", "Пт", "Сб"],
                 monthNames: ["січень", "лютий", "березень", "квітень", "травень", "червень", "липень", "серпень", "вересень", "жовтень", "листопад", "грудень"]
             });
@@ -86,7 +96,7 @@
                             var d = new Date(payments[i].date);
                             d.setDate(d.getDate() + 1);
                             payTab.append($('<tr class="payLine" style="border: 1px solid">' +
-                                '<td class="payId" hidden="hidden">' + payments[i].id + '</td>' +
+                                '<td class="payId" style="display:none;">' + payments[i].id + '</td>' +
                                 '<td>' + d.toISOString().substring(0, 10) + '</td>' +
                                 '<td>' + payments[i].paySum + '</td>' +
                                 '<td>' + payments[i].paySource + '</td>' +
@@ -209,7 +219,7 @@
                                 var approveNBU = objList[i].approveNBU ? "Так" : "Ні";
                                 var neadNewFondDec = objList[i].neadNewFondDec ? "Так" : "Ні";
                                 var trR = $('<tr align="center" class="tR">' +
-                                    '<td class="idLot" hidden="hidden">' + objList[i].id + '</td>' +
+                                    '<td class="idLot" style="display:none;">' + objList[i].id + '</td>' +
                                     '<td>' + objList[i].inn + '</td>' +
                                     '<td>' + objList[i].asset_name + '</td>' +
                                     '<td>' + objList[i].asset_descr + '</td>' +
@@ -267,7 +277,7 @@
                             for (var i = 0; i < objList.length; i++) {
                                 var neadNewFondDec = objList[i].neadNewFondDec ? "Так" : "Ні";
                                 var trR = $('<tr align="center" class="tR">' +
-                                    '<td class="idLot" hidden="hidden">' + objList[i].id + '</td>' +
+                                    '<td class="idLot" style="display:none;">' + objList[i].id + '</td>' +
                                     '<td class="nd">' + objList[i].nd + '</td>' +
                                     '<td>' + objList[i].inn + '</td>' +
                                     '<td>' + objList[i].contractNum + '</td>' +
@@ -570,6 +580,108 @@
                 $(this).find('input').show();
             });
 
+            $('#customerInn').dblclick(function () {
+                window.open("customer/"+$('#customerInn').val());
+            });
+
+            div_customer = $('#div_customer');
+
+            $('#td_customer').dblclick(function () {
+
+                if (div_customer.is(":hidden")) {
+                    div_customer.show();
+                }
+                else {
+                    div_customer.hide();
+                }
+            });
+            $('#button_customer_update').click(function () {
+                $.ajax({
+                    url: lotID+"/customer/update",
+                    type: "POST",
+                    data: {
+                        inn: $('#input_customer_inn').val(),
+                        name: $('#input_customer_name').val(),
+                        middleName: $('#input_customer_middleName').val(),
+                        lastName: $('#input_customer_lastName').val(),
+                        isMerried: $('#checkbox_customer_isMerried').is(':checked'),
+                        type: $('#select_customer_type').val(),
+                        legalType: $('#select_legal_type').val()
+                    },
+                    success: function (customer) {
+                        $('#td_customer').text(customer.customerName+" "+customer.middleName+" "+customer.lastName+" "+customer.customerInn);
+                        div_customer.hide();
+                    }
+                });
+            });
+            $('#button_customer_remove').click(function () {
+                $.ajax({
+                    url: lotID+"/customer/delete",
+                    type: "POST",
+                    success: function (result) {
+                        alert(result);
+                        $('#td_customer').empty();
+                        $('.customer_field_input').each(function () {
+                            $(this).empty();
+                        });
+                        div_customer.hide();
+                    }
+                });
+            });
+
+            $('#button_set_dates').click(function () {
+                $.ajax({
+                    url: lotID+"/setDates",
+                    type: "POST",
+                    data: {
+                        dateProzoro: $('#input_Date_prozoro').val(),
+                        dateDeadline: $('#input_Date_signDeadline').val()
+                    },
+                    success: function () {
+                        alert("Успішно додано!");
+                    }
+                });
+            });
+
+            $('#input_customer_inn').dblclick(function () {
+                $.ajax({
+                    url: "customer/"+$(this).val(),
+                    type: "POST",
+                    success: function (customer) {
+                        if(customer==""){
+                            alert("Клієнта не знайдено");
+                        }
+                            else{
+
+                            $('#input_customer_lastName').val(customer.lastName);
+                            $('#input_customer_middleName').val(customer.middleName);
+                            $('#input_customer_name').val(customer.customerName);
+                            if(customer.merried){
+                                $('#checkbox_customer_isMerried').prop( "checked", true );
+                            }
+                            else
+                                $('#checkbox_customer_isMerried').prop( "checked", false );
+                            
+                            $('#select_legal_type').find('option').each(function () {
+                                $(this).prop( "selected", false );
+                                if( $(this).val()===customer.legalType ){
+                                    $(this).prop( "selected", true )
+                                }
+                            });
+                            $('#select_customer_type').find('option').each(function () {
+                                $(this).prop( "selected", false );
+                                if( $(this).val()===customer.type ){
+                                    $(this).prop( "selected", true )
+                                }
+                            })
+
+                        }
+
+                    }
+                });
+            });
+
+
             <%if (lot.getItSold()){%>
             $('#div_mainButtons').hide();
             $('#factPrice').hide();
@@ -583,7 +695,7 @@
     <link rel="stylesheet" media="screen" type="text/css" href="resources/css/jquery-ui.structure.css"/>
     <link rel="stylesheet" media="screen" type="text/css" href="resources/css/jquery-ui.theme.css"/>
     <style>
-        input, select{
+        input{
             width: 100%;
         }
         table{
@@ -596,9 +708,8 @@
         }
         #div_b1{
             margin-top: -40px;
-            display: table;
-            width: 100%;
-            height: 25%;
+            position: static;
+            padding: 0;
         }
         .div_menu_block_header{
             vertical-align: center;
@@ -607,42 +718,7 @@
             font-weight: bold;
             color: ghostwhite;
             text-align: center;
-
-            border-top: 1px solid ghostwhite;
             background-color: #37415d;
-        }
-        #div_b1 div{
-            vertical-align: top;
-
-        }
-        #div_bid{
-            display: table-cell;
-            width: 35%;
-            height: 100%;
-            border: 1px solid;
-        }
-        #div_decisions{
-            display: table-cell;
-            width: 25%;
-            height: 100%;
-            text-align: left;
-            border: 1px solid;
-        }
-        #div_payments{
-            display: table-cell;
-            width: 20%;
-            height: 100%;
-            border: 1px solid;
-        }
-        #div_documents{
-            display: table-cell;
-            width: 10%;
-            height: 100%;
-            border: 1px solid;
-        }
-        .button_reBid{
-            height: 100%;
-            width: 100%;
         }
 
         #div_documents table, #div_payments table, #div_bid table{
@@ -677,43 +753,17 @@
             background-color: white;
         }
 
-        #div_b2{
-            display: table;
-        }
         #button_del_lot{
             width: 100px;
             height: 50px;
-            background-color: darkred;
-            color: white;
         }
-        #button_del_lot:hover{
-            background-color: red;
-            color: black;
-            font-style: italic;
-        }
+
         #button_setSold_lot{
             width: 100px;
             height: 50px;
-            background-color: darkgreen;
-            color: white;
         }
-        #button_setSold_lot:hover{
-            background-color: lawngreen;
-            color: black;
-            font-style: italic;
-        }
-        #button_Accept{
-            color: white;
-            background-color: darkgreen;
-            width: 200px;
-            height: 50px;
-            font-size: 22px;
-        }
-        #button_Accept:hover{
-            background-color: lightgreen;
-            color: black;
-            font-size: 25px;
-        }
+
+
         .table_decision{
             cursor: pointer;
             font-weight: bold;
@@ -733,23 +783,11 @@
             color: ghostwhite;
         }
         button{
-            font-weight: bolder;
             cursor:pointer;
         }
         select, option{
             width: 100%;
-            height: 100%;
             font-weight: bold;
-        }
-
-        #div_mainButtons{
-            width: 10%;
-        }
-        #div_acceptButton {
-            display: table-cell;
-            width: 100%;
-            text-align: -moz-center;
-            text-align: center;
         }
 
         #div_comments {
@@ -759,10 +797,6 @@
             font-size: 14px;
             height: 40px;
         }
-        #div_mainButtons div{
-            display: table-cell;
-            width: 50%;
-        }
 
         #showCredits{
             cursor:pointer;
@@ -771,16 +805,11 @@
             font-weight: bold;
         }
 
-        #div_finance{
+        #div_b2{
             background-color: white;
-            height: 100%;
-            width: 90%;
-            display: table-cell;
         }
         #table_finance {
-
             font-size: small;
-            height: 100%;
         }
         #table_finance td{
             border: solid 1px #00ffff;
@@ -789,9 +818,6 @@
             background-color: #37415d;
             color: #00ffff;
             border: solid 1px;
-        }
-        #div_b2 div{
-            display: table-cell;
         }
         .table_obj_list{
             width: 100%;
@@ -804,6 +830,10 @@
         #table_credits_list{
             border: 1px solid deepskyblue;
         }
+        .row{
+            padding: 0 !important;
+            margin: 0 !important;
+        }
 
     </style>
 </head>
@@ -811,9 +841,19 @@
 
 <header>
     <div id="div_left_side" class="div_header_additions">
-        <%--<div id="div_beck_img" title="головна" onclick="location.href='index'">
-            <img src="resources/css/images/back.png">
-        </div>--%>
+        <div id="div_crud_buttons">
+            <div>
+                <button id="button_del_lot" class="btn-danger" value="0">Видалити лот</button>
+            </div>
+            <div>
+                <button id="button_setSold_lot" class="btn-light" value="0">Акт підписано</button>
+            </div>
+            <div id="div_mainButtons" class="col-lg-1">
+                <button class="btn btn-success" id="button_Accept" title="натисніть для збереження змін">
+                    ПІДТВЕРДИТИ
+                </button>
+            </div>
+        </div>
     </div>
     <div id="div_sheet_header">
         <h1>ЛОТ №<b id="lotId"><%out.print(lot.getId());%></b></h1>
@@ -826,358 +866,385 @@
     </div>
 </header>
 
-<div id="div_b1">
-    <div id="div_bid">
-        <table id="table_bid">
-            <tr>
-                <th>Біржа</th>
-                <td id="bidTd" title="клікніть двічі для зміни торгів">
-                    <select id="bidSelector" >
-                        <option value="0">
-                        </option>
-                        <% for (Bid bid : allBidsList) { %>
-                        <option value="<%out.print(bid.getId());%>"<%if (lot.getBid() != null && lot.getBid().getId().equals(bid.getId())) {%>
-                                selected="selected"<%
-                                ;
-                            }
-                        %>>
+<div id="div_b1" class="jumbotron-fluid">
+    <div class="row border-bottom" >
+
+        <div id="div_bid" class="col-md-4 border-right" >
+            <table id="table_bid">
+                <tr>
+                    <th>Біржа</th>
+                    <td id="bidTd" title="клікніть двічі для зміни торгів">
+                        <select id="bidSelector" >
+                            <option value="0">
+                            </option>
+                            <% for (Bid bid : allBidsList) { %>
+                            <option value="<%out.print(bid.getId());%>"<%if (lot.getBid() != null && lot.getBid().getId().equals(bid.getId())) {%>
+                                    selected="selected"<%
+                                    ;
+                                }
+                            %>>
+                                <%
+                                    if(bid.getBidDate()!=null&&bid.getExchange().getCompanyName()!=null) {
+                                        out.print(sdf.format(bid.getBidDate()) + " - " + bid.getExchange().getCompanyName()+" ("+bid.getNewspaper()+")");
+                                    }
+                                %>
+                            </option>
                             <%
-                                if(bid.getBidDate()!=null&&bid.getExchange().getCompanyName()!=null) {
-                                    out.print(sdf.format(bid.getBidDate()) + " - " + bid.getExchange().getCompanyName()+" ("+bid.getNewspaper()+")");
                                 }
                             %>
-                        </option>
-                        <%
-                            }
-                        %>
-                    </select>
-                </td>
-            </tr>
-            <tr>
-                <th>Стадія</th>
-                <td>
-                    <select id="ws">
-                        <% for (String ws : statusList) {%>
-                        <option value="<%out.print(ws);%>" <%if (ws.equals(lot.getWorkStage())) {%>
-                                selected="selected" <%
-                                ;
-                            }
-                        %>>
-                            <%
-                                out.print(ws);
-                            %>
-                        </option>
-                        <%
-                            }
-                        %>
-                    </select>
-                </td>
-            </tr>
-            <tr>
-                <th>Торги</th>
-                <td>
-                    <select id="bidst">
-                        <% for (String bidst : bidStatusList) {
-                        %>
-                        <option value="<%out.print(bidst);%>" <%if (bidst.equals(lot.getBidStage())) {%>
-                                selected="selected" <%
-                                ;
-                            }
-                        %>>
-                            <%
-                                out.print(bidst);
-                            %>
-                        </option>
-                        <%
-                            }
-                        %>
-                    </select>
-                </td>
-            </tr>
-            <tr>
-                <th>Статус аукціону</th>
-                <td>
-                    <select id="bidResultSt">
-                        <% for (String resultStatus : bidResultList) {
-                        %>
-                        <option value="<%out.print(resultStatus);%>" <%if (resultStatus.equals(lot.getStatus())) {%>
-                                selected="selected" <%
-                                ;
-                            }
-                        %>>
-                            <%
-                                out.print(resultStatus);
-                            %>
-                        </option>
-                        <%
-                            }
-                        %>
-                    </select>
-                </td>
-            </tr>
-            <tr>
-                <th>Кінець реєстрації</th>
-                <td>
-                    <%
-                        if (lot.getBid() != null && lot.getBid().getRegistrEndDate() != null)
-                            out.print(sdf.format(lot.getBid().getRegistrEndDate()));
-                    %>
-                </td>
-            </tr>
-            <tr>
-                <th>Дата торгів</th>
-                <td id="bidDate" title="натисніть для перегляду історії">
-                    <%
-                        if (lot.getBid() != null && lot.getBid().getBidDate() != null)
-                            out.print(sdf.format(lot.getBid().getBidDate()));
-                    %>
-                </td>
-            </tr>
-
-            <%for (Bid bid : bidsHistoryList) {%>
-            <tr class="bidHistoryTr" hidden="hidden" title="Історія попередніх торгів">
-                <td align="left">
-                    <%out.print(bid.getExchange().getCompanyName());%>
-                </td>
-                <td>
-                    <%if (bid.getBidDate() != null) out.print(sdf.format(bid.getBidDate()));%>
-                </td>
-            </tr>
-            <%}%>
-        </table>
-        <table>
-            <tr>
-                <td width="30%">
-                    <label>Голландський тип</label>
-                </td>
-                <td width="10%" >
-                    <%if(lot.getBidScenario()==1){%>
-                    <input type="checkbox" id="input_bid_scenario" checked="checked" title="оберіть голландський сценарій торгів">
-                    <%}
-                    else{%>
-                    <input type="checkbox" id="input_bid_scenario" title="оберіть голландський сценарій торгів">
-                    <%}%>
-                </td>
-                <td width="30%"></td>
-                <td width="30%" title="Повторні торги на біржі">
-                    <button id="button_reBid_type1" class="button_reBid" value="1" title="Повторні торги">Повторні торги</button>
-                </td>
-            </tr>
-        </table>
-    </div>
-    <div id="div_decisions">
-        <div>
-            <div class="div_menu_block_header">
-                Погодження продажу ФГВФО
-            </div>
-            <div>
-                <table id="table_fond_decision" class="table_decision">
-                    <tr id="accExCurrent" title="клікніть двічі для зміни погодженої фондом біржі">
-                        <td colspan="3" class="acceptEx">
-                            <%out.print(lot.getAcceptExchange());%>
-                        </td>
-                    </tr>
-                    <tr id="accExChoose" hidden="hidden">
-                        <td colspan="2">
-                            <select id="inputAccEx" name="exSelect">
-                                <option value="0">
-
-                                </option>
-                                <%
-                                    if (allExchangeList != null) {
-                                        for (Exchange ex : allExchangeList) {
-                                %>
-                                <option value="<%=ex.getId()%>">
-                                    <%out.print(ex.getCompanyName());%>
-                                </option>
-                                <%
-                                        }
-                                    }
-                                %>
-                            </select>
-                        </td>
-                        <td>
-                            <button id='okButton' style="width: 100%">ok</button>
-                        </td>
-                    </tr>
-                    <tr id="fdCurrent">
-                        <td><%if (lot.getFondDecisionDate() != null) out.print(sdf.format(lot.getFondDecisionDate()));%></td>
-                        <td><%if (lot.getFondDecision() != null) out.print(lot.getFondDecision());%></td>
-                        <td><%if (lot.getDecisionNumber() != null) out.print(lot.getDecisionNumber());%></td>
-                    </tr>
-                    <tr id="fdChoose" hidden="hidden">
-                        <td>
-                            <input id="inputFondDecDate" title="Дата прийняття рішення" placeholder="дата рішення">
-                        </td>
-                        <td>
-                            <select id="inputFondDec" name="decisionSelect" title="Рівень прийняття рішення">
-                                <%
-                                    if (fondDecisionsList != null) {
-                                        for (String decision : fondDecisionsList) {
-                                %>
-                                <option value="<%=decision%>">
-                                    <%out.print(decision);%>
-                                </option>
-                                <%
-                                        }
-                                    }
-                                %>
-                            </select>
-                        </td>
-                        <td>
-                            <input id="inputFondDecNum" type="text" title="Номер рішення" placeholder="номер рішення">
-                        </td>
-                    </tr>
-                    <tr>
-                        <td title="Необхідне перепогодження ФГВФО" width="45%">
-                            <button id="button_reBid_type2" class="button_reBid" value="2" style="width: 100%; color: darkred" title="Необхідне перепогодження ФГВФО">
-                                Необхідне перепогодження
-                            </button>
-                        </td>
-                        <td style="background-color: transparent" width="10%"></td>
-                        <td width="45%">
-                            <button id="redactButton" value="0" style="width: 100%; color: darkblue" title="Додати актуальне рішення ФГВФО">
-                                Додати рішення
-                            </button>
-                        </td>
-                    </tr>
-                </table>
-            </div>
-        </div>
-        <%if(lot.getLotType()==0){%>
-        <div>
-            <div class="div_menu_block_header">
-                Погодження НБУ
-            </div>
-            <div>
-                <table id="table_nbu_decision" class="table_decision">
-                    <tr id="nbuCurrent">
-                        <td><%if (lot.getNbuDecisionDate() != null) out.print(sdf.format(lot.getNbuDecisionDate()));%></td>
-                        <td><%if (lot.getNbuDecision() != null) out.print(lot.getNbuDecision());%></td>
-                        <td><%if (lot.getNbuDecisionNumber() != null) out.print(lot.getNbuDecisionNumber());%></td>
-                    </tr>
-                    <tr id="nbuChoose" hidden="hidden">
-                        <td>
-                            <input id="inputNBUDecDate" title="Дата прийняття рішення" placeholder="дата рішення">
-                        </td>
-                        <td>
-                            <select id="inputNBUDec" name="decisionSelect" title="Рівень прийняття рішення">
-                                <option value="погоджено">
-                                    на погодженні
-                                </option>
-                                <option value="погоджено">
-                                    не погоджено
-                                </option>
-                                <option value="погоджено">
-                                    погоджено
-                                </option>
-                            </select>
-                        </td>
-                        <td>
-                            <input id="inputNBUDecNum" type="text" title="Номер рішення" placeholder="номер рішення">
-                        </td>
-                    </tr>
-                    <tr>
-                        <td style="background-color: transparent"></td>
-                        <td style="background-color: transparent"></td>
-                        <td>
-                            <button id="redactNBUButton" value="0" style="width: 100%; color: darkblue" title="Додати актуальне рішення НБУ">
-                                Додати рішення
-                            </button>
-                        </td>
-                    </tr>
-                </table>
-            </div>
-        </div>
-        <%}%>
-
-
-    </div>
-    <div id="div_payments">
-        <div class="div_menu_block_header">
-            Платежі по лоту <img id="icon_add_pay" class="icon_button" src="resources/css/images/add_payment.png" title="Додати платіж" style="width: 20px; height: 20px">
-        </div>
-        <div>
-            <table id="table_payments" ><%--заповнюється скриптом--%>
-            </table>
-            <table width="100%" id="table_addPay" hidden="hidden">
-                <tr>
-                    <th class="payTd" >
-                        <input id="payDate" class="datepicker" placeholder="дата платежу" title="введіть дату платежу">
-                    </th>
-                    <th class="payTd" >
-                        <input id="pay" type="number" step="0.01" placeholder="сума, грн" title="введіть суму платежу">
-                    </th>
-                    <th class="payTd" >
-                        <select id="paySource" style="width: 100px" title="оберіть джерело надходження коштів">
-                            <option value="Біржа">
-                                Біржа
-                            </option>
-                            <option value="Покупець">
-                                Покупець
-                            </option>
                         </select>
-                    </th>
+                    </td>
                 </tr>
                 <tr>
-                    <td colspan="3" >
-                        <button id="button_addPay" style="width: 100%;" title="Додати платіж" value="0">ок</button>
+                    <th>Стадія</th>
+                    <td>
+                        <select id="ws">
+                            <% for (String ws : statusList) {%>
+                            <option value="<%out.print(ws);%>" <%if (ws.equals(lot.getWorkStage())) {%>
+                                    selected="selected" <%
+                                    ;
+                                }
+                            %>>
+                                <%
+                                    out.print(ws);
+                                %>
+                            </option>
+                            <%
+                                }
+                            %>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <th>Торги</th>
+                    <td>
+                        <select id="bidst">
+                            <% for (String bidst : bidStatusList) {
+                            %>
+                            <option value="<%out.print(bidst);%>" <%if (bidst.equals(lot.getBidStage())) {%>
+                                    selected="selected" <%
+                                    ;
+                                }
+                            %>>
+                                <%
+                                    out.print(bidst);
+                                %>
+                            </option>
+                            <%
+                                }
+                            %>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <th>Статус аукціону</th>
+                    <td>
+                        <select id="bidResultSt">
+                            <% for (String resultStatus : bidResultList) {
+                            %>
+                            <option value="<%out.print(resultStatus);%>" <%if (resultStatus.equals(lot.getStatus())) {%>
+                                    selected="selected" <%
+                                    ;
+                                }
+                            %>>
+                                <%
+                                    out.print(resultStatus);
+                                %>
+                            </option>
+                            <%
+                                }
+                            %>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <th>Кінець реєстрації</th>
+                    <td>
+                        <%
+                            if (lot.getBid() != null && lot.getBid().getRegistrEndDate() != null)
+                                out.print(sdf.format(lot.getBid().getRegistrEndDate()));
+                        %>
+                    </td>
+                </tr>
+                <tr>
+                    <th>Дата торгів</th>
+                    <td id="bidDate" title="натисніть для перегляду історії">
+                        <%
+                            if (lot.getBid() != null && lot.getBid().getBidDate() != null)
+                                out.print(sdf.format(lot.getBid().getBidDate()));
+                        %>
+                    </td>
+                </tr>
+
+                <%for (Bid bid : bidsHistoryList) {%>
+                <tr class="bidHistoryTr" style="display:none;" title="Історія попередніх торгів">
+                    <td align="left">
+                        <%out.print(bid.getExchange().getCompanyName());%>
+                    </td>
+                    <td>
+                        <%if (bid.getBidDate() != null) out.print(sdf.format(bid.getBidDate()));%>
+                    </td>
+                </tr>
+                <%}%>
+            </table>
+            <table>
+                <tr>
+                    <td width="30%">
+                        <label>Голландський тип</label>
+                    </td>
+                    <td width="10%" >
+                        <%if(lot.getBidScenario()==1){%>
+                        <input type="checkbox" id="input_bid_scenario" checked="checked" title="оберіть голландський сценарій торгів">
+                        <%}
+                        else{%>
+                        <input type="checkbox" id="input_bid_scenario" title="оберіть голландський сценарій торгів">
+                        <%}%>
+                    </td>
+                    <td width="30%"></td>
+                    <td width="30%" >
+                        <button id="button_reBid_type1" class="button_reBid btn-sm btn-light " value="1" title="Повторні торги на біржі">Повторні торги</button>
                     </td>
                 </tr>
             </table>
         </div>
-    </div>
-    <div id="div_documents">
-        <div class="div_menu_block_header">
-            <img id="icon_contract" class="icon_button" src="resources/css/images/contract_icon.png" style="width: 20px; height: 20px" title="завантажити договір">
-            Документи
-            <img id="icon_add_document" class="icon_button" src="resources/css/images/add_document.png" style="width: 20px; height: 20px" title="додати документ">
-        </div>
-        <div>
-            <table id="table_documents_scan" border="1">
 
-            </table>
+        <div id="div_decisions" class="col-md-4 border-right">
+            <div>
+                <div class="div_menu_block_header">
+                    Погодження продажу ФГВФО
+                </div>
+                <div>
+                    <table id="table_fond_decision" class="table_decision">
+                        <tr id="accExCurrent" title="клікніть двічі для зміни погодженої фондом біржі">
+                            <td colspan="3" class="acceptEx">
+                                <%out.print(lot.getAcceptExchange());%>
+                            </td>
+                        </tr>
+                        <tr id="accExChoose" style="display:none;">
+                            <td colspan="2">
+                                <select id="inputAccEx" name="exSelect">
+                                    <option value="0">
+
+                                    </option>
+                                    <%
+                                        if (allExchangeList != null) {
+                                            for (Exchange ex : allExchangeList) {
+                                    %>
+                                    <option value="<%=ex.getId()%>">
+                                        <%out.print(ex.getCompanyName());%>
+                                    </option>
+                                    <%
+                                            }
+                                        }
+                                    %>
+                                </select>
+                            </td>
+                            <td>
+                                <button id='okButton' style="width: 100%">ok</button>
+                            </td>
+                        </tr>
+                        <tr id="fdCurrent">
+                            <td><%if (lot.getFondDecisionDate() != null) out.print(sdf.format(lot.getFondDecisionDate()));%></td>
+                            <td><%if (lot.getFondDecision() != null) out.print(lot.getFondDecision());%></td>
+                            <td><%if (lot.getDecisionNumber() != null) out.print(lot.getDecisionNumber());%></td>
+                        </tr>
+                        <tr id="fdChoose" style="display: none">
+                            <td>
+                                <input id="inputFondDecDate" title="Дата прийняття рішення" placeholder="дата рішення">
+                            </td>
+                            <td>
+                                <select id="inputFondDec" name="decisionSelect" title="Рівень прийняття рішення">
+                                    <%
+                                        if (fondDecisionsList != null) {
+                                            for (String decision : fondDecisionsList) {
+                                    %>
+                                    <option value="<%=decision%>">
+                                        <%out.print(decision);%>
+                                    </option>
+                                    <%
+                                            }
+                                        }
+                                    %>
+                                </select>
+                            </td>
+                            <td>
+                                <input id="inputFondDecNum" type="text" title="Номер рішення" placeholder="номер рішення">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td title="Необхідне перепогодження ФГВФО" width="45%">
+                                <button id="button_reBid_type2" class="button_reBid btn-light text-danger" value="2" style="width: 100%" title="Необхідне перепогодження ФГВФО">
+                                    Необхідне перепогодження
+                                </button>
+                            </td>
+                            <td style="background-color: transparent" width="10%"></td>
+                            <td width="45%">
+                                <button id="redactButton" class="btn-light" value="0" style="width: 100%" title="Додати актуальне рішення ФГВФО">
+                                    Додати рішення
+                                </button>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+            <%if(lot.getLotType()==0){%>
+            <div>
+                <div class="div_menu_block_header">
+                    Погодження НБУ
+                </div>
+                <div>
+                    <table id="table_nbu_decision" class="table_decision">
+                        <tr id="nbuCurrent">
+                            <td><%if (lot.getNbuDecisionDate() != null) out.print(sdf.format(lot.getNbuDecisionDate()));%></td>
+                            <td><%if (lot.getNbuDecision() != null) out.print(lot.getNbuDecision());%></td>
+                            <td><%if (lot.getNbuDecisionNumber() != null) out.print(lot.getNbuDecisionNumber());%></td>
+                        </tr>
+                        <tr id="nbuChoose" style="display:none;">
+                            <td>
+                                <input id="inputNBUDecDate" title="Дата прийняття рішення" placeholder="дата рішення">
+                            </td>
+                            <td>
+                                <select id="inputNBUDec" name="decisionSelect" title="Рівень прийняття рішення">
+                                    <option value="погоджено">
+                                        на погодженні
+                                    </option>
+                                    <option value="погоджено">
+                                        не погоджено
+                                    </option>
+                                    <option value="погоджено">
+                                        погоджено
+                                    </option>
+                                </select>
+                            </td>
+                            <td>
+                                <input id="inputNBUDecNum" type="text" title="Номер рішення" placeholder="номер рішення">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="background-color: transparent"></td>
+                            <td style="background-color: transparent"></td>
+                            <td>
+                                <button id="redactNBUButton" value="0" style="width: 100%; color: darkblue" title="Додати актуальне рішення НБУ">
+                                    Додати рішення
+                                </button>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+            <%}%>
+            <hr class="my-4">
+
+            <div class="row text-danger" style="position: absolute; bottom: 0;">
+
+                <div class="col-4"><b>Дата прозоро</b></div>
+                <div class="col-5">
+                    <input id="input_Date_prozoro" title="Дата прозоро" value="<%if (lot.getProzoroDate() != null) out.print(sdf.format(lot.getProzoroDate()));%>">
+                </div>
+
+                <div class="col-4"><b>Кінцева дата</b></div>
+                <div class="col-5">
+                    <input id="input_Date_signDeadline" title="Крайня дата підписання" value="<%if (lot.getDeadlineDate() != null) out.print(sdf.format(lot.getDeadlineDate()));%>">
+                </div>
+
+                <div class="col-3">
+                    <button id="button_set_dates" class="btn-success col-12">зберегти</button>
+                </div>
+
+            </div>
         </div>
-        <div id="addDocForm" hidden="hidden">
-            <form method="POST" action="uploadFile" enctype="multipart/form-data" lang="utf8">
-                <input type="text" id="objType" name="objType" value="lot" hidden="hidden">
-                <input type="text" name="objId" value="<%out.print(lot.getId());%>" hidden="hidden">
-                Обрати документ для збереження:
-                <br/>
-                <input align="center" type="file" name="file" title="натисніть для обрання файлу"><br/>
-                <input align="center" type="submit" value="Зберегти" title="натисніть щоб зберегти файл">
-            </form>
+
+        <div id="div_payments" class="col-md-2 border-right">
+            <div class="div_menu_block_header">
+                Платежі по лоту <img id="icon_add_pay" class="icon_button" src="resources/css/images/add_payment.png" title="Додати платіж" style="width: 20px; height: 20px">
+            </div>
+            <div>
+                <table id="table_payments" ><%--заповнюється скриптом--%>
+                </table>
+                <table width="100%" id="table_addPay" style="display:none;">
+                    <tr>
+                        <th class="payTd" >
+                            <input id="payDate" class="datepicker" placeholder="дата платежу" title="введіть дату платежу">
+                        </th>
+                        <th class="payTd" >
+                            <input id="pay" type="number" step="0.01" placeholder="сума, грн" title="введіть суму платежу">
+                        </th>
+                        <th class="payTd" >
+                            <select id="paySource" style="width: 100px" title="оберіть джерело надходження коштів">
+                                <option value="Біржа">
+                                    Біржа
+                                </option>
+                                <option value="Покупець">
+                                    Покупець
+                                </option>
+                            </select>
+                        </th>
+                    </tr>
+                    <tr>
+                        <td colspan="3" >
+                            <button id="button_addPay" style="width: 100%;" title="Додати платіж" value="0">ок</button>
+                        </td>
+                    </tr>
+                </table>
+            </div>
         </div>
+
+        <div id="div_documents" class="col-md-2 border-right">
+            <div class="div_menu_block_header">
+                <img id="icon_contract" class="icon_button" src="resources/css/images/contract_icon.png" style="width: 20px; height: 20px" title="завантажити договір">
+                Документи
+                <img id="icon_add_document" class="icon_button" src="resources/css/images/add_document.png" style="width: 20px; height: 20px" title="додати документ">
+            </div>
+            <div>
+                <table id="table_documents_scan" border="1">
+
+                </table>
+            </div>
+            <div id="addDocForm" style="display:none;">
+                <form method="POST" action="uploadFile" enctype="multipart/form-data" lang="utf8">
+                    <input type="text" id="objType" name="objType" value="lot" style="display:none;">
+                    <input type="text" name="objId" value="<%out.print(lot.getId());%>" style="display:none;">
+                    Обрати документ для збереження:
+                    <br/>
+                    <input align="center" type="file" name="file" title="натисніть для обрання файлу"><br/>
+                    <input align="center" type="submit" value="Зберегти" title="натисніть щоб зберегти файл">
+                </form>
+            </div>
+        </div>
+
     </div>
 </div>
 
-<div id="div_b2">
-    <div id="div_finance">
-            <table id="table_finance">
+<div id="div_b2" class="jumbotron-fluid">
+
+    <div id="div_finance" class="col-lg-12 row">
+
+            <table id="table_finance" class="col-md-12" style="margin: 5px">
                 <tr>
-                    <th >К-ть об'єктів</th>
+                    <th>К-ть об'єктів</th>
                     <td id="count" align="center"></td>
-                    <th >№ лоту в публікації</th>
-                    <th >К-ть учасників</th>
-                    <th >Покупець</th>
-                    <th >Початкова ціна</th>
-                    <th >Дисконт</th>
-                    <th >Стартова ціна аукціону</th>
-                    <th >Ціна продажу, грн.</th>
-                    <th >Залишок до сплати, грн.</th>
-                    <th >Фактично сплачено, грн.</th>
+                    <th>№ лоту в публікації</th>
+                    <th>К-ть учасників</th>
+                    <th>Початкова ціна</th>
+                    <th>Дисконт</th>
+                    <th>Стартова ціна аукціону</th>
+                    <th>Ціна продажу, грн.</th>
+                    <th>Залишок до сплати, грн.</th>
+                    <th>Фактично сплачено, грн.</th>
+                    <th>Покупець</th> <%--<img id="img_new_customer" class="icon_button" src="resources/images/plus_green.png"
+                                             style="width: 15px; height: 15px" title="додати нового покупця">--%>
                 </tr>
                 <tr id="finInfoTr">
-                    <th >Оціночна вартість, грн</th>
+                    <th>Оціночна вартість, грн</th>
                     <td id="sum" align="center"></td>
-                    <td><input id="lotNum" type="text" value="<%if(lot.getLotNum()!=null)out.print(lot.getLotNum());%>"></td>
-                    <td><input id="countOfPart" type="number" value="<%out.print(lot.getCountOfParticipants());%>"></td>
-                    <td><input id="customerName" type="text" placeholder="ФІО" title="ФІО покупця" value='<%if(lot.getCustomerName()!=null)out.print(lot.getCustomerName());%>'>
-                        <input id="customerInn" type="number" placeholder="ІНН" title="ІНН покупця" value='<%if(lot.getCustomerInn()!=0)out.print(lot.getCustomerInn());%>'>
+                    <td><input id="lotNum" type="text" value="<%if(lot.getLotNum()!=null)out.print(lot.getLotNum());%>">
                     </td>
+                    <td><input id="countOfPart" type="number" value="<%out.print(lot.getCountOfParticipants());%>"></td>
                     <td id="firstPriceTd" align="center" title="Клікніть двічі для редагування">
-                        <div><%=lot.getFirstStartPrice()%></div>
-                        <input id="firstPrice" type="number" hidden="hidden" step="0.01" title="Початкова ціна лоту без дисконту" value="<%out.print(lot.getFirstStartPrice());%>">
+                        <div><%=lot.getFirstStartPrice()%>
+                        </div>
+                        <input id="firstPrice" type="number" style="display:none;" step="0.01"
+                               title="Початкова ціна лоту без дисконту" value="<%out.print(lot.getFirstStartPrice());%>">
                     </td>
                     <td id="discount" align="center" title="Дисконт відносно початкової ціни на перших торгах">
                         <%
@@ -1197,41 +1264,102 @@
                     </td>
                     <td id="paymentsSum" datatype="number" align="center">
                     </td>
+                     <td id="td_customer" title="Клікніть двічі для редагування">
+
+                         <c:out value="${requestScope.lott.getCustomer().shortDescription()}"/>
+                         <%--<input id="customerName" type="text" placeholder="ФІО" title="ФІО покупця" value='<%if(lot.getCustomerName()!=null)out.print(lot.getCustomerName());%>'>
+                         <input id="customerInn" type="number" placeholder="ІНН" title="ІНН покупця" value='<%if(lot.getCustomerInn()!=0)out.print(lot.getCustomerInn());%>'>--%>
+                     </td>
                 </tr>
             </table>
+
     </div>
-    <div id="div_mainButtons">
-        <div id="div_crud_buttons">
-            <div>
-                <button id="button_del_lot" value="0">Видалити лот</button>
-            </div>
-            <div>
-                <button id="button_setSold_lot" value="0">Акт підписано</button>
-            </div>
-        </div>
-        <br/>
-        <div id="div_acceptButton">
-            <button id="button_Accept" title="натисніть для збереження змін">
-                ПІДТВЕРДИТИ
-            </button>
-        </div>
+
+    <div id="div_customer" class="col-md-12" style="display:none;">
+
+        <table class="table table-hover ">
+            <tr>
+                <th>Форма власності</th>
+                <th>ІНН покупця</th>
+                <th>Прізвище</th>
+                <th>Ім'я</th>
+                <th>По-батькові</th>
+                <th>Одружений(на)</th>
+                <th>Підписант</th>
+                <th>
+                    <button id="button_customer_remove" type="button" class="btn-sm btn-danger">Видалити</button>
+                </th>
+            </tr>
+            <tr>
+                <td>
+                    <select id="select_legal_type">
+
+                        <% for(Customer.LegalType type : Customer.LegalType.values()){
+                            out.print(type.getUkrType());
+                        %>
+
+                        <option value="<%out.print(type.name());%>" <%if (lot.getCustomer()!=null&&lot.getCustomer().getLegalType().name().equals(type.name())) out.print("selected=\"selected\"");%> >
+                            <%out.print(type.getUkrType());%>
+                        </option>
+                        <%}%>
+                    </select>
+                </td>
+                <td title="клікніть двічі для пошуку клієнта в базі">
+                    <input class="customer_field_input" id="input_customer_inn" type="number" min="0" value="<c:out value="${requestScope.lott.getCustomer().getCustomerInn()}"/>">
+                </td>
+                <td>
+                    <input class="customer_field_input" id="input_customer_lastName" type="text" value="<c:out value="${requestScope.lott.getCustomer().lastName}"/>">
+                </td>
+                <td>
+                    <input class="customer_field_input" id="input_customer_name" type="text" value="<c:out value="${requestScope.lott.getCustomer().customerName}"/>">
+                </td>
+                <td>
+                    <input class="customer_field_input" id="input_customer_middleName" type="text" value="<c:out value="${requestScope.lott.getCustomer().middleName}"/>">
+                </td>
+                <td>
+                    <input id="checkbox_customer_isMerried" type="checkbox"
+                           <c:if test="${requestScope.lott.getCustomer().isMerried()==true}">checked="checked"</c:if>>
+                </td>
+                <td>
+                    <select id="select_customer_type">
+
+                        <% for(Customer.SubscriberType type : Customer.SubscriberType.values()){
+                            out.print(type.getUkrType());
+                        %>
+
+                        <option value="<%out.print(type.name());%>" <%if (lot.getCustomer()!=null&&lot.getCustomer().getType().name().equals(type.name())) out.print("selected=\"selected\"");%> >
+                            <%out.print(type.getUkrType());%>
+                        </option>
+                        <%}%>
+                    </select>
+                </td>
+                <td>
+                    <button id="button_customer_update" type="button" class="btn-sm btn-success">OK</button>
+                </td>
+            </tr>
+
+        </table>
+
     </div>
+
 </div>
 
-<div id="div_obj_list" class="view" align="center">
+<hr class="my-4">
+
+<div class="view jumbotron-fluid" id="div_obj_list" align="center">
     <table align="center">
         <tr>
             <td align="center">
-                <button id="showCredits" title="Показати/Приховати список об'єктів в лоті">Список об'єктів</button>
+                <button id="showCredits" class="btn-info" title="Показати/Приховати список об'єктів в лоті">Список об'єктів</button>
             </td>
             <td align="right" title="натисніть для збереження в форматі .xls">
                 <img id="icon_excel_download" class="icon_button" src="resources/css/images/excel.jpg" width="30px" height="30px"/>
             </td>
         </tr>
     </table>
-    <table id="table_assets_list" class="table_obj_list" hidden="hidden" border="green" style="border: 1px solid lawngreen;">
+    <table id="table_assets_list" class="table_obj_list" style="display:none;" border="green" style="border: 1px solid lawngreen;">
         <tr style="color: lawngreen; background-color: #37415d">
-            <th hidden="hidden">ID</th>
+            <th style="display:none;">ID</th>
             <th>Інвентарний №</th>
             <th>Назва активу</th>
             <th>Опис обєкту</th>
@@ -1245,9 +1373,9 @@
             <th>SRV_ID</th>
         </tr>
     </table>
-    <table id="table_credits_list" class="table_obj_list" hidden="hidden" border="blue">
+    <table id="table_credits_list" class="table_obj_list" style="display:none;" border="blue">
         <tr style="color: deepskyblue; background-color: #37415d">
-            <th hidden="hidden">ID</th>
+            <th style="display:none;">ID</th>
             <th>ID_Bars</th>
             <th>ІНН</th>
             <th>N договору</th>

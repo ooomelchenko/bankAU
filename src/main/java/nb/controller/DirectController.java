@@ -291,6 +291,7 @@ public class DirectController {
         model.addAttribute("allBidsList", bidService.getAllBids());
         model.addAttribute("fondDecisionsList", StaticStatus.fondDecisionsList);
         model.addAttribute("allExchangeList", exchangeService.getAllExchanges());
+
         List<Long> bidIdList = lotService.getBidsIdByLot(idLot);
 
         Set<Bid> historyBids = new TreeSet<>();
@@ -353,4 +354,31 @@ public class DirectController {
             return "Contract";
         }
     }
+
+/*    @RequestMapping(value = "/customer/{inn}", method = RequestMethod.GET)
+    private String getCustomerByInn(HttpSession session, Model model, @PathVariable long inn) {
+
+        if (!isAuth(session)) {
+            return "LogIN";
+        } else {
+            model.addAttribute("customer", customerService.getCustomerByInn(inn));
+            return "Customer";
+        }
+
+    }
+
+    @RequestMapping(value = "/customer/add/{inn}", method = RequestMethod.GET)
+    private String createCustomer(HttpSession session, Model model, @PathVariable long inn) {
+
+        if (!isAuth(session)) {
+            return "LogIN";
+        } else {
+            Customer customer = new Customer();
+            customer.setCustomerInn(inn);
+            model.addAttribute("customer", customer);
+            return "Customer";
+        }
+
+    }*/
+
 }

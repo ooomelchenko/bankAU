@@ -37,7 +37,7 @@ public class LotDaoImpl implements LotDao {
     }
     @Override
     public Lot read(Long id) {
-        return (Lot)factory.getCurrentSession().get(Lot.class, id);
+        return factory.getCurrentSession().get(Lot.class, id);
     }
     @Override
     public boolean update(Lot lot) {

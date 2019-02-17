@@ -338,7 +338,7 @@
             <%--<td align="center" class="residualToPay"></td>--%>
             <td class="workstage"><%=lot.getWorkStage()%>
             </td>
-            <td class="customer"><%if (lot.getCustomerName() != null) out.print(lot.getCustomerName());%></td>
+            <td class="customer"><%if (lot.getCustomer()!=null ) out.print(lot.getCustomer().shortDescription());%></td>
             <td class="aktDate"><%
                 if (lot.getActSignedDate() != null) out.print(sdf.format(lot.getActSignedDate()));%></td>
             <%--<td align="center" class="user"><%=lot.getUser().getLogin()%></td>--%>
