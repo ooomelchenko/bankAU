@@ -105,7 +105,7 @@
                                         '<td align="center">' + lots[i].startPrice + '</td>' +
                                         '<td align="center">' + lots[i].countOfParticipants + '</td>' +
                                         '<td align="center" class="factPrice">' + lots[i].factPrice + '</td>' +
-                                        '<td align="center" class="customer">' + lots[i].customerName + '</td>' +
+                                        '<td align="center" class="customer">' + buildCustomerFIO(lots[i].customer) + '</td>' +
                                         '<td align="center" class="payStatus">' + '</td>' +
                                         '<td align="center" class="paymentsSum">' + '</td>' +
                                         '<td align="center" class="residualToPay">' + '</td>' +
@@ -127,6 +127,21 @@
                     })
                 }
             });
+
+            function buildCustomerFIO(customer){
+
+                var res ="";
+                if(customer!=null){
+
+                    if(customer.lastName!=null)
+                        res+=customer.lastName+" ";
+                    if(customer.middleName!=null)
+                        res+=customer.middleName+" ";
+                    if(customer.customerName!=null)
+                        res+=customer.customerName;
+                }
+                return res;
+            }
 
             $('.button_accept_bid_changes').click(function(){
 

@@ -365,7 +365,7 @@ public class AssetController {
                 row.getCell(57).setCellStyle(numStyle);
             }
             try {
-                row.getCell(65).setCellValue(lot.getCustomer().getCustomerName());
+                row.getCell(65).setCellValue(lot.getCustomer().shortDescription());
             } catch (NullPointerException npe) {
             }
             try {
