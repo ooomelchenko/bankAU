@@ -45,7 +45,12 @@
                 var startDate = $('#minAuditDate').val();
                 var endDate = $('#maxAuditDate').val();
                 window.open("getReport/7/"+startDate+"/"+endDate);
-            })
+            });
+            $('#downloadReestr').click(function(){
+                var startDate = $('#startDate8').val();
+                var endDate = $('#endDate8').val();
+                window.open("getReport/8/"+startDate+"/"+endDate);
+            });
         })
     </script>
 
@@ -156,6 +161,21 @@
             </td>
             <td hidden="hidden" class="dateTd">
                 <img id="downloadBidReport" class="icon_button" src="resources/css/images/excel.jpg" title="завантажити">
+            </td>
+        </tr>
+
+        <tr class="reportTr">
+            <td id="report7" class="reportName">
+                Реєстр кредитів
+            </td>
+            <td hidden="hidden" class="dateTd">
+                <input id="startDate8" class="datepicker" about="початкова дата" title="оберіть початкову дату торгів">
+            </td>
+            <td hidden="hidden" class="dateTd">
+                <input id="endDate8" class="datepicker" about="кінцева дата" title="оберіть кінцеву дату торгів">
+            </td>
+            <td hidden="hidden" class="dateTd">
+                <img id="downloadReestr" class="icon_button" src="resources/css/images/excel.jpg" title="завантажити">
             </td>
         </tr>
 

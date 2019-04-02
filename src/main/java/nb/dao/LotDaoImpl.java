@@ -88,6 +88,16 @@ public class LotDaoImpl implements LotDao {
         Collections.reverse(lotList);
         return lotList;
     }
+
+    @Override
+    public List<Lot> findSolded(int lotType, Date first, Date last) {
+        Query query = factory.getCurrentSession().createQuery("FROM nb.domain.Lot lot WHERE lot.status = 'Торги відбулись' AND lot.lotType = :lt AND (lot.bid.bidDate>=:date1 AND lot.bid.bidDate<=:date2) ORDER BY lot.bid.bidDate DESC");
+        query.setParameter("lt", lotType);
+        query.setParameter("date1", first);
+        query.setParameter("date2", last);
+        return query.list();
+    }
+
     @Override
     public List<Lot> findNotSolded() {
         List <Lot> lotList = factory.getCurrentSession().createQuery("FROM nb.domain.Lot lot WHERE lot.status is null or lot.status != 'Торги відбулись' ").list(); // ORDER BY lot.bid.bidDate DESC , lot.bid.exchange.companyName

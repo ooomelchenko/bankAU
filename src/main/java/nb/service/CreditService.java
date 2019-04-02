@@ -53,7 +53,7 @@ public interface CreditService {
     boolean updateCredit(String userLogin, Credit crdt);
 
     @Transactional(readOnly = true)
-    List getCrditsByLotId(Long lotId);
+    List<Credit> getCrditsByLotId(Long lotId);
 
     @Transactional(readOnly = true)
     List getCredits_SuccessBids(Date startBids, Date endBids);

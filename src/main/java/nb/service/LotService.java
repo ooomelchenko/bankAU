@@ -40,6 +40,9 @@ public interface LotService {
     List getSoldedLots(int lotType);
 
     @Transactional(readOnly = true)
+    List getSoldedLots(int lotType, Date start, Date end);
+
+    @Transactional(readOnly = true)
     List getNotSoldedLots();
 
     @Transactional(readOnly = true)

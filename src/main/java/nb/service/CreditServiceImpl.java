@@ -149,7 +149,7 @@ public class CreditServiceImpl implements CreditService {
     }
     @Override
     @Transactional(readOnly = true)
-    public List getCrditsByLotId(Long lotId){
+    public List<Credit> getCrditsByLotId(Long lotId){
         return creditDao.getCreditsByLot(lotId);
     }
     @Override

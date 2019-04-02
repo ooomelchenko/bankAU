@@ -24,6 +24,8 @@ public interface LotDao {
 
     List<Lot> findSolded(int type);
 
+    List<Lot> findSolded(int lotType, Date start, Date end);
+
     List<Lot> findNotSolded();
 
     List<Lot> findNotSolded(int lotType);
