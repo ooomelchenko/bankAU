@@ -100,8 +100,8 @@ public class LotServiceImpl implements LotService {
         return lotDao.findSolded(lotType);
     }
     @Override
-    public List getSoldedLots(int lotType, Date start, Date end) {
-        return lotDao.findSolded(lotType, start, end);
+    public List getSoldedWithoutDealLots(int lotType, Date start, Date end) {
+        return lotDao.findSoldedWithoutDeal(lotType, start, end);
     }
     @Override
     @Transactional(readOnly = true)

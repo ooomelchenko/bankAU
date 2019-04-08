@@ -633,7 +633,7 @@
             <td class="residualToPay" style="font-weight: bold"></td>--%>
             <td class="paysSum" style="font-weight: bold"><%out.print(asset.getPaysBid().add(asset.getPaysCustomer()));%></td>
             <td class="residualToPay" style="font-weight: bold"><%if(asset.getFactPrice()!=null )out.print(asset.getFactPrice().subtract(asset.getPaysBid().add(asset.getPaysCustomer())));%></td>
-            <td class="customerName"><%if(asset.getLot()!=null) out.print(asset.getLot().getCustomerName());%></td>
+            <td class="customerName"><%if(asset.getLot()!=null&&asset.getLot().getCustomer()!=null) out.print(asset.getLot().getCustomer().shortDescription());%></td>
             <td class="workStage"><%if(asset.getLot()!=null) out.print(asset.getLot().getWorkStage());%></td>
             <td><%--<input class="inputFondDecDate" value="<%if(asset.getLot()!=null && asset.getLot().getFondDecisionDate()!=null)out.print(sdf.format(asset.getLot().getFondDecisionDate()));%>" hidden="hidden">--%> <div class="fondDecDat"><%if(asset.getLot()!=null && asset.getLot().getFondDecisionDate()!=null)out.print(sdf.format(asset.getLot().getFondDecisionDate()));%></div></td>
             <td>

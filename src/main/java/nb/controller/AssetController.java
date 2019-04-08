@@ -2213,7 +2213,7 @@ public class AssetController {
             }*/
         }
         else if (reportNum == 8) {
-            reportPath = fillCreditsReestr(lotService.getSoldedLots(0, startDate, endDate));
+            reportPath = fillCreditsReestr(lotService.getSoldedWithoutDealLots(0, startDate, endDate));
         }
 
         File file = new File(reportPath);
