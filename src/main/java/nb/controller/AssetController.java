@@ -572,7 +572,7 @@ public class AssetController {
             Lot tLot = lotService.getLot(credit.getLot());
             try {
                 row.createCell(2).setCellValue(tLot.getLotNum());
-                row.createCell(7).setCellValue(tLot.getCustomer().getCustomerName());
+                row.createCell(7).setCellValue(tLot.getCustomer().shortDescription());
                 try {
                     row.createCell(0).setCellValue(tLot.getBid().getBidDate());
                     row.getCell(0).setCellStyle(dateStyle);
