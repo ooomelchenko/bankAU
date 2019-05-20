@@ -7,6 +7,7 @@ import nb.queryDomain.BidDetails;
 import nb.queryDomain.CreditAccPriceHistory;
 import nb.queryDomain.FondDecisionsByLotHistory;
 import nb.service.*;
+import nb.util.CustomDateFormats;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.disk.DiskFileItem;
 import org.apache.poi.hssf.usermodel.HSSFDataFormat;
@@ -65,9 +66,7 @@ public class AssetController {
     @Autowired
     private CustomerService customerService;
 
-    private static final SimpleDateFormat sdfshort = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
-    private static final SimpleDateFormat sdfpoints = new SimpleDateFormat("dd.MM.yyyy", Locale.ENGLISH);
-    private static final SimpleDateFormat yearMonthFormat = new SimpleDateFormat("MM/yyyy", Locale.ENGLISH);
+
     private static final String documentsPath = "C:\\SCAN\\DocumentsByLots\\";
     private static final String bidDocumentsPath = "C:\\SCAN\\DocumentsByBid\\";
 
@@ -147,8 +146,13 @@ public class AssetController {
     }
 
     private String makeDodatok(List<Asset> assetList, List<Credit> creditList, String startDate, String endDate) throws IOException {
-        POIFSFileSystem fs = new POIFSFileSystem(new FileInputStream("C:\\projectFiles\\Table prodaj.xls"));
-        HSSFWorkbook wb = new HSSFWorkbook(fs);
+
+        HSSFWorkbook wb;
+
+        try(POIFSFileSystem fs = new POIFSFileSystem(new FileInputStream("C:\\projectFiles\\Table prodaj.xls"))){
+            wb = new HSSFWorkbook(fs);
+        }
+
         HSSFSheet sheet = wb.getSheetAt(0);
         //int shiftCount = assetList.size() + 6;
 
@@ -387,10 +391,10 @@ public class AssetController {
         sumRow.getCell(57).setCellFormula("SUM(BF8:BF" + tableEnd + ")");
 
         String fileName = "C:\\projectFiles\\" + ("Table prodaj " + startDate + " по " + endDate + ".xls");
-        OutputStream fileOut = new FileOutputStream(fileName);
 
-        wb.write(fileOut);
-        fileOut.close();
+        try(OutputStream fileOut = new FileOutputStream(fileName)){
+            wb.write(fileOut);
+        }
         return fileName;
     }
 
@@ -401,7 +405,7 @@ public class AssetController {
         Set<String> decisionsSet = new TreeSet<>();
         for (Lot lot : lotsByBidList) {
             if (lot.getFondDecisionDate() != null)
-                decisionsSet.add(lot.getDecisionNumber() + " від " + sdfpoints.format(lot.getFondDecisionDate()));
+                decisionsSet.add(lot.getDecisionNumber() + " від " + CustomDateFormats.sdfpoints.format(lot.getFondDecisionDate()));
         }
 
         InputStream fs = new FileInputStream("C:\\\\projectFiles\\\\Dodatok 2.docx");
@@ -443,23 +447,23 @@ public class AssetController {
             tab1.getRow(7).getCell(1).setText(bid.getExchange().getReq());
         }
         for (int i = 0; i < lotsByBidList.size(); i++) {
-            String assetName = "";
-            String assetDesc = "";
+            StringBuilder assetName = new StringBuilder();
+            StringBuilder assetDesc = new StringBuilder();
             Lot lot = lotsByBidList.get(i);
 
             List<Asset> notTMCList = lotService.getNotTMCAssetsByLot(lot);
             List<Asset> TMCList = lotService.getTMCAssetsByLot(lot);
             for (Asset asset : notTMCList) {
-                assetName += asset.getAsset_name() + " ";
-                assetDesc += asset.getAsset_descr() + " ";
+                assetName.append(asset.getAsset_name()).append(" ");
+                assetDesc.append(asset.getAsset_descr()).append(" ");
             }
             if (TMCList.size() > 0) {
-                assetDesc += " +" + TMCList.size() + " од. ТМЦ";
+                assetDesc.append(" +").append(TMCList.size()).append(" од. ТМЦ");
             }
             XWPFTableRow row = tab1.getRow(i + 1);
             row.getCell(0).setText(lot.getLotNum());
-            row.getCell(1).setText(assetName);
-            row.getCell(2).setText(assetDesc);
+            row.getCell(1).setText(assetName.toString());
+            row.getCell(2).setText(assetDesc.toString());
             row.getCell(3).setText(String.valueOf(lot.getStartPrice()));
 
             if ((lotsByBidList.size() - i) > 1)
@@ -484,23 +488,24 @@ public class AssetController {
         }
         tab2.getRow(2).getCell(1).setText(bid.getExchange().getCompanyName() + ", " + bid.getExchange().getPostAddress() + ", працює щоденно крім вихідних з 09.00 до 17.00, www.aukzion.com.ua");
 
-        tab2.getRow(12).getCell(1).setText(String.valueOf(sdfpoints.format(bid.getBidDate())) + " року");
+        tab2.getRow(12).getCell(1).setText(String.valueOf(CustomDateFormats.sdfpoints.format(bid.getBidDate())) + " року");
         tab2.getRow(14).getCell(1).setText(String.valueOf(bid.getExchange().getEmail()));
 
         if (bid.getRegistrEndDate() != null) {
-            tab2.getRow(16).getCell(1).setText(String.valueOf("до 17 год. 00 хв. " + sdfpoints.format(bid.getRegistrEndDate())) + " року");
-            tab2.getRow(17).getCell(1).setText(String.valueOf("до 17 год. 00 хв. " + sdfpoints.format(bid.getRegistrEndDate())) + " року; ");
-            tab2.getRow(17).getCell(1).setText(String.valueOf("до 17 год. 00 хв. " + sdfpoints.format(bid.getRegistrEndDate())) + " року");
+            tab2.getRow(16).getCell(1).setText(String.valueOf("до 17 год. 00 хв. " + CustomDateFormats.sdfpoints.format(bid.getRegistrEndDate())) + " року");
+            tab2.getRow(17).getCell(1).setText(String.valueOf("до 17 год. 00 хв. " + CustomDateFormats.sdfpoints.format(bid.getRegistrEndDate())) + " року; ");
+            tab2.getRow(17).getCell(1).setText(String.valueOf("до 17 год. 00 хв. " + CustomDateFormats.sdfpoints.format(bid.getRegistrEndDate())) + " року");
         }
 
         //Таблица 3 заполнение
-        tab3.getRow(3).getCell(1).setText(String.valueOf(sdfpoints.format(bid.getBidDate())) + " р.");
+        tab3.getRow(3).getCell(1).setText(String.valueOf(CustomDateFormats.sdfpoints.format(bid.getBidDate())) + " р.");
 
-        String fileName = "C:\\projectFiles\\Dodatok 2 (" + String.valueOf(sdfshort.format(bid.getBidDate())) + ").docx";
-        OutputStream fileOut = new FileOutputStream(fileName);
+        String fileName = "C:\\projectFiles\\Dodatok 2 (" + String.valueOf(CustomDateFormats.sdfshort.format(bid.getBidDate())) + ").docx";
 
-        docx.write(fileOut);
-        fileOut.close();
+        try(OutputStream fileOut = new FileOutputStream(fileName)){
+            docx.write(fileOut);
+        }
+
         return fileName;
     }
 
@@ -542,17 +547,22 @@ public class AssetController {
             row.createCell(10).setCellValue(credit.getFio());
         }
 
-        String fileName = "C:\\projectFiles\\" + ("Credits " + sdfshort.format(new Date()) + ".xlsx");
-        OutputStream fileOut = new FileOutputStream(fileName);
+        String fileName = "C:\\projectFiles\\" + ("Credits " + CustomDateFormats.sdfshort.format(new Date()) + ".xlsx");
 
-        wb.write(fileOut);
-        fileOut.close();
+        try(OutputStream fileOut = new FileOutputStream(fileName)){
+            wb.write(fileOut);
+        }
         return fileName;
     }
 
     private String fillSoldedCrdTab(List<Credit> creditList) throws IOException {
-        InputStream ExcelFileToRead = new FileInputStream("C:\\projectFiles\\CREDITS_solded.xlsx");
-        XSSFWorkbook wb = new XSSFWorkbook(ExcelFileToRead);
+
+        XSSFWorkbook wb;
+
+        try(InputStream ExcelFileToRead = new FileInputStream("C:\\projectFiles\\CREDITS_solded.xlsx")){
+            wb = new XSSFWorkbook(ExcelFileToRead);
+        }
+
         XSSFSheet sheet = wb.getSheetAt(0);
 
         //задаем формат даты
@@ -594,18 +604,23 @@ public class AssetController {
             }
         }
 
-        String fileName = "C:\\projectFiles\\" + ("CREDITS_solded " + sdfshort.format(new Date()) + ".xlsx");
-        OutputStream fileOut = new FileOutputStream(fileName);
+        String fileName = "C:\\projectFiles\\" + ("CREDITS_solded " + CustomDateFormats.sdfshort.format(new Date()) + ".xlsx");
 
-        wb.write(fileOut);
-        fileOut.close();
+        try(OutputStream fileOut = new FileOutputStream(fileName)){
+            wb.write(fileOut);
+        }
         return fileName;
     }
 
     private String fillCreditsReestr(List<Lot> lotList) throws IOException {
 
-        InputStream ExcelFileToRead = new FileInputStream("C:\\projectFiles\\Reestr.xlsx");
-        XSSFWorkbook wb = new XSSFWorkbook(ExcelFileToRead);
+        XSSFWorkbook wb;
+
+        try(InputStream ExcelFileToRead = new FileInputStream("C:\\projectFiles\\Reestr.xlsx"))
+        {
+            wb = new XSSFWorkbook(ExcelFileToRead);
+        }
+
         XSSFSheet sheet = wb.getSheetAt(0);
 
         //задаем формат даты
@@ -654,7 +669,7 @@ public class AssetController {
             }
         }
 
-        String fileName = "C:\\projectFiles\\" + ("Credits_reestr " + sdfshort.format(new Date()) + ".xlsx");
+        String fileName = "C:\\projectFiles\\" + ("Credits_reestr " + CustomDateFormats.sdfshort.format(new Date()) + ".xlsx");
 
         try(OutputStream fileOut = new FileOutputStream(fileName)){
             wb.write(fileOut);
@@ -665,8 +680,12 @@ public class AssetController {
     private String fillAssTab() throws IOException {
         List<Lot> lotList = lotService.getLotsByType(1);
 
-        InputStream ExcelFileToRead = new FileInputStream("C:\\projectFiles\\Temp.xlsx");
-        XSSFWorkbook xwb = new XSSFWorkbook(ExcelFileToRead);
+        XSSFWorkbook xwb;
+
+        try(InputStream ExcelFileToRead = new FileInputStream("C:\\projectFiles\\Temp.xlsx")){
+            xwb = new XSSFWorkbook(ExcelFileToRead);
+        }
+
         SXSSFWorkbook wb = new SXSSFWorkbook(xwb);
         SXSSFSheet sheet = wb.getSheetAt(0);
         SXSSFSheet lotSheet = wb.getSheetAt(1);
@@ -963,12 +982,10 @@ public class AssetController {
             }
         }
 
-        String fileName = "C:\\projectFiles\\" + ("Assets " + sdfshort.format(new Date()) + ".xlsx");
-        OutputStream fileOut = new FileOutputStream(fileName);
-
-        wb.write(fileOut);
-        fileOut.flush();
-        fileOut.close();
+        String fileName = "C:\\projectFiles\\" + ("Assets " + CustomDateFormats.sdfshort.format(new Date()) + ".xlsx");
+        try(OutputStream fileOut = new FileOutputStream(fileName) ){
+            wb.write(fileOut);
+        }
         return fileName;
     }
 
@@ -991,54 +1008,47 @@ public class AssetController {
     }
 
     private String makePaymentsReport(List<Pay> payList, String start, String end) {
-        InputStream ExcelFileToRead = null;
-        try {
-            ExcelFileToRead = new FileInputStream("C:\\projectFiles\\Pays.xlsx");
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-        XSSFWorkbook wb = null;
-        try {
-            wb = new XSSFWorkbook(ExcelFileToRead);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        XSSFSheet sheet = wb.getSheetAt(0);
 
-        String excelFormatter = DateFormatConverter.convert(Locale.ENGLISH, "yyyy-MM-dd");
-        CellStyle cellStyle = wb.createCellStyle();
-        cellStyle.setDataFormat(wb.createDataFormat().getFormat(excelFormatter));
-
-        for (int i = 0; i < payList.size(); i++) {
-            Pay pay = payList.get(i);
-            XSSFRow payRow = sheet.createRow(i + 1);
-            payRow.createCell(0).setCellValue(pay.getDate());
-            payRow.getCell(0).setCellStyle(cellStyle);
-            payRow.createCell(1).setCellValue(pay.getPaySum().doubleValue());
-            payRow.createCell(2).setCellValue(pay.getPaySource());
-            payRow.createCell(3).setCellValue(pay.getLotId());
-            payRow.createCell(4).setCellValue(lotService.getLot(pay.getLotId()).getLotNum());
-        }
         String fileName = "C:\\projectFiles\\Payments_" + start + "_" + end + ".xlsx";
-        OutputStream fileOut = null;
-        try {
-            fileOut = new FileOutputStream(fileName);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
 
-        try {
+        try(InputStream ExcelFileToRead = new FileInputStream("C:\\projectFiles\\Pays.xlsx");
+            XSSFWorkbook wb = new XSSFWorkbook(ExcelFileToRead);
+            OutputStream fileOut = new FileOutputStream(fileName)
+            ) {
+
+            XSSFSheet sheet = wb.getSheetAt(0);
+
+            String excelFormatter = DateFormatConverter.convert(Locale.ENGLISH, "yyyy-MM-dd");
+            CellStyle cellStyle = wb.createCellStyle();
+            cellStyle.setDataFormat(wb.createDataFormat().getFormat(excelFormatter));
+
+            for (int i = 0; i < payList.size(); i++) {
+                Pay pay = payList.get(i);
+                XSSFRow payRow = sheet.createRow(i + 1);
+                payRow.createCell(0).setCellValue(pay.getDate());
+                payRow.getCell(0).setCellStyle(cellStyle);
+                payRow.createCell(1).setCellValue(pay.getPaySum().doubleValue());
+                payRow.createCell(2).setCellValue(pay.getPaySource());
+                payRow.createCell(3).setCellValue(pay.getLotId());
+                payRow.createCell(4).setCellValue(lotService.getLot(pay.getLotId()).getLotNum());
+            }
+
             wb.write(fileOut);
-            fileOut.close();
+
         } catch (IOException e) {
             e.printStackTrace();
         }
+
         return fileName;
     }
 
     private String makeBidsSumReport(List<LotHistory> lotList, List<BidDetails> aggregatedLotList) throws IOException {
-        InputStream ExcelFileToRead = new FileInputStream("C:\\projectFiles\\Temp1.xlsx");
-        XSSFWorkbook xwb = new XSSFWorkbook(ExcelFileToRead);
+
+        XSSFWorkbook xwb;
+        try(InputStream ExcelFileToRead = new FileInputStream("C:\\projectFiles\\Temp1.xlsx")){
+            xwb = new XSSFWorkbook(ExcelFileToRead);
+        }
+
         SXSSFWorkbook wb = new SXSSFWorkbook(xwb);
         SXSSFSheet sheet = wb.getSheetAt(0);
 
@@ -1070,7 +1080,7 @@ public class AssetController {
             row.createCell(0).setCellValue(lot.getBidId());
             Bid bid = bidService.getBid(lot.getBidId());
             try {
-                row.createCell(1).setCellValue(bid.getExchange().getCompanyName() + "_" + sdfshort.format(bid.getBidDate()));
+                row.createCell(1).setCellValue(bid.getExchange().getCompanyName() + "_" + CustomDateFormats.sdfshort.format(bid.getBidDate()));
             } catch (NullPointerException e) {
             }
             try {
@@ -1106,7 +1116,7 @@ public class AssetController {
             row.createCell(0).setCellValue(aggregatedLot.getBidId());
             Bid bid = bidService.getBid(aggregatedLot.getBidId());
             try {
-                row.createCell(1).setCellValue(bid.getExchange().getCompanyName() + "_" + sdfshort.format(bid.getBidDate()));
+                row.createCell(1).setCellValue(bid.getExchange().getCompanyName() + "_" + CustomDateFormats.sdfshort.format(bid.getBidDate()));
             } catch (NullPointerException e) {
             }
             try {
@@ -1125,11 +1135,10 @@ public class AssetController {
         }
 
         String fileName = "C:\\projectFiles\\" + ("Bids_report.xlsx");
-        OutputStream fileOut = new FileOutputStream(fileName);
-
-        wb.write(fileOut);
-        fileOut.flush();
-        fileOut.close();
+        try(OutputStream fileOut = new FileOutputStream(fileName)){
+            wb.write(fileOut);
+            //fileOut.flush();
+        }
         return fileName;
     }
 
@@ -1167,7 +1176,7 @@ public class AssetController {
                     XSSFRow row = sheet3.createRow(numRow3);
                     row.createCell(0).setCellValue(lotId);
                     try {
-                        row.createCell(1).setCellValue(sdfshort.format(fondDecision.getFondDecisionDate()));
+                        row.createCell(1).setCellValue(CustomDateFormats.sdfshort.format(fondDecision.getFondDecisionDate()));
                     } catch (Exception e) {
 
                     }
@@ -1183,7 +1192,7 @@ public class AssetController {
                     row.createCell(0).setCellValue(asset.getInn());
                     row.createCell(1).setCellValue(lotId);
                     row.createCell(2).setCellValue(bid.getExchange().getCompanyName());
-                    row.createCell(3).setCellValue(sdfshort.format(bid.getBidDate()));
+                    row.createCell(3).setCellValue(CustomDateFormats.sdfshort.format(bid.getBidDate()));
                     try {
                         row.createCell(4).setCellValue(assetService.getAccPriceByLotIdHistory(asset.getId(), lotId).doubleValue());
                     } catch (NullPointerException e) {
@@ -1196,16 +1205,17 @@ public class AssetController {
                 numRow2++;
                 XSSFRow row2 = sheet2.createRow(numRow2);
                 row2.createCell(0).setCellValue(asset.getInn());
-                row2.createCell(1).setCellValue(sdfshort.format(acceptPriceHistory.getDate()));
+                row2.createCell(1).setCellValue(CustomDateFormats.sdfshort.format(acceptPriceHistory.getDate()));
                 row2.createCell(2).setCellValue(acceptPriceHistory.getAcceptedPrice().doubleValue());
             }
         }
 
-        String fileName = "C:\\projectFiles\\" + ("History " + sdfshort.format(new Date()) + ".xlsx");
-        OutputStream fileOut = new FileOutputStream(fileName);
+        String fileName = "C:\\projectFiles\\" + ("History " + CustomDateFormats.sdfshort.format(new Date()) + ".xlsx");
 
-        wb.write(fileOut);
-        fileOut.close();
+        try(OutputStream fileOut = new FileOutputStream(fileName)){
+            wb.write(fileOut);
+        }
+
         return fileName;
     }
 
@@ -1227,7 +1237,11 @@ public class AssetController {
                         StringBuilder tempText = new StringBuilder();
                         if (!creditList.isEmpty() && text.contains("knd")) {
                             for (Credit credit : creditList) {
-                                tempText.append("№").append(credit.getContractNum()).append(" від ").append(sdfpoints.format(credit.getContractStart())).append("року,");
+                                tempText.append("№")
+                                        .append(credit.getContractNum())
+                                        .append(" від ")
+                                        .append(CustomDateFormats.sdfpoints.format(credit.getContractStart()))
+                                        .append("року,");
                             }
                         }
                         r.setText(replaceRunText(text, String.valueOf(creditList.get(0).getContractNum()), contract_year, String.valueOf((lot.getCustomer()==null) ?  "" : lot.getCustomer().shortDescription()),
@@ -1252,7 +1266,7 @@ public class AssetController {
                                     String tempText = "";
                                     if (!creditList.isEmpty() && text.contains("knd")) {
                                         for (Credit credit : creditList) {
-                                            tempText += "№" + credit.getContractNum() + " від " + sdfpoints.format(credit.getContractStart()) + "року,";
+                                            tempText += "№" + credit.getContractNum() + " від " + CustomDateFormats.sdfpoints.format(credit.getContractStart()) + "року,";
                                         }
                                     }
 
@@ -1284,7 +1298,7 @@ public class AssetController {
 
         String bidDate;
         try {
-            bidDate = sdfpoints.format(lot.getBid().getBidDate());
+            bidDate = CustomDateFormats.sdfpoints.format(lot.getBid().getBidDate());
         } catch (NullPointerException e) {
             bidDate = "дата торгів";
         }
@@ -1412,7 +1426,7 @@ public class AssetController {
                         String tempText = "";
                         if (!creditList.isEmpty() && text.contains("knd")) {
                             for (Credit credit : creditList) {
-                                tempText += "№" + credit.getContractNum() + " від " + sdfpoints.format(credit.getContractStart()) + "року,";
+                                tempText += "№" + credit.getContractNum() + " від " + CustomDateFormats.sdfpoints.format(credit.getContractStart()) + "року,";
                             }
                         }
                         r.setText(replaceRunText(text, String.valueOf(creditList.get(0).getContractNum()), contract_year, String.valueOf((lot.getCustomer()==null) ?  "" : lot.getCustomer().shortDescription()),
@@ -1439,7 +1453,7 @@ public class AssetController {
                                     String tempText = "";
                                     if (!creditList.isEmpty() && text.contains("knd")) {
                                         for (Credit credit : creditList) {
-                                            tempText += "№" + credit.getContractNum() + " від " + sdfpoints.format(credit.getContractStart()) + "року,";
+                                            tempText += "№" + credit.getContractNum() + " від " + CustomDateFormats.sdfpoints.format(credit.getContractStart()) + "року,";
                                         }
                                     }
 
@@ -1465,7 +1479,7 @@ public class AssetController {
             newRow.getCell(1).setText("Кредитний договір");
             String creditStartDate = "";
             try {
-                creditStartDate = sdfpoints.format(credit.getContractStart());
+                creditStartDate = CustomDateFormats.sdfpoints.format(credit.getContractStart());
             } catch (NullPointerException e) {
             }
             newRow.getCell(2).setText(credit.getContractNum() + " від " + creditStartDate);
@@ -1492,7 +1506,7 @@ public class AssetController {
 
         String bidDate;
         try {
-            bidDate = sdfpoints.format(lot.getBid().getBidDate());
+            bidDate = CustomDateFormats.sdfpoints.format(lot.getBid().getBidDate());
         } catch (NullPointerException e) {
             bidDate = "дата торгів";
         }
@@ -1606,7 +1620,7 @@ public class AssetController {
                         String tempText = "";
                         if (!creditList.isEmpty() && text.contains("knd")) {
                             for (Credit credit : creditList) {
-                                tempText += "№" + credit.getContractNum() + " від " + sdfpoints.format(credit.getContractStart()) + "року,";
+                                tempText += "№" + credit.getContractNum() + " від " + CustomDateFormats.sdfpoints.format(credit.getContractStart()) + "року,";
                             }
                         }
                         r.setText(replaceRunText(text, String.valueOf(creditList.get(0).getContractNum()), contract_year, String.valueOf((lot.getCustomer()==null) ?  "" : lot.getCustomer().shortDescription()),
@@ -1633,7 +1647,7 @@ public class AssetController {
                                     String tempText = "";
                                     if (!creditList.isEmpty() && text.contains("knd")) {
                                         for (Credit credit : creditList) {
-                                            tempText += "№" + credit.getContractNum() + " від " + sdfpoints.format(credit.getContractStart()) + "року,";
+                                            tempText += "№" + credit.getContractNum() + " від " + CustomDateFormats.sdfpoints.format(credit.getContractStart()) + "року,";
                                         }
                                     }
 
@@ -1657,7 +1671,7 @@ public class AssetController {
             newRow.createCell().setText("Позичальник – " + credit.getFio() + ", РНОКПП " + credit.getInn());
             String creditStartDate = "";
             try {
-                creditStartDate = sdfpoints.format(credit.getContractStart());
+                creditStartDate = CustomDateFormats.sdfpoints.format(credit.getContractStart());
             } catch (NullPointerException e) {
             }
             newRow.createCell().setText("Кредитний договір " + credit.getContractNum() + " від " + creditStartDate);
@@ -1666,10 +1680,9 @@ public class AssetController {
         objTable.removeRow(1);
 
         String fileName = "C:\\projectFiles\\Lot_Credits_Docs\\Dogovir_Dodatok1_" + lot.getId() + ".docx";
-        OutputStream fileOut = new FileOutputStream(fileName);
-
-        docx.write(fileOut);
-        fileOut.close();
+        try(OutputStream fileOut = new FileOutputStream(fileName)){
+            docx.write(fileOut);
+        }
         return fileName;
     }
 
@@ -1688,16 +1701,21 @@ public class AssetController {
                 for (XWPFRun r : runs) {
                     String text = r.getText(0);
                     if (text != null) {
-                        String tempText = "";
+                        StringBuilder tempText = new StringBuilder();
                         if (!creditList.isEmpty() && text.contains("knd")) {
                             for (Credit credit : creditList) {
-                                tempText += "№" + credit.getContractNum() + " від " + sdfpoints.format(credit.getContractStart()) + "року,";
+                                tempText
+                                        .append("№")
+                                        .append(credit.getContractNum())
+                                        .append(" від ")
+                                        .append(CustomDateFormats.sdfpoints.format(credit.getContractStart()))
+                                        .append("року,");
                             }
                         }
                         r.setText(replaceRunText(text, String.valueOf(creditList.get(0).getContractNum()), contract_year, String.valueOf((lot.getCustomer()==null) ?  "" : lot.getCustomer().shortDescription()),
                                 String.valueOf(contract_address), String.valueOf((lot.getCustomer()==null) ?  "" : lot.getCustomer().getCustomerInn()),
                                 String.valueOf(contract_protokol_num), String.valueOf(contract_protokol_date),
-                                String.valueOf(protocol_made_by), String.valueOf(lot.getFactPrice()), tempText, subscriber), 0);
+                                String.valueOf(protocol_made_by), String.valueOf(lot.getFactPrice()), tempText.toString(), subscriber), 0);
                     }
                 }
             }
@@ -1718,7 +1736,7 @@ public class AssetController {
                                     String tempText = "";
                                     if (!creditList.isEmpty() && text.contains("knd")) {
                                         for (Credit credit : creditList) {
-                                            tempText += "№" + credit.getContractNum() + " від " + sdfpoints.format(credit.getContractStart()) + "року,";
+                                            tempText += "№" + credit.getContractNum() + " від " + CustomDateFormats.sdfpoints.format(credit.getContractStart()) + "року,";
                                         }
                                     }
 
@@ -1735,10 +1753,11 @@ public class AssetController {
         }
 
         String fileName = "C:\\projectFiles\\Lot_Credits_Docs\\Dogovir_Dodatok2_" + lot.getId() + ".docx";
-        OutputStream fileOut = new FileOutputStream(fileName);
 
-        docx.write(fileOut);
-        fileOut.close();
+        try(OutputStream fileOut = new FileOutputStream(fileName)){
+            docx.write(fileOut);
+        }
+
         return fileName;
     }
 
@@ -1918,7 +1937,7 @@ public class AssetController {
         String login = (String) session.getAttribute("userId");
         Date date;
         try {
-            date = sdfshort.parse(payDate);
+            date = CustomDateFormats.sdfshort.parse(payDate);
         } catch (ParseException e) {
             return "0";
         }
@@ -2105,12 +2124,12 @@ public class AssetController {
         Date startDate = null;
         Date endDate = null;
         try {
-            startDate = sdfshort.parse(start);
+            startDate = CustomDateFormats.sdfshort.parse(start);
         } catch (ParseException e) {
             System.out.println("Невірний формат дати або дату не введено");
         }
         try {
-            endDate = sdfshort.parse(end);
+            endDate = CustomDateFormats.sdfshort.parse(end);
         } catch (ParseException e) {
             System.out.println("Невірний формат дати або дату не введено");
         }
@@ -2154,8 +2173,6 @@ public class AssetController {
                 e.printStackTrace();
             }
         }
-
-
         /*if(reportNum==3){
             try {
                 reportPath=fillCrdTab(creditService.getCreditsByPortion(1));
@@ -2167,11 +2184,11 @@ public class AssetController {
         Date startDate = null;
         Date endDate = null;
         try {
-            startDate = sdfshort.parse(start);
+            startDate = CustomDateFormats.sdfshort.parse(start);
         } catch (ParseException e) {
         }
         try {
-            endDate = sdfshort.parse(end);
+            endDate = CustomDateFormats.sdfshort.parse(end);
         } catch (ParseException e) {
         }
         List<Asset> assetList = assetService.findAllSuccessBids(startDate, endDate);
@@ -2221,7 +2238,8 @@ public class AssetController {
         response.setContentType("application/octet-stream");
         response.setHeader("Content-Disposition", "attachment; filename=\"" + file.getName() + "\"");
 
-        try(InputStream is = new FileInputStream(file); OutputStream os = response.getOutputStream()){
+        try(InputStream is = new FileInputStream(file);
+            OutputStream os = response.getOutputStream()){
             byte[] buffer = new byte[1024];
             int len;
             while ((len = is.read(buffer)) != -1) {
@@ -2242,11 +2260,11 @@ public class AssetController {
         Date startDate = null;
         Date endDate = null;
         try {
-            startDate = sdfshort.parse(start);
+            startDate = CustomDateFormats.sdfshort.parse(start);
         } catch (ParseException e) {
         }
         try {
-            endDate = sdfshort.parse(end);
+            endDate = CustomDateFormats.sdfshort.parse(end);
         } catch (ParseException e) {
         }
         List<Asset> assetList = assetService.findAllSuccessBids(startDate, endDate, portion);
@@ -2259,21 +2277,21 @@ public class AssetController {
         }
 
         File file = new File(reportPath);
-        InputStream is = new FileInputStream(file);
 
         response.setContentType("application/octet-stream");
         response.setHeader("Content-Disposition", "attachment; filename=\"" + file.getName() + "\"");
 
-        OutputStream os = response.getOutputStream();
-        byte[] buffer = new byte[1024];
-        int len;
-        while ((len = is.read(buffer)) != -1) {
-            os.write(buffer, 0, len);
+        try(InputStream is = new FileInputStream(file);
+            OutputStream os = response.getOutputStream()){
+            byte[] buffer = new byte[1024];
+            int len;
+            while ((len = is.read(buffer)) != -1) {
+                os.write(buffer, 0, len);
+            }
         }
-        os.flush();
-        is.close();
-        os.close();
-        file.delete();
+        finally {
+            file.delete();
+        }
     }
 
     @RequestMapping(value = "/getFileNames", method = RequestMethod.POST)
@@ -2314,35 +2332,33 @@ public class AssetController {
         } catch (UnsupportedEncodingException e) {
         }
         String name = null;
-        if (!file.isEmpty()) {
-            try {
-                byte[] bytes = file.getBytes();
+        if (!file.isEmpty()) try {
+            byte[] bytes = file.getBytes();
 
-                name = file.getOriginalFilename();
+            name = file.getOriginalFilename();
 
-                String rootPath = null;
-                if (objType.equals("lot"))
-                    rootPath = documentsPath;
-                if (objType.equals("bid"))
-                    rootPath = bidDocumentsPath;
+            String rootPath = null;
+            if (objType.equals("lot"))
+                rootPath = documentsPath;
+            if (objType.equals("bid"))
+                rootPath = bidDocumentsPath;
 
-                File dir = new File(rootPath + File.separator + objId);
-                if (!dir.exists()) {
-                    dir.mkdirs();
-                }
-                File uploadedFile = new File(dir.getAbsolutePath() + File.separator + name);
-
-                BufferedOutputStream stream = new BufferedOutputStream(new FileOutputStream(uploadedFile));
-                stream.write(bytes);
-                stream.flush();
-                stream.close();
-
-                return "File " + name + " zavantajeno";
-
-            } catch (Exception e) {
-                return "Download error " + name + " => " + e.getMessage();
+            File dir = new File(rootPath + File.separator + objId);
+            if (!dir.exists()) {
+                dir.mkdirs();
             }
-        } else {
+            File uploadedFile = new File(dir.getAbsolutePath() + File.separator + name);
+
+            try (BufferedOutputStream stream = new BufferedOutputStream(new FileOutputStream(uploadedFile))) {
+                stream.write(bytes);
+            }
+
+            return "File " + name + " zavantajeno";
+
+        } catch (Exception e) {
+            return "Download error " + name + " => " + e.getMessage();
+        }
+        else {
             return "Error. File not choosen.";
         }
     }
@@ -2573,21 +2589,23 @@ public class AssetController {
         String filePath = Excel.loadCreditsByList(lotList, assetList);
 
         File file = new File(filePath);
-        InputStream is = new FileInputStream(file);
 
         response.setContentType("application/octet-stream");
         response.setHeader("Content-Disposition", "attachment; filename=\"" + file.getName() + "\"");
 
-        OutputStream os = response.getOutputStream();
-        byte[] buffer = new byte[1024];
-        int len;
-        while ((len = is.read(buffer)) != -1) {
-            os.write(buffer, 0, len);
+        try(
+        InputStream is = new FileInputStream(file);
+        OutputStream os = response.getOutputStream()
+        ){
+            byte[] buffer = new byte[1024];
+            int len;
+            while ((len = is.read(buffer)) != -1) {
+                os.write(buffer, 0, len);
+            }
         }
-        os.flush();
-        is.close();
-        os.close();
-        file.delete();
+        finally {
+            file.delete();
+        }
     }
 
     @RequestMapping(value = "/unitsByLot/{id}", method = RequestMethod.GET)
@@ -2603,21 +2621,21 @@ public class AssetController {
             file = Excel.loadAssetsByList(lot, lotService.getAssetsByLot(lot));
         }
 
-        InputStream is = new FileInputStream(file);
-
         response.setContentType("application/octet-stream");
         response.setHeader("Content-Disposition", "attachment; filename=\"" + file.getName() + "\"");
 
-        OutputStream os = response.getOutputStream();
-        byte[] buffer = new byte[1024];
-        int len;
-        while ((len = is.read(buffer)) != -1) {
-            os.write(buffer, 0, len);
+        try(InputStream is = new FileInputStream(file);
+            OutputStream os = response.getOutputStream()){
+            byte[] buffer = new byte[1024];
+            int len;
+            while ((len = is.read(buffer)) != -1) {
+                os.write(buffer, 0, len);
+            }
         }
-        os.flush();
-        is.close();
-        os.close();
-        file.delete();
+        finally {
+            file.delete();
+        }
+
     }
 
     @RequestMapping(value = "/downloadT/{id}", method = RequestMethod.GET)
@@ -2634,42 +2652,43 @@ public class AssetController {
         String filePath = Excel.loadCreditsByList(lotList, assetList);
 
         File file = new File(filePath);
-        InputStream is = new FileInputStream(file);
 
         response.setContentType("application/octet-stream");
         response.setHeader("Content-Disposition", "attachment; filename=\"" + file.getName() + "\"");
 
-        OutputStream os = response.getOutputStream();
-        byte[] buffer = new byte[1024];
-        int len;
-        while ((len = is.read(buffer)) != -1) {
-            os.write(buffer, 0, len);
+        try(InputStream is = new FileInputStream(file);
+            OutputStream os = response.getOutputStream()){
+            byte[] buffer = new byte[1024];
+            int len;
+            while ((len = is.read(buffer)) != -1) {
+                os.write(buffer, 0, len);
+            }
         }
-        os.flush();
-        is.close();
-        os.close();
-        file.delete();
+        finally {
+            file.delete();
+        }
+
     }
 
     @RequestMapping(value = "/reportDownload", method = RequestMethod.GET)
     public void reportDownload(HttpServletResponse response, HttpSession session) throws IOException {
         String reportPath = (String) session.getAttribute("reportPath");
         File file = new File(reportPath);
-        InputStream is = new FileInputStream(file);
 
         response.setContentType("application/octet-stream");
         response.setHeader("Content-Disposition", "attachment; filename=\"" + file.getName() + "\"");
 
-        OutputStream os = response.getOutputStream();
-        byte[] buffer = new byte[1024];
-        int len;
-        while ((len = is.read(buffer)) != -1) {
-            os.write(buffer, 0, len);
+        try(InputStream is = new FileInputStream(file);
+            OutputStream os = response.getOutputStream()){
+            byte[] buffer = new byte[1024];
+            int len;
+            while ((len = is.read(buffer)) != -1) {
+                os.write(buffer, 0, len);
+            }
         }
-        os.flush();
-        is.close();
-        os.close();
-        file.delete();
+        finally {
+            file.delete();
+        }
     }
 
     @RequestMapping(value = "/downloadDocument", method = RequestMethod.GET)
@@ -2684,20 +2703,20 @@ public class AssetController {
         if (docType.equals("bid"))
             file = new File(bidDocumentsPath + objId + File.separator + docName);
 
-        InputStream is = new FileInputStream(file);
-
         response.setContentType("application/octet-stream");
         response.setHeader("Content-Disposition", "attachment; filename=\"" + file.getName() + "\"");
 
-        OutputStream os = response.getOutputStream();
-        byte[] buffer = new byte[1024];
-        int len;
-        while ((len = is.read(buffer)) != -1) {
-            os.write(buffer, 0, len);
+        try(InputStream is = new FileInputStream(file);
+            OutputStream os = response.getOutputStream()){
+            byte[] buffer = new byte[1024];
+            int len;
+            while ((len = is.read(buffer)) != -1) {
+                os.write(buffer, 0, len);
+            }
         }
-        os.flush();
-        is.close();
-        os.close();
+        finally {
+            file.delete();
+        }
     }
 
     @RequestMapping(value = "/downloadOgolosh/{id}", method = RequestMethod.GET)
@@ -2707,21 +2726,20 @@ public class AssetController {
         String docName = makeOgoloshennya(id);
         file = new File(docName);
 
-        InputStream is = new FileInputStream(file);
-
         response.setContentType("application/octet-stream");
         response.setHeader("Content-Disposition", "attachment; filename=\"" + file.getName() + "\"");
 
-        OutputStream os = response.getOutputStream();
-        byte[] buffer = new byte[1024];
-        int len;
-        while ((len = is.read(buffer)) != -1) {
-            os.write(buffer, 0, len);
+        try(InputStream is = new FileInputStream(file);
+            OutputStream os = response.getOutputStream()){
+            byte[] buffer = new byte[1024];
+            int len;
+            while ((len = is.read(buffer)) != -1) {
+                os.write(buffer, 0, len);
+            }
         }
-        os.flush();
-        is.close();
-        os.close();
-        file.delete();
+        finally {
+            file.delete();
+        }
     }
 
     @RequestMapping(value = "/downloadCreditContract/{lotId}/{contract_year}/{contract_address}/{contract_protokol_num}/{contract_protokol_date}/{protocol_made_by}/{subscriber}",
@@ -2737,21 +2755,21 @@ public class AssetController {
 
         File file;
         file = new File(makeContract(lotId, contract_year, contract_address, contract_protokol_num, contract_protokol_date, protocol_made_by, subscriber));
-        InputStream is = new FileInputStream(file);
 
         response.setContentType("application/octet-stream");
         response.setHeader("Content-Disposition", "attachment; filename=\"" + file.getName() + "\"");
 
-        OutputStream os = response.getOutputStream();
-        byte[] buffer = new byte[1024];
-        int len;
-        while ((len = is.read(buffer)) != -1) {
-            os.write(buffer, 0, len);
+        try(InputStream is = new FileInputStream(file);
+            OutputStream os = response.getOutputStream()){
+            byte[] buffer = new byte[1024];
+            int len;
+            while ((len = is.read(buffer)) != -1) {
+                os.write(buffer, 0, len);
+            }
         }
-        os.flush();
-        is.close();
-        os.close();
-        file.delete();
+        finally {
+            file.delete();
+        }
     }
 
     @RequestMapping(value = "/downloadAssetContract/{lotId}/{contract_year}/{contract_address}/{contract_protokol_num}/{contract_protokol_date}/{protocol_made_by}/{subscriber}/{pass_seria}/{pass_num}/{pass_vidano}/{pass_vidano_date}/{operates_basis}/{account_bank}/{bid_enter}/{bid_client}/{signer_bank}",
@@ -2785,21 +2803,21 @@ public class AssetController {
                 bid_client,
                 signer_bank
         ));
-        InputStream is = new FileInputStream(file);
 
         response.setContentType("application/octet-stream");
         response.setHeader("Content-Disposition", "attachment; filename=\"" + file.getName() + "\"");
 
-        OutputStream os = response.getOutputStream();
-        byte[] buffer = new byte[1024];
-        int len;
-        while ((len = is.read(buffer)) != -1) {
-            os.write(buffer, 0, len);
+        try(InputStream is = new FileInputStream(file);
+            OutputStream os = response.getOutputStream()){
+            byte[] buffer = new byte[1024];
+            int len;
+            while ((len = is.read(buffer)) != -1) {
+                os.write(buffer, 0, len);
+            }
         }
-        os.flush();
-        is.close();
-        os.close();
-        file.delete();
+        finally {
+            file.delete();
+        }
     }
 
     @RequestMapping(value = "/downloadContract_Akt/{lotId}/{contract_year}/{contract_address}/{contract_protokol_num}/{contract_protokol_date}/{protocol_made_by}/{subscriber}",
@@ -2815,21 +2833,21 @@ public class AssetController {
 
         File file;
         file = new File(makeContract_Akt(lotId, contract_year, contract_address, contract_protokol_num, contract_protokol_date, protocol_made_by, subscriber));
-        InputStream is = new FileInputStream(file);
 
         response.setContentType("application/octet-stream");
         response.setHeader("Content-Disposition", "attachment; filename=\"" + file.getName() + "\"");
 
-        OutputStream os = response.getOutputStream();
-        byte[] buffer = new byte[1024];
-        int len;
-        while ((len = is.read(buffer)) != -1) {
-            os.write(buffer, 0, len);
+        try(InputStream is = new FileInputStream(file);
+            OutputStream os = response.getOutputStream()){
+            byte[] buffer = new byte[1024];
+            int len;
+            while ((len = is.read(buffer)) != -1) {
+                os.write(buffer, 0, len);
+            }
         }
-        os.flush();
-        is.close();
-        os.close();
-        file.delete();
+        finally {
+            file.delete();
+        }
     }
 
     @RequestMapping(value = "/downloadAssetContract_Akt/{lotId}/{contract_year}/{contract_address}/{contract_protokol_num}/{contract_protokol_date}/{protocol_made_by}/{subscriber}/{pass_seria}/{pass_num}/{pass_vidano}/{pass_vidano_date}/{operates_basis}/{account_bank}/{bid_enter}/{bid_client}/{signer_bank}",
@@ -2857,21 +2875,21 @@ public class AssetController {
         file = new File(makeAssetContract_Akt(lotId, contract_year, contract_address, contract_protokol_num, contract_protokol_date, protocol_made_by, subscriber,
                 pass_seria, pass_num, pass_vidano, pass_vidano_date, operates_basis, account_bank,
                 bid_enter, bid_client, signer_bank));
-        InputStream is = new FileInputStream(file);
 
         response.setContentType("application/octet-stream");
         response.setHeader("Content-Disposition", "attachment; filename=\"" + file.getName() + "\"");
 
-        OutputStream os = response.getOutputStream();
-        byte[] buffer = new byte[1024];
-        int len;
-        while ((len = is.read(buffer)) != -1) {
-            os.write(buffer, 0, len);
+        try(InputStream is = new FileInputStream(file);
+            OutputStream os = response.getOutputStream()){
+            byte[] buffer = new byte[1024];
+            int len;
+            while ((len = is.read(buffer)) != -1) {
+                os.write(buffer, 0, len);
+            }
         }
-        os.flush();
-        is.close();
-        os.close();
-        file.delete();
+        finally {
+            file.delete();
+        }
     }
 
     @RequestMapping(value = "/downloadContract_Dodatok/{dodatok_num}/{lotId}/{contract_year}/{contract_address}/{contract_protokol_num}/{contract_protokol_date}/{protocol_made_by}/{subscriber}",
@@ -2892,21 +2910,21 @@ public class AssetController {
         else if (dodatok_num == 2)
             file = new File(makeContract_Dodatok2(lotId, contract_year, contract_address, contract_protokol_num, contract_protokol_date, protocol_made_by, subscriber));
         else return;
-        InputStream is = new FileInputStream(file);
 
         response.setContentType("application/octet-stream");
         response.setHeader("Content-Disposition", "attachment; filename=\"" + file.getName() + "\"");
 
-        OutputStream os = response.getOutputStream();
-        byte[] buffer = new byte[1024];
-        int len;
-        while ((len = is.read(buffer)) != -1) {
-            os.write(buffer, 0, len);
+        try(InputStream is = new FileInputStream(file);
+            OutputStream os = response.getOutputStream()){
+            byte[] buffer = new byte[1024];
+            int len;
+            while ((len = is.read(buffer)) != -1) {
+                os.write(buffer, 0, len);
+            }
         }
-        os.flush();
-        is.close();
-        os.close();
-        file.delete();
+        finally {
+            file.delete();
+        }
     }
 
     @RequestMapping(value = "/downLotIdListForm", method = RequestMethod.GET)
@@ -2914,20 +2932,17 @@ public class AssetController {
 
         File file = new File("C:\\projectFiles\\LOT_ID_LIST.xlsx");
 
-        InputStream is = new FileInputStream(file);
-
         response.setContentType("application/octet-stream");
         response.setHeader("Content-Disposition", "attachment; filename=\"" + file.getName() + "\"");
 
-        OutputStream os = response.getOutputStream();
-        byte[] buffer = new byte[1024];
-        int len;
-        while ((len = is.read(buffer)) != -1) {
-            os.write(buffer, 0, len);
+        try(InputStream is = new FileInputStream(file);
+            OutputStream os = response.getOutputStream()){
+            byte[] buffer = new byte[1024];
+            int len;
+            while ((len = is.read(buffer)) != -1) {
+                os.write(buffer, 0, len);
+            }
         }
-        os.flush();
-        is.close();
-        os.close();
     }
     //LOT_ID_LIST.xlsx
 
@@ -3197,17 +3212,17 @@ public class AssetController {
         Bid bid = bidService.getBid(Long.parseLong(bidId));
         Exchange exchange = exchangeService.getExchange(Long.parseLong(exId));
         try {
-            bDate = sdfshort.parse(bidDate);
+            bDate = CustomDateFormats.sdfshort.parse(bidDate);
         } catch (ParseException e) {
             System.out.println("Неверный формат даты");
         }
         try {
-            ND1 = sdfshort.parse(newND1);
+            ND1 = CustomDateFormats.sdfshort.parse(newND1);
         } catch (ParseException e) {
             System.out.println("Неверный формат даты");
         }
         try {
-            RED = sdfshort.parse(newRED);
+            RED = CustomDateFormats.sdfshort.parse(newRED);
         } catch (ParseException e) {
             System.out.println("Неверный формат даты");
         }
@@ -3503,7 +3518,7 @@ public class AssetController {
                 Lot lot = lotService.getLot(cr.getLot());
 
                 if (lot.getBid() != null) {
-                    bidDate = String.valueOf(sdfpoints.format(lot.getBid().getBidDate()));
+                    bidDate = String.valueOf(CustomDateFormats.sdfpoints.format(lot.getBid().getBidDate()));
                     exchangeName = lot.getBid().getExchange().getCompanyName();
                 }
                 bidStage = lot.getBidStage();
@@ -3522,21 +3537,21 @@ public class AssetController {
 
                 workStage = lot.getWorkStage();
                 if (lot.getFondDecisionDate() != null)
-                    fondDecisionDate = String.valueOf(sdfpoints.format(lot.getFondDecisionDate()));
+                    fondDecisionDate = String.valueOf(CustomDateFormats.sdfpoints.format(lot.getFondDecisionDate()));
                 fondDecision = lot.getFondDecision();
                 fondDecisionNumber = lot.getDecisionNumber();
                 if (lot.getNbuDecisionDate() != null)
-                    nbuDecisionDate = String.valueOf(sdfpoints.format(lot.getNbuDecisionDate()));
+                    nbuDecisionDate = String.valueOf(CustomDateFormats.sdfpoints.format(lot.getNbuDecisionDate()));
                 nbuDecision = lot.getNbuDecision();
                 nbuDecisionNumber = lot.getNbuDecisionNumber();
                 acceptedExchange = lot.getAcceptExchange();
 
                 if (lot.getActSignedDate() != null)
-                    actSignedDate = sdfpoints.format(lot.getActSignedDate());
+                    actSignedDate = CustomDateFormats.sdfpoints.format(lot.getActSignedDate());
             }
             String planSaleDate = "";
             if (cr.getPlanSaleDate() != null)
-                planSaleDate = yearMonthFormat.format(cr.getPlanSaleDate());
+                planSaleDate = CustomDateFormats.yearMonthFormat.format(cr.getPlanSaleDate());
 
             rezList.add(lotId
                     + "||" + cr.getNd()
@@ -3736,7 +3751,7 @@ public class AssetController {
 
         Date date = null;
         try {
-            date = sdfshort.parse(fondDecDate);
+            date = CustomDateFormats.sdfshort.parse(fondDecDate);
         } catch (ParseException e) {
             System.out.println("Халепа!");
         }
@@ -3762,7 +3777,7 @@ public class AssetController {
 
         Date date = null;
         try {
-            date = sdfshort.parse(nbuDecDate);
+            date = CustomDateFormats.sdfshort.parse(nbuDecDate);
         } catch (ParseException e) {
             System.out.println("Халепа!");
         }
@@ -3943,7 +3958,7 @@ public class AssetController {
             List<Bid> bidList = lotService.getLotHistoryAggregatedByBid(lotId);
             Collections.sort(bidList);
             for (Bid bid : bidList) {
-                temp = asset.getInn() + "||" + lotId + "||" + bid.getExchange().getCompanyName() + "||" + sdfshort.format(bid.getBidDate()) + "||" + assetService.getAccPriceByLotIdHistory(asset.getId(), lotId);
+                temp = asset.getInn() + "||" + lotId + "||" + bid.getExchange().getCompanyName() + "||" + CustomDateFormats.sdfshort.format(bid.getBidDate()) + "||" + assetService.getAccPriceByLotIdHistory(asset.getId(), lotId);
                 rezList.add(temp);
             }
         }
@@ -3969,7 +3984,7 @@ public class AssetController {
             List<Bid> bidList = lotService.getLotHistoryAggregatedByBid(lotId);
             Collections.sort(bidList);
             for (Bid bid : bidList) {
-                temp = credit.getInn() + "||" + lotId + "||" + bid.getExchange().getCompanyName() + "||" + sdfshort.format(bid.getBidDate()) + "||" + creditService.getPriceByLotIdHistory(credit.getId(), lotId);
+                temp = credit.getInn() + "||" + lotId + "||" + bid.getExchange().getCompanyName() + "||" + CustomDateFormats.sdfshort.format(bid.getBidDate()) + "||" + creditService.getPriceByLotIdHistory(credit.getId(), lotId);
                 rezList.add(temp);
             }
         }
@@ -4070,13 +4085,13 @@ public class AssetController {
         Date dateDead;
 
         try{
-            datePro = sdfshort.parse(dateProzoro);
+            datePro = CustomDateFormats.sdfshort.parse(dateProzoro);
         }
         catch (NullPointerException | ParseException e) {
             datePro=null;
         }
         try{
-            dateDead = sdfshort.parse(dateDeadline);
+            dateDead = CustomDateFormats.sdfshort.parse(dateDeadline);
         }
         catch (NullPointerException | ParseException e) {
             dateDead=null;
