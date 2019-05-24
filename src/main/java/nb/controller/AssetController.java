@@ -8,6 +8,7 @@ import nb.queryDomain.CreditAccPriceHistory;
 import nb.queryDomain.FondDecisionsByLotHistory;
 import nb.service.*;
 import nb.util.CustomDateFormats;
+import nb.util.Excel;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.disk.DiskFileItem;
 import org.apache.poi.hssf.usermodel.HSSFDataFormat;
@@ -65,7 +66,6 @@ public class AssetController {
     private PayService payService;
     @Autowired
     private CustomerService customerService;
-
 
     private static final String documentsPath = "C:\\SCAN\\DocumentsByLots\\";
     private static final String bidDocumentsPath = "C:\\SCAN\\DocumentsByBid\\";
@@ -145,7 +145,7 @@ public class AssetController {
         return text;
     }
 
-    private String makeDodatok(List<Asset> assetList, List<Credit> creditList, String startDate, String endDate) throws IOException {
+    private File makeDodatok(List<Asset> assetList, List<Credit> creditList, String startDate, String endDate) throws IOException {
 
         HSSFWorkbook wb;
 
@@ -390,12 +390,13 @@ public class AssetController {
         sumRow.getCell(56).setCellFormula("SUM(BE8:BE" + tableEnd + ")");
         sumRow.getCell(57).setCellFormula("SUM(BF8:BF" + tableEnd + ")");
 
-        String fileName = "C:\\projectFiles\\" + ("Table prodaj " + startDate + " по " + endDate + ".xls");
+        File file = new File("C:\\projectFiles\\Table prodaj " + startDate + " по " + endDate + ".xls");
 
-        try(OutputStream fileOut = new FileOutputStream(fileName)){
-            wb.write(fileOut);
+        try(OutputStream outputStream = new FileOutputStream(file)){
+            wb.write(outputStream);
         }
-        return fileName;
+
+        return file;
     }
 
     private String makeOgoloshennya(Long bidId) throws IOException {
@@ -555,7 +556,7 @@ public class AssetController {
         return fileName;
     }
 
-    private String fillSoldedCrdTab(List<Credit> creditList) throws IOException {
+    private File fillSoldedCrdTab(List<Credit> creditList) throws IOException {
 
         XSSFWorkbook wb;
 
@@ -604,15 +605,16 @@ public class AssetController {
             }
         }
 
-        String fileName = "C:\\projectFiles\\" + ("CREDITS_solded " + CustomDateFormats.sdfshort.format(new Date()) + ".xlsx");
+    //    String fileName = "" + CustomDateFormats.sdfshort.format(new Date());
+        File file = new File("C:\\projectFiles\\CREDITS_solded "+ CustomDateFormats.sdfshort.format(new Date())+".xlsx");
 
-        try(OutputStream fileOut = new FileOutputStream(fileName)){
+        try(OutputStream fileOut = new FileOutputStream(file)){
             wb.write(fileOut);
         }
-        return fileName;
+        return file;
     }
 
-    private String fillCreditsReestr(List<Lot> lotList) throws IOException {
+    private File fillCreditsReestr(List<Lot> lotList) throws IOException {
 
         XSSFWorkbook wb;
 
@@ -669,15 +671,14 @@ public class AssetController {
             }
         }
 
-        String fileName = "C:\\projectFiles\\" + ("Credits_reestr " + CustomDateFormats.sdfshort.format(new Date()) + ".xlsx");
-
-        try(OutputStream fileOut = new FileOutputStream(fileName)){
+        File file = new File("C:\\projectFiles\\Credits_reestr " + CustomDateFormats.sdfshort.format(new Date()) + ".xlsx");
+        try(OutputStream fileOut = new FileOutputStream(file)){
             wb.write(fileOut);
         }
-        return fileName;
+        return file;
     }
 
-    private String fillAssTab() throws IOException {
+    private File fillAssTab() throws IOException {
         List<Lot> lotList = lotService.getLotsByType(1);
 
         XSSFWorkbook xwb;
@@ -982,11 +983,13 @@ public class AssetController {
             }
         }
 
-        String fileName = "C:\\projectFiles\\" + ("Assets " + CustomDateFormats.sdfshort.format(new Date()) + ".xlsx");
-        try(OutputStream fileOut = new FileOutputStream(fileName) ){
+        File file = new File("C:\\projectFiles\\Assets " + CustomDateFormats.sdfshort.format(new Date()) + ".xlsx");
+
+        try(OutputStream fileOut = new FileOutputStream(file)){
             wb.write(fileOut);
         }
-        return fileName;
+
+        return file;
     }
 
     private File getTempFile(MultipartFile multipartFile) throws IOException {
@@ -1007,15 +1010,13 @@ public class AssetController {
         return file;
     }
 
-    private String makePaymentsReport(List<Pay> payList, String start, String end) {
+    private File makePaymentsReport(List<Pay> payList, String start, String end) throws IOException {
 
-        String fileName = "C:\\projectFiles\\Payments_" + start + "_" + end + ".xlsx";
+        XSSFWorkbook wb;
 
-        try(InputStream ExcelFileToRead = new FileInputStream("C:\\projectFiles\\Pays.xlsx");
-            XSSFWorkbook wb = new XSSFWorkbook(ExcelFileToRead);
-            OutputStream fileOut = new FileOutputStream(fileName)
-            ) {
-
+        try(InputStream ExcelFileToRead = new FileInputStream("C:\\projectFiles\\Pays.xlsx")) {
+            
+            wb = new XSSFWorkbook(ExcelFileToRead);
             XSSFSheet sheet = wb.getSheetAt(0);
 
             String excelFormatter = DateFormatConverter.convert(Locale.ENGLISH, "yyyy-MM-dd");
@@ -1032,17 +1033,18 @@ public class AssetController {
                 payRow.createCell(3).setCellValue(pay.getLotId());
                 payRow.createCell(4).setCellValue(lotService.getLot(pay.getLotId()).getLotNum());
             }
-
-            wb.write(fileOut);
-
-        } catch (IOException e) {
-            e.printStackTrace();
         }
 
-        return fileName;
+        File file = new File("C:\\projectFiles\\Payments_" + start + "_" + end + ".xlsx") ;
+
+        try(OutputStream fileOut = new FileOutputStream(file)){
+            wb.write(fileOut);
+        }
+
+        return file;
     }
 
-    private String makeBidsSumReport(List<LotHistory> lotList, List<BidDetails> aggregatedLotList) throws IOException {
+    private File makeBidsSumReport(List<LotHistory> lotList, List<BidDetails> aggregatedLotList) throws IOException {
 
         XSSFWorkbook xwb;
         try(InputStream ExcelFileToRead = new FileInputStream("C:\\projectFiles\\Temp1.xlsx")){
@@ -1134,12 +1136,12 @@ public class AssetController {
             }
         }
 
-        String fileName = "C:\\projectFiles\\" + ("Bids_report.xlsx");
-        try(OutputStream fileOut = new FileOutputStream(fileName)){
+        File file = new File ("C:\\projectFiles\\Bids_report.xlsx");
+        try(OutputStream fileOut = new FileOutputStream(file)){
             wb.write(fileOut);
             //fileOut.flush();
         }
-        return fileName;
+        return file;
     }
 
     private String makeHistoryReportByAssets(List<Asset> assetList) throws IOException {
@@ -1263,17 +1265,22 @@ public class AssetController {
                             for (XWPFRun r : runs) {
                                 String text = r.getText(0);
                                 if (text != null) {
-                                    String tempText = "";
+                                    StringBuilder tempText = new StringBuilder();
                                     if (!creditList.isEmpty() && text.contains("knd")) {
                                         for (Credit credit : creditList) {
-                                            tempText += "№" + credit.getContractNum() + " від " + CustomDateFormats.sdfpoints.format(credit.getContractStart()) + "року,";
+                                            tempText
+                                                    .append("№")
+                                                    .append(credit.getContractNum())
+                                                    .append(" від ")
+                                                    .append(CustomDateFormats.sdfpoints.format(credit.getContractStart()))
+                                                    .append("року,");
                                         }
                                     }
 
                                     r.setText(replaceRunText(text, String.valueOf(creditList.get(0).getContractNum()), contract_year, String.valueOf((lot.getCustomer()==null) ?  "" : lot.getCustomer().shortDescription()),
                                             String.valueOf(contract_address), String.valueOf((lot.getCustomer()==null) ?  "" : lot.getCustomer().getCustomerInn()),
                                             String.valueOf(contract_protokol_num), String.valueOf(contract_protokol_date),
-                                            String.valueOf(protocol_made_by), String.valueOf(lot.getFactPrice()), tempText, subscriber), 0);
+                                            String.valueOf(protocol_made_by), String.valueOf(lot.getFactPrice()), tempText.toString(), subscriber), 0);
                                 }
                             }
                         }
@@ -2092,7 +2099,7 @@ public class AssetController {
         return "1";
     }
 
-    @Deprecated
+   /* @Deprecated
     @RequestMapping(value = "/setReportPath", method = RequestMethod.GET)
     private @ResponseBody
     String setReportPath(@RequestParam("reportNum") int reportNum,
@@ -2159,9 +2166,73 @@ public class AssetController {
 
         model.addAttribute("reportPath", reportPath);
         return "1";
-    }
+    }*/
 
     @RequestMapping(value = "/getReport/{reportNum}/{start}/{end}", method = RequestMethod.GET)
+    public void getReport(HttpServletResponse response, @PathVariable String start, @PathVariable String end,
+                          @PathVariable int reportNum) throws IOException {
+
+        File file = null;
+
+        if (reportNum == 4) {
+            file = fillAssTab();
+        }
+
+        Date startDate = null;
+        Date endDate = null;
+        try {
+            startDate = CustomDateFormats.sdfshort.parse(start);
+        } catch (ParseException e) {
+        }
+        try {
+            endDate = CustomDateFormats.sdfshort.parse(end);
+        } catch (ParseException e) {
+        }
+
+        List<Credit> crList = creditService.getCredits_SuccessBids(startDate, endDate);
+
+        if (reportNum == 3) {
+                file = fillSoldedCrdTab(crList);
+        }
+
+        else if (reportNum == 1) {
+            file = makeDodatok(assetService.findAllSuccessBids(startDate, endDate), crList, start, end);
+        }
+        else if (reportNum == 2) {
+            file = new File("C:\\projectFiles\\Dodatok 2_14.xls");
+        }
+        else if (reportNum == 5) {
+            file = makePaymentsReport(payService.getPaysByDates(startDate, endDate), start, end);
+        }
+        else if (reportNum == 6) {
+            file = makeBidsSumReport(lotService.getLotsHistoryByBidDates(startDate, endDate), lotService.getLotsHistoryAggregatedByBid(startDate, endDate));
+        }
+        else if (reportNum == 7) {
+
+        }
+        else if (reportNum == 8) {
+            file = fillCreditsReestr(lotService.getSoldedWithoutDealLots(0, startDate, endDate));
+        }
+
+        response.setContentType("application/octet-stream");
+        response.setHeader("Content-Disposition", "attachment; filename=\"" + file.getName() + "\"");
+
+        try(InputStream is = new FileInputStream(file);
+            OutputStream os = response.getOutputStream()){
+            byte[] buffer = new byte[1024];
+            int len;
+            while ((len = is.read(buffer)) != -1) {
+                os.write(buffer, 0, len);
+            }
+        }
+        finally {
+            file.delete();
+        }
+
+
+    }
+
+    /*@RequestMapping(value = "/getReport/{reportNum}/{start}/{end}", method = RequestMethod.GET)
     public void getReport(HttpServletResponse response, @PathVariable String start, @PathVariable String end,
                           @PathVariable int reportNum) throws IOException {
         String reportPath = "";
@@ -2173,13 +2244,13 @@ public class AssetController {
                 e.printStackTrace();
             }
         }
-        /*if(reportNum==3){
+        *//*if(reportNum==3){
             try {
                 reportPath=fillCrdTab(creditService.getCreditsByPortion(1));
             } catch (IOException e) {
                 e.printStackTrace();
             }
-        }*/
+        }*//*
 
         Date startDate = null;
         Date endDate = null;
@@ -2223,11 +2294,11 @@ public class AssetController {
             }
         }
         else if (reportNum == 7) {
-            /*try {
+            *//*try {
                 reportPath = makeBidsSumReport(lotService.getLotsHistoryByBidDates(startDate, endDate), lotService.getLotsHistoryAggregatedByBid(startDate, endDate));
             } catch (IOException e) {
                 e.printStackTrace();
-            }*/
+            }*//*
         }
         else if (reportNum == 8) {
             reportPath = fillCreditsReestr(lotService.getSoldedWithoutDealLots(0, startDate, endDate));
@@ -2250,7 +2321,7 @@ public class AssetController {
             file.delete();
         }
 
-    }
+    }*/
 
     @RequestMapping(value = "/getSalesReport/{portion}/{start}/{end}", method = RequestMethod.GET)
     public void getSalesReport(HttpServletResponse response, @PathVariable String start, @PathVariable String end,
@@ -2270,13 +2341,7 @@ public class AssetController {
         List<Asset> assetList = assetService.findAllSuccessBids(startDate, endDate, portion);
         List<Credit> crList = creditService.getCredits_SuccessBids(startDate, endDate);
 
-        try {
-            reportPath = makeDodatok(assetList, crList, start, end);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        File file = new File(reportPath);
+        File file = makeDodatok(assetList, crList, start, end);
 
         response.setContentType("application/octet-stream");
         response.setHeader("Content-Disposition", "attachment; filename=\"" + file.getName() + "\"");
@@ -2289,9 +2354,7 @@ public class AssetController {
                 os.write(buffer, 0, len);
             }
         }
-        finally {
-            file.delete();
-        }
+
     }
 
     @RequestMapping(value = "/getFileNames", method = RequestMethod.POST)

@@ -1,4 +1,4 @@
-package nb.controller;
+package nb.util;
 
 import nb.domain.Asset;
 import nb.domain.Credit;
@@ -25,7 +25,7 @@ public class Excel implements Serializable {
     public Excel() {
     }
 
-     static String loadCreditsByList(List<Lot> lotList, List<Asset> assetList) throws IOException {
+    public static String loadCreditsByList(List<Lot> lotList, List<Asset> assetList) throws IOException {
         Set<Date> bidDateSet = new TreeSet<>();
         Set<String> exNamesSet = new TreeSet<>();
         Set<Long> lotNumsSet = new TreeSet<>();
@@ -140,7 +140,7 @@ public class Excel implements Serializable {
         return fileName;
     }
 
-    static File loadAssetsByList(Lot lot, List<Asset> assetList) throws IOException {
+    public static File loadAssetsByList(Lot lot, List<Asset> assetList) throws IOException {
 
         POIFSFileSystem fs = new POIFSFileSystem(new FileInputStream("C:\\projectFiles\\Shablon_1.xls"));
         HSSFWorkbook wb = new HSSFWorkbook(fs);
@@ -255,7 +255,7 @@ public class Excel implements Serializable {
         return file;
     }
 
-    static File loadCreditsByLot(Lot lot, List<Credit> creditList) throws IOException {
+    public static File loadCreditsByLot(Lot lot, List<Credit> creditList) throws IOException {
 
         POIFSFileSystem fs = new POIFSFileSystem(new FileInputStream("C:\\projectFiles\\Shablon_0.xls"));
         HSSFWorkbook wb = new HSSFWorkbook(fs);
