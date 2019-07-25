@@ -74,6 +74,9 @@ public class LotHistory implements Serializable {
     @Column(name = "NBU_DECISION_NUM")
     private String nbuDecisionNumber;
 
+    @Column(name="CUSTOMER_ID")
+    private Long customerId;
+
     @Column(name = "BID_SCENARIO")
     private short bidScenario;
 
@@ -294,6 +297,13 @@ public class LotHistory implements Serializable {
         this.bidScenario = bidScenario;
     }
 
+    public Long getCustomerId() {
+        return customerId;
+    }
+    public void setCustomerId(Long customerId) {
+        this.customerId = customerId;
+    }
+
     //Конструктора
     public LotHistory() {
     }
@@ -331,5 +341,6 @@ public class LotHistory implements Serializable {
         this.nbuDecisionDate = lot.getNbuDecisionDate();
         this.nbuDecisionNumber = lot.getNbuDecisionNumber();
         this.bidScenario = lot.getBidScenario();
+        this.customerId = lot.getCustomer()==null ? null : lot.getCustomer().getId();
     }
 }
