@@ -24,6 +24,12 @@ public class LotServiceImpl implements LotService {
     private PayDao payDao;
     @Autowired
     private CreditDao creditDao;
+    @Autowired
+    private CreditHistoryDao creditHistoryDao;
+    @Autowired
+    private AssetService assetService;
+    @Autowired
+    private UserService userService;
 
     public LotServiceImpl() {
     }
@@ -48,9 +54,38 @@ public class LotServiceImpl implements LotService {
         return lotDao.create(lot);
     }
     @Override
+    @Transactional
     public Long createLot(String userName, Lot lot) {
         Long lotId =lotDao.create(lot);
         lotHistoryDao.create(new LotHistory(userName,lot));
+        return lotId;
+    }
+    @Override
+    @Transactional
+    public Long createCreditLot(String login, List<Long> creditIdList) {
+        User user = userService.getByLogin(login);
+        Lot lot = new Lot( "", user, new Date(), 0);
+        Long lotId =lotDao.create(lot);
+        lotHistoryDao.create(new LotHistory(login,lot));
+
+        creditDao.updateLot(creditIdList, lotId);
+        //creditHistoryDao.setLot(unitIdList, lot.getId());
+        return lotId;
+    }
+    @Override
+    @Transactional
+    public Long createAssetLot(String login, List<String> invent) {
+        User user = userService.getByLogin(login);
+        Lot lot = new Lot( "", user, new Date(), 1);
+        Long lotId =lotDao.create(lot);
+        lotHistoryDao.create(new LotHistory(login,lot));
+
+        List<Asset> assetList = assetDao.getAllAssetsByINum(invent);
+
+        for(Asset asset: assetList){
+            asset.setLot(lot);
+            assetService.updateAsset(login, asset);
+        }
         return lotId;
     }
     @Override
@@ -139,6 +174,7 @@ public class LotServiceImpl implements LotService {
         return lotDao.lotCount(lot);
     }
     @Override
+    @Transactional
     public boolean delLot(Lot lot) {
         try {
             List<Pay> paysByLot = payDao.getPaymentsByLot(lot);

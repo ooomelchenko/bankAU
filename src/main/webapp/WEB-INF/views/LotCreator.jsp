@@ -244,6 +244,9 @@
     <div style="width: 100%; text-align: center">
         Форма для завантаження <img class="icon_button" id="formDownld" style="width: 40px; height: 40px" src="resources/css/images/excel.jpg" title="Завантажити зразок файлу зі списком ID для пошуку (.xls)" >
     </div>
+    <div style="text-align: right">
+        <img id="button_create_lot_by_file" class="icon_button" style="width: 40px; height: 40px" src="resources/css/images/ok_icon.png" title="Натисніть для створення лоту з файлу">
+    </div>
 </footer>
 </body>
 </html>

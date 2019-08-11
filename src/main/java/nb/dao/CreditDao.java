@@ -47,4 +47,6 @@ public interface CreditDao {
     List getCreditsByIdBars(Long id);
 
     List getCredits_SuccessBids(Date startBids, Date endBids);
+
+    boolean updateLot(List<Long> creditList, Long lot);
 }

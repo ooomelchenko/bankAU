@@ -144,4 +144,21 @@ $(document).ready(function () {
         calculate();
     });
 
+    $('#button_create_lot_by_file').click(function(){
+        createLotsByFile();
+    });
+    function createLotsByFile(){
+        var formData = new FormData($('form')[0]);
+        $.ajax({
+            type: "POST",
+            processData: false,
+            contentType: false,
+            url: "createLotsByFile",
+            data:  formData,
+            success: function (response) {
+                alert(response);
+            }
+        })
+    }
+
 });

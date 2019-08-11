@@ -1,8 +1,6 @@
 package nb.service;
 
-import nb.domain.Bid;
-import nb.domain.Exchange;
-import nb.domain.Lot;
+import nb.domain.*;
 import nb.queryDomain.FondDecisionsByLotHistory;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,6 +15,12 @@ public interface LotService {
     Long createLot(Lot lot);
 
     Long createLot(String userName, Lot lot);
+
+    @Transactional
+    Long createCreditLot(String userName, List<Long> creditIdList);
+
+    @Transactional
+    Long createAssetLot(String userName, List<String> invent);
 
     boolean delete(Long id);
     boolean delete(Lot lot);

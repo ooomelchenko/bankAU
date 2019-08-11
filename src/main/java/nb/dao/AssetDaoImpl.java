@@ -43,6 +43,13 @@ public class AssetDaoImpl implements AssetDao {
         return true;
     }
     @Override
+    public boolean update(List<Asset> assets) {
+        for(Asset asset: assets){
+            factory.getCurrentSession().update(asset);
+        }
+        return true;
+    }
+    @Override
     public boolean delete(Asset asset) {
         factory.getCurrentSession().delete(asset);
         return true;
@@ -116,6 +123,12 @@ public class AssetDaoImpl implements AssetDao {
     public List getAllAssetsByINum(String inn){
         Query query = factory.getCurrentSession().createQuery("FROM nb.domain.Asset asset WHERE asset.inn=:inn");
         query.setParameter("inn", inn);
+        return query.list();
+    }
+    @Override
+    public List getAllAssetsByINum(List<String> innList){
+        Query query = factory.getCurrentSession().createQuery("FROM nb.domain.Asset asset WHERE asset.inn in (:innList)");
+        query.setParameterList("innList", innList);
         return query.list();
     }
     @Override

@@ -11,6 +11,9 @@ public interface AssetDao {
     Long create(Asset asset);
     Asset read(Long id);
     boolean update(Asset asset);
+
+    boolean update(List<Asset> assets);
+
     boolean delete(Asset asset);
 
     int delAssetsFromLot(Lot lot);
@@ -34,6 +37,8 @@ public interface AssetDao {
     List getAssetsByINum(String inn);
 
     List getAllAssetsByINum(String inn);
+
+    List getAllAssetsByINum(List<String> innList);
 
     List getAllBidDates();
 
