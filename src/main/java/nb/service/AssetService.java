@@ -76,4 +76,6 @@ public interface AssetService {
     BigDecimal getAccPriceByLotIdHistory(Long assetId, Long lotId);
 
     List getDateAndAccPriceHistoryByAsset(Long assId);
+
+    List getAssetHistory(String inn);
 }

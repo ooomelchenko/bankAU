@@ -2992,20 +2992,7 @@ public class AssetController {
     @RequestMapping(value = "/getAssetHistory", method = RequestMethod.POST)
     private @ResponseBody
     List assetHistory(@RequestParam("inn") String inn) {
-        List<String> rezList = new ArrayList<>();
-        String temp;
-        Asset asset = (Asset) assetService.getAllAssetsByInNum(inn).get(0);
-
-        List<Long> lotIdList = assetService.getLotIdHistoryByAsset(asset.getId());
-        for (Long lotId : lotIdList) {
-            List<Bid> bidList = lotService.getLotHistoryAggregatedByBid(lotId);
-            Collections.sort(bidList);
-            for (Bid bid : bidList) {
-                temp = asset.getInn() + "||" + lotId + "||" + bid.getExchange().getCompanyName() + "||" + CustomDateFormats.sdfshort.format(bid.getBidDate()) + "||" + assetService.getAccPriceByLotIdHistory(asset.getId(), lotId);
-                rezList.add(temp);
-            }
-        }
-        return rezList;
+            return assetService.getAssetHistory(inn);
     }
 
     @RequestMapping(value = "/getAccPriceHistory", method = RequestMethod.POST)
