@@ -39,7 +39,7 @@
         <!-- Spring -->
         <spring-framework.version>4.3.14.RELEASE</spring-framework.version>
         <spring-data-jpa.version>1.8.2.RELEASE</spring-data-jpa.version>
-        <jackson.library>2.7.5</jackson.library>
+        <jackson.library>2.9.10.4</jackson.library>
 
         <!-- Test -->
         <junit.version>4.12</junit.version>
