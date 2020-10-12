@@ -42,7 +42,7 @@
         <jackson.library>2.7.5</jackson.library>
 
         <!-- Test -->
-        <junit.version>4.12</junit.version>
+        <junit.version>4.13.1</junit.version>
         <poi.version>3.17</poi.version>
         <hibernate.version>5.2.12.Final</hibernate.version>
     </properties>
